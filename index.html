@@ -10,7 +10,11 @@
 
   <style>
     body { margin: 0; }
-    #map { height: 100vh; width: 100%; }
+
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
 
     .panel {
       position: absolute;
@@ -19,33 +23,45 @@
       padding: 10px;
       margin: 10px;
       border-radius: 8px;
+      width: 220px;
+    }
+
+    input, select, button {
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 6px;
     }
   </style>
 </head>
 
 <body>
 
+<!-- FORM -->
 <div class="panel">
   <h3>Aggiungi Evento</h3>
 
-  <input id="title" placeholder="Titolo"><br><br>
+  <input id="title" placeholder="Titolo">
 
   <select id="category">
     <option value="music">Musica</option>
     <option value="food">Food</option>
     <option value="culture">Cultura</option>
     <option value="sport">Sport</option>
-  </select><br><br>
+  </select>
 
-  <input id="lat" placeholder="Latitudine"><br><br>
-  <input id="lng" placeholder="Longitudine"><br><br>
+  <input id="lat" placeholder="Latitudine">
+  <input id="lng" placeholder="Longitudine">
 
   <button onclick="addEvent()">Salva evento</button>
 </div>
 
+<!-- MAPPA -->
 <div id="map"></div>
 
 <script>
+  const SUPABASE_URL = "https://TUO-PROJECT-URL.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
+
   const map = L.map('map').setView([42.4200, 12.1040], 10);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -62,36 +78,28 @@
     }
   }
 
-  const eventi = [
-    {
-      title: "Concerto Live",
-      category: "music",
-      lat: 42.4200,
-      lng: 12.1040
-    },
-    {
-      title: "Serata Food & Wine",
-      category: "food",
-      lat: 42.3000,
-      lng: 12.0800
-    },
-    {
-      title: "Mostra d'arte",
-      category: "culture",
-      lat: 42.4500,
-      lng: 12.1500
-    }
-  ];
+  async function loadEvents() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/events?select=*`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    });
 
-  eventi.forEach(e => {
-    L.circleMarker([e.lat, e.lng], {
-      radius: 8,
-      color: getColor(e.category),
-      fillOpacity: 0.8
-    })
-    .addTo(map)
-    .bindPopup(`<b>${e.title}</b>`);
-  });
+    const eventi = await res.json();
+
+    eventi.forEach(e => {
+      L.circleMarker([e.lat, e.lng], {
+        radius: 8,
+        color: getColor(e.category),
+        fillOpacity: 0.8
+      })
+      .addTo(map)
+      .bindPopup(`<b>${e.title}</b>`);
+    });
+  }
+
+  loadEvents();
 
   async function addEvent() {
     const title = document.getElementById("title").value;
@@ -99,12 +107,12 @@
     const lat = parseFloat(document.getElementById("lat").value);
     const lng = parseFloat(document.getElementById("lng").value);
 
-    await fetch("https://TUO-PROJECT-URL.supabase.co/rest/v1/events", {
+    await fetch(`${SUPABASE_URL}/rest/v1/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A",
-        Authorization: "Bearer sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A"
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
       },
       body: JSON.stringify({
         title,
