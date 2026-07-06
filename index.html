@@ -9,7 +9,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body { margin: 0; }
+    body { margin: 0; font-family: Arial; }
 
     #map {
       height: 100vh;
@@ -18,15 +18,19 @@
 
     .panel {
       position: absolute;
+      top: 10px;
+      left: 10px;
       z-index: 999;
       background: white;
-      padding: 10px;
-      margin: 10px;
+      padding: 12px;
       border-radius: 8px;
-      width: 220px;
+      width: 240px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    input, select, button {
+    .panel input,
+    .panel select,
+    .panel button {
       width: 100%;
       margin-bottom: 8px;
       padding: 6px;
@@ -36,9 +40,8 @@
 
 <body>
 
-<!-- FORM -->
 <div class="panel">
-  <h3>Aggiungi Evento</h3>
+  <h3>Aggiungi evento</h3>
 
   <input id="title" placeholder="Titolo">
 
@@ -49,17 +52,19 @@
     <option value="sport">Sport</option>
   </select>
 
+  <input id="start_date" type="datetime-local">
+  <input id="end_date" type="datetime-local">
+
   <input id="lat" placeholder="Latitudine">
   <input id="lng" placeholder="Longitudine">
 
   <button onclick="addEvent()">Salva evento</button>
 </div>
 
-<!-- MAPPA -->
 <div id="map"></div>
 
 <script>
-  const SUPABASE_URL = "https://gdyhkuvrncztjguvxofg.supabase.co/rest/v1/";
+  const SUPABASE_URL = "INSERISCI_IL_TUO_URL_SUPABASE";
   const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
 
   const map = L.map('map').setView([42.4200, 12.1040], 10);
@@ -78,25 +83,30 @@
     }
   }
 
+  function addMarker(e) {
+    L.circleMarker([e.lat, e.lng], {
+      radius: 8,
+      color: getColor(e.category),
+      fillOpacity: 0.8
+    })
+    .addTo(map)
+    .bindPopup(
+      `<b>${e.title}</b><br>
+       ${e.start_date ? "Inizio: " + e.start_date + "<br>" : ""}
+       ${e.end_date ? "Fine: " + e.end_date : ""}`
+    );
+  }
+
   async function loadEvents() {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/events?select=*`, {
+    const res = await fetch(SUPABASE_URL + "/rest/v1/events?select=*", {
       headers: {
         apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`
+        Authorization: "Bearer " + SUPABASE_KEY
       }
     });
 
-    const eventi = await res.json();
-
-    eventi.forEach(e => {
-      L.circleMarker([e.lat, e.lng], {
-        radius: 8,
-        color: getColor(e.category),
-        fillOpacity: 0.8
-      })
-      .addTo(map)
-      .bindPopup(`<b>${e.title}</b>`);
-    });
+    const data = await res.json();
+    data.forEach(addMarker);
   }
 
   loadEvents();
@@ -104,21 +114,25 @@
   async function addEvent() {
     const title = document.getElementById("title").value;
     const category = document.getElementById("category").value;
+    const start_date = document.getElementById("start_date").value || null;
+    const end_date = document.getElementById("end_date").value || null;
     const lat = parseFloat(document.getElementById("lat").value);
     const lng = parseFloat(document.getElementById("lng").value);
 
-    await fetch(`${SUPABASE_URL}/rest/v1/events`, {
+    await fetch(SUPABASE_URL + "/rest/v1/events", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`
+        Authorization: "Bearer " + SUPABASE_KEY
       },
       body: JSON.stringify({
         title,
         category,
         lat,
-        lng
+        lng,
+        start_date,
+        end_date
       })
     });
 
