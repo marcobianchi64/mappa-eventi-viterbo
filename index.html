@@ -61,9 +61,6 @@
   <button onclick="addEvent()">Salva evento</button>
 </div>
 
-  <button onclick="addEvent()">Salva evento</button>
-</div>
-
 <div id="map"></div>
 
 <script>
@@ -71,20 +68,16 @@
   const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
 
   const map = L.map('map').setView([42.4200, 12.1040], 10);
-  let selectedLat = null;
-let selectedLng = null;
-
-map.on("click", function(e) {
-  selectedLat = e.latlng.lat;
-  selectedLng = e.latlng.lng;
-
-  document.getElementById("lat").value = selectedLat;
-  document.getElementById("lng").value = selectedLng;
-});
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap'
   }).addTo(map);
+
+  // 🔵 CLICK SULLA MAPPA → RIEMPI CAMPI
+  map.on("click", function(e) {
+    document.getElementById("lat").value = e.latlng.lat;
+    document.getElementById("lng").value = e.latlng.lng;
+  });
 
   function getColor(category) {
     switch(category) {
