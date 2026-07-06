@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="it">
 <head>
   <meta charset="utf-8" />
   <title>Mappa Eventi Viterbo</title>
@@ -9,7 +10,19 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body { margin: 0; font-family: Arial; }
+    :root {
+      --panel-width: 290px;
+      --shadow: 0 3px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
 
     #map {
       height: 100vh;
@@ -18,134 +31,440 @@
 
     .panel {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 999;
-      background: white;
-      padding: 12px;
-      border-radius: 8px;
-      width: 240px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      width: var(--panel-width);
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      background: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+
+    .panel p {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.35;
+    }
+
+    .panel label {
+      display: block;
+      margin: 10px 0 4px;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .panel input,
     .panel select,
+    .panel textarea,
     .panel button {
       width: 100%;
-      margin-bottom: 8px;
-      padding: 6px;
+      padding: 9px;
+      border: 1px solid #cfcfcf;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    .panel textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .panel button {
+      margin-top: 12px;
+      border: 0;
+      background: #1f6feb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .panel button:hover {
+      background: #1557b0;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.35;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status.error {
+      color: #b42318;
+    }
+
+    .status.success {
+      color: #167a38;
+    }
+
+    .event-card {
+      width: 240px;
+    }
+
+    .event-card img {
+      display: block;
+      width: 100%;
+      height: 125px;
+      margin: 0 0 9px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .event-card h3 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .event-card p {
+      margin: 4px 0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .event-card a {
+      display: inline-block;
+      margin-top: 8px;
+      color: #1f6feb;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    @media (max-width: 650px) {
+      .panel {
+        top: 8px;
+        left: 8px;
+        width: calc(100% - 16px);
+        max-height: 46vh;
+      }
     }
   </style>
+
 </head>
 
 <body>
+  <aside class="panel">
+    <h1>Eventi in provincia di Viterbo</h1>
+    <p>Gli eventi inviati dal modulo entrano in revisione prima della pubblicazione.</p>
 
-<div class="panel">
-  <h3>Aggiungi evento</h3>
+```
+<label for="title">Titolo evento</label>
+<input id="title" placeholder="Es. Concerto in piazza" />
 
-  <input id="title" placeholder="Titolo">
+<label for="category">Categoria</label>
+<select id="category">
+  <option value="music">Musica</option>
+  <option value="food">Enogastronomia</option>
+  <option value="culture">Cultura</option>
+  <option value="other">Altri eventi</option>
+</select>
 
-  <select id="category">
-    <option value="music">Musica</option>
-    <option value="food">Food</option>
-    <option value="culture">Cultura</option>
-    <option value="sport">Sport</option>
-  </select>
+<label for="start_date">Inizio</label>
+<input id="start_date" type="datetime-local" />
 
-  <input id="start_date" type="datetime-local">
-  <input id="end_date" type="datetime-local">
+<label for="end_date">Fine</label>
+<input id="end_date" type="datetime-local" />
 
-  <input id="lat" placeholder="Latitudine">
-  <input id="lng" placeholder="Longitudine">
+<label for="venue">Luogo</label>
+<input id="venue" placeholder="Es. Piazza San Lorenzo" />
 
-  <button onclick="addEvent()">Salva evento</button>
-</div>
+<label for="event_url">Pagina ufficiale dell'evento</label>
+<input id="event_url" type="url" placeholder="https://..." />
 
-<div id="map"></div>
+<label for="image_url">Immagine dell'evento (facoltativa)</label>
+<input id="image_url" type="url" placeholder="https://..." />
 
-<script>
-  const SUPABASE_URL = "INSERISCI_IL_TUO_URL_SUPABASE";
-  const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
+<label for="description">Breve descrizione (facoltativa)</label>
+<textarea id="description" placeholder="Informazioni utili sull'evento"></textarea>
 
-  const map = L.map('map').setView([42.4200, 12.1040], 10);
+<label for="lat">Latitudine</label>
+<input id="lat" placeholder="Clicca sulla mappa" readonly />
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
+<label for="lng">Longitudine</label>
+<input id="lng" placeholder="Clicca sulla mappa" readonly />
 
-  // 🔵 CLICK SULLA MAPPA → RIEMPI CAMPI
-  map.on("click", function(e) {
-    document.getElementById("lat").value = e.latlng.lat;
-    document.getElementById("lng").value = e.latlng.lng;
-  });
+<button id="saveButton" type="button">Invia evento per revisione</button>
 
-  function getColor(category) {
-    switch(category) {
-      case "music": return "red";
-      case "food": return "green";
-      case "culture": return "blue";
-      case "sport": return "orange";
-      default: return "gray";
-    }
-  }
+<div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
+<div id="status" class="status" aria-live="polite"></div>
+```
 
-  function addMarker(e) {
-    L.circleMarker([e.lat, e.lng], {
-      radius: 8,
-      color: getColor(e.category),
-      fillOpacity: 0.8
-    })
-    .addTo(map)
-    .bindPopup(
-      `<b>${e.title}</b><br>
-       ${e.start_date ? "Inizio: " + e.start_date + "<br>" : ""}
-       ${e.end_date ? "Fine: " + e.end_date : ""}`
-    );
-  }
+  </aside>
 
-  async function loadEvents() {
-    const res = await fetch(SUPABASE_URL + "/rest/v1/events?select=*", {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: "Bearer " + SUPABASE_KEY
+  <div id="map"></div>
+
+  <script>
+    const SUPABASE_URL = "https://gdyhkuvrncztjguvxofg.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
+    const EVENTS_ENDPOINT = `${SUPABASE_URL}/rest/v1/events`;
+
+    const map = L.map("map").setView([42.4200, 12.1040], 10);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    let draftMarker = null;
+
+    function getColor(category) {
+      switch (category) {
+        case "music": return "#d92d20";
+        case "food": return "#2e8b57";
+        case "culture": return "#2f6fed";
+        case "other": return "#7a5af8";
+        default: return "#667085";
       }
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return escapeHtml(value);
+
+      return date.toLocaleString("it-IT", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    function isVisibleNow(event) {
+      if (!event.verified) return false;
+
+      const now = new Date();
+      const start = event.start_date ? new Date(event.start_date) : null;
+      const end = event.end_date ? new Date(event.end_date) : start;
+
+      if (!start || Number.isNaN(start.getTime())) return false;
+      if (end && end < now) return false;
+
+      const visibleFrom = new Date(start);
+      visibleFrom.setDate(visibleFrom.getDate() - 15);
+
+      return now >= visibleFrom;
+    }
+
+    function createEventCard(event) {
+      const title = escapeHtml(event.title);
+      const venue = escapeHtml(event.venue);
+      const description = escapeHtml(event.description);
+      const image = event.image_url
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        : "";
+
+      const dateText = event.start_date
+        ? `<p><strong>Inizio:</strong> ${formatDate(event.start_date)}</p>`
+        : "";
+
+      const endText = event.end_date
+        ? `<p><strong>Fine:</strong> ${formatDate(event.end_date)}</p>`
+        : "";
+
+      const venueText = venue
+        ? `<p><strong>Luogo:</strong> ${venue}</p>`
+        : "";
+
+      const descriptionText = description
+        ? `<p>${description}</p>`
+        : "";
+
+      const link = event.event_url
+        ? `<a href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener noreferrer">Vedi evento ufficiale →</a>`
+        : "";
+
+      return `
+        <div class="event-card">
+          ${image}
+          <h3>${title}</h3>
+          ${dateText}
+          ${endText}
+          ${venueText}
+          ${descriptionText}
+          ${link}
+        </div>
+      `;
+    }
+
+    function addEventMarker(event) {
+      if (!Number.isFinite(Number(event.lat)) || !Number.isFinite(Number(event.lng))) {
+        return;
+      }
+
+      const marker = L.circleMarker([event.lat, event.lng], {
+        radius: 9,
+        color: getColor(event.category),
+        fillColor: getColor(event.category),
+        fillOpacity: 0.85,
+        weight: 2
+      }).addTo(map);
+
+      marker.bindTooltip(
+        `<strong>${escapeHtml(event.title)}</strong><br>${formatDate(event.start_date)}`,
+        { direction: "top", offset: [0, -8], opacity: 0.95 }
+      );
+
+      marker.bindPopup(createEventCard(event), { maxWidth: 270 });
+    }
+
+    async function loadEvents() {
+      try {
+        const response = await fetch(
+          `${EVENTS_ENDPOINT}?select=*&order=start_date.asc`,
+          {
+            headers: {
+              apikey: SUPABASE_KEY,
+              Authorization: `Bearer ${SUPABASE_KEY}`
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Impossibile caricare gli eventi.");
+        }
+
+        const events = await response.json();
+        events.filter(isVisibleNow).forEach(addEventMarker);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function setStatus(message, type = "") {
+      const status = document.getElementById("status");
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    map.on("click", (event) => {
+      const lat = event.latlng.lat.toFixed(6);
+      const lng = event.latlng.lng.toFixed(6);
+
+      document.getElementById("lat").value = lat;
+      document.getElementById("lng").value = lng;
+
+      if (draftMarker) {
+        map.removeLayer(draftMarker);
+      }
+
+      draftMarker = L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup("Posizione selezionata per il nuovo evento")
+        .openPopup();
+
+      setStatus("Posizione selezionata.", "success");
     });
 
-    const data = await res.json();
-    data.forEach(addMarker);
-  }
+    async function addEvent() {
+      const button = document.getElementById("saveButton");
+      const title = document.getElementById("title").value.trim();
+      const category = document.getElementById("category").value;
+      const startDate = document.getElementById("start_date").value;
+      const endDate = document.getElementById("end_date").value;
+      const venue = document.getElementById("venue").value.trim();
+      const eventUrl = document.getElementById("event_url").value.trim();
+      const imageUrl = document.getElementById("image_url").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const lat = Number(document.getElementById("lat").value);
+      const lng = Number(document.getElementById("lng").value);
 
-  loadEvents();
+      if (!title || !startDate || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+        setStatus("Inserisci titolo, data di inizio e posizione sulla mappa.", "error");
+        return;
+      }
 
-  async function addEvent() {
-    const title = document.getElementById("title").value;
-    const category = document.getElementById("category").value;
-    const start_date = document.getElementById("start_date").value || null;
-    const end_date = document.getElementById("end_date").value || null;
-    const lat = parseFloat(document.getElementById("lat").value);
-    const lng = parseFloat(document.getElementById("lng").value);
+      if (endDate && new Date(endDate) < new Date(startDate)) {
+        setStatus("La data di fine non può essere precedente alla data di inizio.", "error");
+        return;
+      }
 
-    await fetch(SUPABASE_URL + "/rest/v1/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY,
-        Authorization: "Bearer " + SUPABASE_KEY
-      },
-      body: JSON.stringify({
+      button.disabled = true;
+      button.textContent = "Invio in corso...";
+      setStatus("");
+
+      const payload = {
         title,
         category,
+        start_date: new Date(startDate).toISOString(),
+        end_date: endDate ? new Date(endDate).toISOString() : null,
+        venue: venue || null,
+        event_url: eventUrl || null,
+        image_url: imageUrl || null,
+        description: description || null,
         lat,
         lng,
-        start_date,
-        end_date
-      })
-    });
+        verified: false,
+        source_id: null
+      };
 
-    alert("Evento salvato!");
-    location.reload();
-  }
-</script>
+      try {
+        const response = await fetch(EVENTS_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const details = await response.text();
+          throw new Error(details || "Errore durante l'invio.");
+        }
+
+        setStatus("Evento inviato: sarà pubblicato dopo la revisione.", "success");
+
+        document.getElementById("title").value = "";
+        document.getElementById("start_date").value = "";
+        document.getElementById("end_date").value = "";
+        document.getElementById("venue").value = "";
+        document.getElementById("event_url").value = "";
+        document.getElementById("image_url").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("lat").value = "";
+        document.getElementById("lng").value = "";
+
+        if (draftMarker) {
+          map.removeLayer(draftMarker);
+          draftMarker = null;
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus("Invio non riuscito. Riprova più tardi.", "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Invia evento per revisione";
+      }
+    }
+
+    document.getElementById("saveButton").addEventListener("click", addEvent);
+
+    loadEvents();
+  </script>
 
 </body>
 </html>
