@@ -11,11 +11,21 @@
   <style>
     body { margin: 0; }
     #map { height: 100vh; width: 100%; }
+
+    .panel {
+      position: absolute;
+      z-index: 999;
+      background: white;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
 <body>
-<div style="position:absolute; z-index:999; background:white; padding:10px; margin:10px; border-radius:8px;">
+
+<div class="panel">
   <h3>Aggiungi Evento</h3>
 
   <input id="title" placeholder="Titolo"><br><br>
@@ -32,6 +42,8 @@
 
   <button onclick="addEvent()">Salva evento</button>
 </div>
+
+<div id="map"></div>
 
 <script>
   const map = L.map('map').setView([42.4200, 12.1040], 10);
@@ -81,32 +93,31 @@
     .bindPopup(`<b>${e.title}</b>`);
   });
 
+  async function addEvent() {
+    const title = document.getElementById("title").value;
+    const category = document.getElementById("category").value;
+    const lat = parseFloat(document.getElementById("lat").value);
+    const lng = parseFloat(document.getElementById("lng").value);
+
+    await fetch("https://TUO-PROJECT-URL.supabase.co/rest/v1/events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A",
+        Authorization: "Bearer sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A"
+      },
+      body: JSON.stringify({
+        title,
+        category,
+        lat,
+        lng
+      })
+    });
+
+    alert("Evento salvato!");
+    location.reload();
+  }
 </script>
 
 </body>
 </html>
-async function addEvent() {
-  const title = document.getElementById("title").value;
-  const category = document.getElementById("category").value;
-  const lat = parseFloat(document.getElementById("lat").value);
-  const lng = parseFloat(document.getElementById("lng").value);
-
-  await fetch("https://TUO-PROJECT-URL.supabase.co/rest/v1/events", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A",
-      Authorization: "Bearer sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A"
-    },
-    body: JSON.stringify({
-      title,
-      category,
-      lat,
-      lng
-    })
-  });
-
-  alert("Evento salvato!");
-
-  location.reload();
-}
