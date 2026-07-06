@@ -15,7 +15,23 @@
 </head>
 
 <body>
-<div id="map"></div>
+<div style="position:absolute; z-index:999; background:white; padding:10px; margin:10px; border-radius:8px;">
+  <h3>Aggiungi Evento</h3>
+
+  <input id="title" placeholder="Titolo"><br><br>
+
+  <select id="category">
+    <option value="music">Musica</option>
+    <option value="food">Food</option>
+    <option value="culture">Cultura</option>
+    <option value="sport">Sport</option>
+  </select><br><br>
+
+  <input id="lat" placeholder="Latitudine"><br><br>
+  <input id="lng" placeholder="Longitudine"><br><br>
+
+  <button onclick="addEvent()">Salva evento</button>
+</div>
 
 <script>
   const map = L.map('map').setView([42.4200, 12.1040], 10);
@@ -69,3 +85,28 @@
 
 </body>
 </html>
+async function addEvent() {
+  const title = document.getElementById("title").value;
+  const category = document.getElementById("category").value;
+  const lat = parseFloat(document.getElementById("lat").value);
+  const lng = parseFloat(document.getElementById("lng").value);
+
+  await fetch("https://TUO-PROJECT-URL.supabase.co/rest/v1/events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A",
+      Authorization: "Bearer sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A"
+    },
+    body: JSON.stringify({
+      title,
+      category,
+      lat,
+      lng
+    })
+  });
+
+  alert("Evento salvato!");
+
+  location.reload();
+}
