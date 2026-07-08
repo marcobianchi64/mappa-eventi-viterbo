@@ -4,12 +4,157 @@
   <meta charset="UTF-8">
   <title>Project Atlas - Control Center</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f4f6f8; color:#222; }
+    header { background:#111827; color:white; padding:18px 24px; }
+    main { padding:20px; max-width:1100px; margin:auto; }
+    .card { background:white; padding:18px; border-radius:10px; margin-bottom:18px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+    input, button { width:100%; padding:10px; margin:8px 0; box-sizing:border-box; }
+    button { border:0; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .primary { background:#2563eb; color:white; }
+    .approve { background:#15803d; color:white; }
+    .reject { background:#b91c1c; color:white; }
+    .hidden { display:none; }
+    .event { border:1px solid #ddd; padding:14px; border-radius:8px; margin-bottom:12px; background:#fff; }
+    .small { color:#666; font-size:13px; }
+  </style>
 </head>
-
 <body>
-  <h1>Project Atlas - Control Center</h1>
 
-  <p>Pagina di test attiva.</p>
-  <p>Se vedi questa pagina, il file control-center.html è online.</p>
+<header>
+  <h1>Project Atlas - Control Center</h1>
+</header>
+
+<main>
+  <section id="loginBox" class="card">
+    <h2>Accesso amministratore</h2>
+    <input id="email" type="email" placeholder="Email amministratore">
+    <button class="primary" id="loginBtn">Invia link di accesso</button>
+    <p id="loginStatus" class="small"></p>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="card">
+      <h2>Eventi da verificare</h2>
+      <div id="eventsList">Caricamento...</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://gdyhkuvrncztjguvxofg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+document.getElementById("loginBtn").addEventListener("click", login);
+
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const status = document.getElementById("loginStatus");
+
+  if (!email) {
+    status.textContent = "Inserisci una email.";
+    return;
+  }
+
+  status.textContent = "Invio link in corso...";
+
+  const { error } = await client.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+
+  if (error) {
+    status.textContent = "Errore: " + error.message;
+  } else {
+    status.textContent = "Controlla la tua email e clicca il link di accesso.";
+  }
+}
+
+async function checkSession() {
+  const { data } = await client.auth.getSession();
+
+  if (data.session) {
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+    loadEvents();
+  }
+}
+
+async function loadEvents() {
+  const { data, error } = await client
+    .from("events")
+    .select("*")
+    .eq("review_status", "pending")
+    .order("start_date", { ascending: true });
+
+  const list = document.getElementById("eventsList");
+
+  if (error) {
+    list.innerHTML = "Errore caricamento: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    list.innerHTML = "Nessun evento in revisione.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(e => {
+    const div = document.createElement("div");
+    div.className = "event";
+    div.innerHTML = `
+      <h3>${escapeHtml(e.title || "")}</h3>
+      <p><strong>Categoria:</strong> ${escapeHtml(e.category || "")}</p>
+      <p><strong>Inizio:</strong> ${formatDate(e.start_date)}</p>
+      <p><strong>Fine:</strong> ${formatDate(e.end_date)}</p>
+      <p><strong>Luogo:</strong> ${escapeHtml(e.venue || "")}</p>
+      <p><strong>Coordinate:</strong> ${e.lat}, ${e.lng}</p>
+      <button class="approve">Approva</button>
+      <button class="reject">Rifiuta</button>
+    `;
+
+    div.querySelector(".approve").onclick = () => updateEvent(e.date_event, true, "approved");
+    div.querySelector(".reject").onclick = () => updateEvent(e.date_event, false, "rejected");
+
+    list.appendChild(div);
+  });
+}
+
+async function updateEvent(id, verified, status) {
+  const { error } = await client
+    .from("events")
+    .update({ verified: verified, review_status: status })
+    .eq("date_event", id);
+
+  if (error) {
+    alert("Errore: " + error.message);
+    return;
+  }
+
+  loadEvents();
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleString("it-IT");
+}
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, m => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+checkSession();
+</script>
+
 </body>
 </html>
