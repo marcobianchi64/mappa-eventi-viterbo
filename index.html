@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="it">
 <head>
   <meta charset="utf-8" />
@@ -11,17 +10,19 @@
 
   <style>
     :root {
-      --panel-width: 290px;
+      --panel-width: 300px;
       --shadow: 0 3px 14px rgba(0, 0, 0, 0.22);
+      --blue: #1f6feb;
+      --text: #1f2937;
+      --muted: #667085;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      color: var(--text);
     }
 
     #map {
@@ -39,7 +40,7 @@
       overflow-y: auto;
       background: #fff;
       padding: 14px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: var(--shadow);
     }
 
@@ -69,7 +70,7 @@
       width: 100%;
       padding: 9px;
       border: 1px solid #cfcfcf;
-      border-radius: 6px;
+      border-radius: 7px;
       font: inherit;
     }
 
@@ -81,15 +82,13 @@
     .panel button {
       margin-top: 12px;
       border: 0;
-      background: #1f6feb;
+      background: var(--blue);
       color: white;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .panel button:hover {
-      background: #1557b0;
-    }
+    .panel button:hover { background: #1557b0; }
 
     .hint {
       margin-top: 10px;
@@ -104,45 +103,137 @@
       font-weight: 700;
     }
 
-    .status.error {
-      color: #b42318;
+    .status.error { color: #b42318; }
+    .status.success { color: #167a38; }
+
+    .legend {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 12px;
+      color: #444;
     }
 
-    .status.success {
-      color: #167a38;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .atlas-marker {
+      width: 34px;
+      height: 34px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .atlas-marker span {
+      transform: rotate(45deg);
+      font-size: 16px;
+      line-height: 1;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .draft-marker {
+      background: #1f6feb;
+      width: 34px;
+      height: 34px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
 
     .event-card {
-      width: 240px;
+      width: 260px;
     }
 
     .event-card img {
       display: block;
       width: 100%;
-      height: 125px;
-      margin: 0 0 9px;
+      height: 135px;
+      margin: 0 0 10px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 8px;
+      background: #f2f4f7;
     }
 
     .event-card h3 {
       margin: 0 0 7px;
-      font-size: 16px;
+      font-size: 17px;
       line-height: 1.25;
     }
 
     .event-card p {
-      margin: 4px 0;
+      margin: 5px 0;
       font-size: 13px;
       line-height: 1.35;
     }
 
-    .event-card a {
+    .badge {
       display: inline-block;
-      margin-top: 8px;
-      color: #1f6feb;
+      padding: 4px 8px;
+      margin-bottom: 8px;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .event-card a.action {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 10px;
+      color: #fff;
+      background: var(--blue);
+      border-radius: 7px;
       font-weight: 700;
       text-decoration: none;
+    }
+
+    .event-preview {
+      width: 210px;
+    }
+
+    .event-preview img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 7px;
+      margin-bottom: 6px;
+      background: #f2f4f7;
+    }
+
+    .event-preview strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .event-preview span {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.3;
     }
 
     @media (max-width: 650px) {
@@ -150,11 +241,10 @@
         top: 8px;
         left: 8px;
         width: calc(100% - 16px);
-        max-height: 46vh;
+        max-height: 47vh;
       }
     }
   </style>
-
 </head>
 
 <body>
@@ -162,48 +252,52 @@
     <h1>Eventi in provincia di Viterbo</h1>
     <p>Gli eventi inviati dal modulo entrano in revisione prima della pubblicazione.</p>
 
-```
-<label for="title">Titolo evento</label>
-<input id="title" placeholder="Es. Concerto in piazza" />
+    <label for="title">Titolo evento</label>
+    <input id="title" placeholder="Es. Concerto in piazza" />
 
-<label for="category">Categoria</label>
-<select id="category">
-  <option value="music">Musica</option>
-  <option value="food">Enogastronomia</option>
-  <option value="culture">Cultura</option>
-  <option value="other">Altri eventi</option>
-</select>
+    <label for="category">Categoria</label>
+    <select id="category">
+      <option value="music">Musica</option>
+      <option value="food">Enogastronomia</option>
+      <option value="culture">Cultura</option>
+      <option value="other">Altri eventi</option>
+    </select>
 
-<label for="start_date">Inizio</label>
-<input id="start_date" type="datetime-local" />
+    <label for="start_date">Inizio</label>
+    <input id="start_date" type="datetime-local" />
 
-<label for="end_date">Fine</label>
-<input id="end_date" type="datetime-local" />
+    <label for="end_date">Fine</label>
+    <input id="end_date" type="datetime-local" />
 
-<label for="venue">Luogo</label>
-<input id="venue" placeholder="Es. Piazza San Lorenzo" />
+    <label for="venue">Luogo</label>
+    <input id="venue" placeholder="Es. Piazza San Lorenzo" />
 
-<label for="event_url">Pagina ufficiale dell'evento</label>
-<input id="event_url" type="url" placeholder="https://..." />
+    <label for="event_url">Pagina ufficiale dell'evento</label>
+    <input id="event_url" type="url" placeholder="https://..." />
 
-<label for="image_url">Immagine dell'evento (facoltativa)</label>
-<input id="image_url" type="url" placeholder="https://..." />
+    <label for="image_url">Immagine dell'evento (facoltativa)</label>
+    <input id="image_url" type="url" placeholder="https://..." />
 
-<label for="description">Breve descrizione (facoltativa)</label>
-<textarea id="description" placeholder="Informazioni utili sull'evento"></textarea>
+    <label for="description">Breve descrizione (facoltativa)</label>
+    <textarea id="description" placeholder="Informazioni utili sull'evento"></textarea>
 
-<label for="lat">Latitudine</label>
-<input id="lat" placeholder="Clicca sulla mappa" readonly />
+    <label for="lat">Latitudine</label>
+    <input id="lat" placeholder="Clicca sulla mappa" readonly />
 
-<label for="lng">Longitudine</label>
-<input id="lng" placeholder="Clicca sulla mappa" readonly />
+    <label for="lng">Longitudine</label>
+    <input id="lng" placeholder="Clicca sulla mappa" readonly />
 
-<button id="saveButton" type="button">Invia evento per revisione</button>
+    <button id="saveButton" type="button">Invia evento per revisione</button>
 
-<div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
-<div id="status" class="status" aria-live="polite"></div>
-```
+    <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
+    <div id="status" class="status" aria-live="polite"></div>
 
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#d92d20"></span>Musica</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#2e8b57"></span>Enogastronomia</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#2f6fed"></span>Cultura</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#7a5af8"></span>Altri eventi</div>
+    </div>
   </aside>
 
   <div id="map"></div>
@@ -231,6 +325,50 @@
       }
     }
 
+    function getCategoryLabel(category) {
+      switch (category) {
+        case "music": return "Musica";
+        case "food": return "Enogastronomia";
+        case "culture": return "Cultura";
+        case "other": return "Altri eventi";
+        default: return "Evento";
+      }
+    }
+
+    function getCategoryIcon(category) {
+      switch (category) {
+        case "music": return "♪";
+        case "food": return "🍷";
+        case "culture": return "⌂";
+        case "other": return "★";
+        default: return "•";
+      }
+    }
+
+    function createMarkerIcon(category) {
+      const color = getColor(category);
+      const icon = getCategoryIcon(category);
+
+      return L.divIcon({
+        className: "",
+        html: `<div class="atlas-marker" style="background:${color}"><span>${icon}</span></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -30],
+        tooltipAnchor: [0, -30]
+      });
+    }
+
+    function createDraftIcon() {
+      return L.divIcon({
+        className: "",
+        html: `<div class="draft-marker"></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -30]
+      });
+    }
+
     function escapeHtml(value) {
       return String(value || "")
         .replace(/&/g, "&amp;")
@@ -252,7 +390,7 @@
     }
 
     function isVisibleNow(event) {
-      if (!event.verified) return false;
+      if (event.verified !== true) return false;
 
       const now = new Date();
       const start = event.start_date ? new Date(event.start_date) : null;
@@ -271,6 +409,9 @@
       const title = escapeHtml(event.title);
       const venue = escapeHtml(event.venue);
       const description = escapeHtml(event.description);
+      const categoryLabel = getCategoryLabel(event.category);
+      const categoryColor = getColor(event.category);
+
       const image = event.image_url
         ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
         : "";
@@ -292,12 +433,13 @@
         : "";
 
       const link = event.event_url
-        ? `<a href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener noreferrer">Vedi evento ufficiale →</a>`
+        ? `<a class="action" href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener noreferrer">Vedi evento ufficiale →</a>`
         : "";
 
       return `
         <div class="event-card">
           ${image}
+          <span class="badge" style="background:${categoryColor}">${categoryLabel}</span>
           <h3>${title}</h3>
           ${dateText}
           ${endText}
@@ -308,31 +450,46 @@
       `;
     }
 
+    function createTooltip(event) {
+      const title = escapeHtml(event.title);
+      const venue = escapeHtml(event.venue);
+      const image = event.image_url
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        : "";
+
+      return `
+        <div class="event-preview">
+          ${image}
+          <strong>${title}</strong>
+          <span>${formatDate(event.start_date)}</span>
+          ${venue ? `<span>${venue}</span>` : ""}
+        </div>
+      `;
+    }
+
     function addEventMarker(event) {
       if (!Number.isFinite(Number(event.lat)) || !Number.isFinite(Number(event.lng))) {
         return;
       }
 
-      const marker = L.circleMarker([event.lat, event.lng], {
-        radius: 9,
-        color: getColor(event.category),
-        fillColor: getColor(event.category),
-        fillOpacity: 0.85,
-        weight: 2
+      const marker = L.marker([event.lat, event.lng], {
+        icon: createMarkerIcon(event.category)
       }).addTo(map);
 
-      marker.bindTooltip(
-        `<strong>${escapeHtml(event.title)}</strong><br>${formatDate(event.start_date)}`,
-        { direction: "top", offset: [0, -8], opacity: 0.95 }
-      );
+      marker.bindTooltip(createTooltip(event), {
+        direction: "top",
+        offset: [0, -8],
+        opacity: 0.98,
+        sticky: true
+      });
 
-      marker.bindPopup(createEventCard(event), { maxWidth: 270 });
+      marker.bindPopup(createEventCard(event), { maxWidth: 285 });
     }
 
     async function loadEvents() {
       try {
         const response = await fetch(
-          `${EVENTS_ENDPOINT}?select=*&order=start_date.asc`,
+          `${EVENTS_ENDPOINT}?select=*&verified=eq.true&order=start_date.asc`,
           {
             headers: {
               apikey: SUPABASE_KEY,
@@ -369,7 +526,9 @@
         map.removeLayer(draftMarker);
       }
 
-      draftMarker = L.marker([lat, lng])
+      draftMarker = L.marker([lat, lng], {
+        icon: createDraftIcon()
+      })
         .addTo(map)
         .bindPopup("Posizione selezionata per il nuovo evento")
         .openPopup();
@@ -416,6 +575,7 @@
         lat,
         lng,
         verified: false,
+        review_status: "pending",
         source_id: null
       };
 
@@ -462,9 +622,7 @@
     }
 
     document.getElementById("saveButton").addEventListener("click", addEvent);
-
     loadEvents();
   </script>
-
 </body>
 </html>
