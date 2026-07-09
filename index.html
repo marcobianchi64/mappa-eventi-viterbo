@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <title>Project Atlas - Eventi</title>
+  <!-- ATLAS VERSIONE 0.5.5 COMPATTA FORZATA -->
+<title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -377,10 +378,93 @@
       .mobile-actions { display: grid; grid-template-columns: 1fr 1fr; }
       .filter-panel { left: 10px; right: 10px; top: 56px; width: auto; }
     }
-  </style>
+  
+    /* ATLAS 0.5.5 - COMPATTA FORZATA */
+    .stable-event-sheet {
+      max-height: 72vh !important;
+    }
+
+    .stable-event-cover {
+      height: 105px !important;
+    }
+
+    .stable-event-title {
+      font-size: 21px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .stable-event-facts {
+      margin-bottom: 8px !important;
+      font-size: 13px !important;
+    }
+
+    .stable-event-body {
+      padding: 12px 14px !important;
+    }
+
+    .stable-event-section {
+      padding-top: 10px !important;
+      margin-top: 10px !important;
+    }
+
+    .stable-event-section h3 {
+      margin-bottom: 5px !important;
+    }
+
+    .stable-event-section p {
+      font-size: 13px !important;
+      line-height: 1.38 !important;
+    }
+
+    .stable-event-actions {
+      display: grid !important;
+      grid-template-columns: repeat(5, 1fr) !important;
+      gap: 6px !important;
+      margin-top: 12px !important;
+      margin-bottom: 0 !important;
+    }
+
+    .stable-event-action {
+      min-height: 48px !important;
+      padding: 6px 3px !important;
+      font-size: 10.5px !important;
+      border-radius: 12px !important;
+    }
+
+    .stable-event-action span {
+      display: block !important;
+      font-size: 17px !important;
+      margin-bottom: 2px !important;
+    }
+
+    .stable-event-main-action {
+      display: none !important;
+    }
+
+    .stable-event-action.reminder {
+      border-color: #cbd5e1 !important;
+      background: #f8fafc !important;
+      box-shadow: 0 4px 12px rgba(15,23,42,.06) !important;
+    }
+
+    .atlas-version-check {
+      position: fixed;
+      right: 8px;
+      bottom: 8px;
+      z-index: 3000;
+      background: rgba(17,24,39,.78);
+      color: #fff;
+      font-size: 10px;
+      padding: 4px 6px;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+</style>
 </head>
 
 <body>
+  <div class="atlas-version-check">v0.5.5</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Quando: 15 giorni</button>
@@ -928,23 +1012,22 @@
             ${venue ? `<div>📍 ${venue}</div>` : ""}
           </div>
 
-          <button class="stable-event-main-action" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}'); showStableToast('Evento salvato. Te lo ricorderemo il giorno prima.')">🔖 Ricordamelo</button>
-
-          <div class="stable-event-actions">
-            <button class="stable-event-action" onclick="window.open('${directionsUrl(event)}','_blank')"><span>📍</span>Guidami</button>
-            <button class="stable-event-action" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(createEventShareUrl(event))}')"><span>📤</span>Condividi</button>
-            ${officialAction}
-            <button class="stable-event-action" onclick="showStableToast('Accesso e partecipazione saranno gestiti dal modulo futuro')"><span>🎟</span>Accesso</button>
-          </div>
-
           <div class="stable-event-section">
             <h3>Informazioni</h3>
-            <p>${description || "Informazioni essenziali sull’evento. Atlas mostra prima ciò che serve per decidere, poi consente di approfondire."}</p>
+            <p>${description || "Informazioni essenziali sull’evento."}</p>
           </div>
 
           <div class="stable-event-section">
             <h3>Dettagli</h3>
-            <p>Qui potranno comparire programma, organizzatore, accessibilità, modalità di partecipazione e altri dettagli utili.</p>
+            <p>Programma, organizzatore, accessibilità e modalità di partecipazione compariranno qui quando disponibili.</p>
+          </div>
+
+          <div class="stable-event-actions">
+            <button class="stable-event-action reminder" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}'); showStableToast('Evento salvato. Te lo ricorderemo il giorno prima.')"><span>🔖</span>Ricorda</button>
+            <button class="stable-event-action" onclick="window.open('${directionsUrl(event)}','_blank')"><span>📍</span>Guidami</button>
+            <button class="stable-event-action" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(createEventShareUrl(event))}')"><span>📤</span>Condividi</button>
+            ${officialAction}
+            <button class="stable-event-action" onclick="showStableToast('Accesso e partecipazione saranno gestiti dal modulo futuro')"><span>🎟</span>Accesso</button>
           </div>
         </div>
       `;
