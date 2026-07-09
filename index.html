@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <!-- ATLAS VERSIONE 0.5.5 COMPATTA FORZATA -->
+  <!-- ATLAS VERSIONE 0.5.6 GUIDAMI FIX -->
 <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -295,7 +295,7 @@
       margin-bottom: 16px;
     }
 
-    .stable-event-action {
+    .stable-event-action { text-decoration: none !important; display: block !important;
       border: 1px solid #e5e7eb;
       background: #fff;
       border-radius: 14px;
@@ -464,7 +464,7 @@
 </head>
 
 <body>
-  <div class="atlas-version-check">v0.5.5</div>
+  <div class="atlas-version-check">v0.5.6</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Quando: 15 giorni</button>
@@ -1024,7 +1024,7 @@
 
           <div class="stable-event-actions">
             <button class="stable-event-action reminder" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}'); showStableToast('Evento salvato. Te lo ricorderemo il giorno prima.')"><span>🔖</span>Ricorda</button>
-            <button class="stable-event-action" onclick="window.open('${directionsUrl(event)}','_blank')"><span>📍</span>Guidami</button>
+            <a class="stable-event-action" href="${directionsUrl(event)}" target="_blank" rel="noopener noreferrer"><span>📍</span>Guidami</a>
             <button class="stable-event-action" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(createEventShareUrl(event))}')"><span>📤</span>Condividi</button>
             ${officialAction}
             <button class="stable-event-action" onclick="showStableToast('Accesso e partecipazione saranno gestiti dal modulo futuro')"><span>🎟</span>Accesso</button>
