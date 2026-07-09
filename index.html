@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <!-- ATLAS VERSIONE 0.5.8 LABEL FIX -->
+  <!-- ATLAS VERSIONE 0.5.9 FIX VERIFICATO -->
 <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -24,7 +24,7 @@
     #map { height: 100vh; width: 100%; }
 
     .topbar {
-      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1900;
+      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1100;
       display: flex; gap: 8px; align-items: center; pointer-events: none;
     }
     .brand-pill, .chip {
@@ -526,29 +526,25 @@
     }
 
 
-    /* ATLAS 0.5.8 - label and topbar fixes */
-    .topbar {
-      z-index: 1900 !important;
-    }
-
-    .bottom-sheet {
-      z-index: 1600 !important;
-    }
-
-    .mobile-actions {
-      z-index: 1500 !important;
+    /* ATLAS 0.5.9 - FIX VERIFICATO */
+    .topbar { z-index: 2500 !important; }
+    .bottom-sheet { z-index: 1600 !important; }
+    .mobile-actions { z-index: 1500 !important; }
+    .atlas-version-check {
+      opacity: .75 !important;
+      background: rgba(17,24,39,.85) !important;
     }
 
 </style>
 </head>
 
 <body>
-  <div class="atlas-version-check">v0.5.8</div>
+  <div class="atlas-version-check">v0.5.9</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: 15 giorni</button>
     <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
-    <button id="nearMeButtonTop" class="chip blue" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te">📍 Scopri vicino a te</button>
+    <button id="nearMeButtonTop" class="chip blue" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te" aria-label="Condividi la posizione per scoprire gli eventi intorno a te">📍 Condividi posizione</button>
   </div>
 
   <aside class="desktop-panel" id="desktopPanel">
@@ -632,7 +628,7 @@
 
   <div class="mobile-actions">
     <button id="openSearchMobile" class="btn dark" type="button">🔎 Cerca / segnala</button>
-    <button id="nearMeButtonMobile" class="btn" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te">📍 Scopri vicino a te</button>
+    <button id="nearMeButtonMobile" class="btn" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te" aria-label="Condividi la posizione per scoprire gli eventi intorno a te">📍 Condividi posizione</button>
   </div>
 
   <div id="mobileSheet" class="bottom-sheet">
@@ -1182,7 +1178,7 @@
         setStatus("Geolocalizzazione non disponibile su questo dispositivo.", "error");
         return;
       }
-      setStatus("Cerco gli eventi vicino a te...");
+      setStatus("Cerco la tua posizione per mostrarti gli eventi vicini...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const lat = position.coords.latitude;
@@ -1196,7 +1192,7 @@
             fillColor: "#111827",
             fillOpacity: 1
           }).addTo(map).bindPopup("Sei qui");
-          setStatus("Mappa centrata sulla tua zona.", "success");
+          setStatus("Posizione trovata. Ora puoi scoprire gli eventi intorno a te.", "success");
         },
         () => setStatus("Non ho potuto rilevare la posizione. Puoi cercare una località manualmente.", "error"),
         { enableHighAccuracy: true, timeout: 8000 }
