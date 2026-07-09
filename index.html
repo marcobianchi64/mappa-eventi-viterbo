@@ -4,73 +4,174 @@
   <meta charset="utf-8" />
   <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
-    :root { --panel-width:310px; --shadow:0 3px 14px rgba(0,0,0,.22); --blue:#1f6feb; --text:#1f2937; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Arial,sans-serif; color:var(--text); }
-    #map { height:100vh; width:100%; }
-    .panel { position:absolute; top:12px; left:12px; z-index:1000; width:var(--panel-width); max-height:calc(100vh - 24px); overflow-y:auto; background:#fff; padding:14px; border-radius:14px; box-shadow:var(--shadow); }
-    .panel h1 { margin:0 0 4px; font-size:20px; }
-    .panel p { margin:0 0 12px; font-size:13px; color:#555; line-height:1.35; }
-    .quick-tools { display:grid; grid-template-columns:1fr; gap:8px; margin:12px 0; }
-    .quick-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .panel input,.panel select,.panel textarea,.quick-tools input { width:100%; padding:9px; border:1px solid #cfcfcf; border-radius:8px; font:inherit; }
-    .panel label { display:block; margin:10px 0 4px; font-size:13px; font-weight:700; }
-    .panel textarea { min-height:70px; resize:vertical; }
-    .panel button,.quick-tools button { width:100%; padding:9px; border:0; border-radius:8px; background:var(--blue); color:white; font-weight:700; cursor:pointer; font:inherit; }
-    .quick-tools button.secondary { background:#111827; }
-    .quick-tools button.light { background:#eef2ff; color:#1f2937; }
-    .panel button.submit { margin-top:12px; }
-    .hint { margin-top:10px; font-size:12px; color:#666; line-height:1.35; }
-    .status { margin-top:10px; font-size:13px; font-weight:700; }
-    .status.error { color:#b42318; } .status.success { color:#167a38; }
-    .legend { margin-top:12px; padding-top:10px; border-top:1px solid #eee; display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; color:#444; }
-    .legend-item { display:flex; align-items:center; gap:6px; white-space:nowrap; }
-    .legend-dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
-    .atlas-marker { width:34px; height:34px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35); }
-    .atlas-marker span { transform:rotate(45deg); font-size:16px; color:#fff; font-weight:bold; text-shadow:0 1px 2px rgba(0,0,0,.3); }
-    .draft-marker { background:#1f6feb; width:34px; height:34px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35); }
-    .event-card { width:265px; }
-    .event-card img { display:block; width:100%; height:135px; margin:0 0 10px; object-fit:cover; border-radius:8px; background:#f2f4f7; }
-    .event-card h3 { margin:0 0 7px; font-size:17px; line-height:1.25; }
-    .event-card p { margin:5px 0; font-size:13px; line-height:1.35; }
-    .badge { display:inline-block; padding:4px 8px; margin-bottom:8px; color:#fff; border-radius:999px; font-size:12px; font-weight:700; }
-    .event-card a.action,.event-card button.action { display:block; width:100%; margin-top:8px; padding:8px 10px; color:#fff; border:0; border-radius:8px; font:inherit; font-weight:700; text-decoration:none; text-align:center; cursor:pointer; }
-    .event-card a.official { background:var(--blue); } .event-card button.share { background:#111827; }
-    .event-preview { width:220px; }
-    .event-preview img { width:100%; height:90px; object-fit:cover; border-radius:7px; margin-bottom:6px; background:#f2f4f7; }
-    .event-preview strong { display:block; margin-bottom:4px; font-size:14px; line-height:1.25; }
-    .event-preview span { display:block; font-size:12px; color:#555; line-height:1.3; }
-    @media (max-width:650px){ .panel{ top:8px; left:8px; width:calc(100% - 16px); max-height:48vh; } }
+    :root {
+      --atlas-blue: #2563eb;
+      --atlas-dark: #111827;
+      --atlas-text: #1f2937;
+      --atlas-border: #e5e7eb;
+      --shadow: 0 8px 28px rgba(15, 23, 42, 0.20);
+      --panel-width: 330px;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; color: var(--atlas-text); }
+    #map { height: 100vh; width: 100%; }
+
+    .topbar {
+      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1100;
+      display: flex; gap: 8px; align-items: center; pointer-events: none;
+    }
+    .brand-pill, .chip {
+      pointer-events: auto; background: rgba(255,255,255,0.96); border: 1px solid var(--atlas-border);
+      border-radius: 999px; box-shadow: 0 4px 16px rgba(15,23,42,0.16);
+      display: flex; align-items: center; gap: 7px;
+    }
+    .brand-pill { padding: 9px 13px; font-weight: 800; color: var(--atlas-dark); white-space: nowrap; }
+    .chip { padding: 8px 11px; font-size: 13px; font-weight: 700; color: var(--atlas-text); cursor: pointer; border: none; }
+    .chip.primary { background: var(--atlas-dark); color: #fff; }
+    .chip.blue { background: var(--atlas-blue); color: #fff; }
+
+    .desktop-panel {
+      position: absolute; top: 68px; left: 12px; z-index: 1000; width: var(--panel-width);
+      max-height: calc(100vh - 86px); overflow-y: auto; background: rgba(255,255,255,0.98);
+      padding: 14px; border-radius: 18px; box-shadow: var(--shadow); border: 1px solid rgba(229,231,235,0.9);
+    }
+    .desktop-panel h1 { margin: 0 0 4px; font-size: 20px; }
+    .desktop-panel p { margin: 0 0 12px; font-size: 13px; color: #555; line-height: 1.35; }
+    .panel-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+    .search-box { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 10px 0; }
+    .search-box input, .desktop-panel input, .desktop-panel select, .desktop-panel textarea {
+      width: 100%; padding: 10px; border: 1px solid #d0d5dd; border-radius: 10px; font: inherit; background: #fff;
+    }
+    .desktop-panel textarea { min-height: 74px; resize: vertical; }
+    .desktop-panel label { display: block; margin: 10px 0 4px; font-size: 13px; font-weight: 800; }
+    button { font: inherit; cursor: pointer; }
+    .btn { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 800; background: var(--atlas-blue); color: #fff; }
+    .btn.dark { background: var(--atlas-dark); }
+    .btn.light { background: #eef2ff; color: var(--atlas-text); }
+    .btn.full { width: 100%; margin-top: 12px; }
+    .status { margin-top: 10px; font-size: 13px; font-weight: 800; }
+    .status.error { color: #b42318; }
+    .status.success { color: #167a38; }
+    .hint { margin-top: 9px; font-size: 12px; color: #666; line-height: 1.35; }
+
+    .filter-panel {
+      position: absolute; top: 62px; right: 12px; z-index: 1300; width: 280px;
+      background: #fff; border: 1px solid var(--atlas-border); border-radius: 18px; box-shadow: var(--shadow);
+      padding: 14px; display: none;
+    }
+    .filter-panel.open { display: block; }
+    .filter-panel h3 { margin: 0 0 10px; font-size: 16px; }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .filter-option { border: 1px solid #d0d5dd; background: #fff; padding: 9px; border-radius: 10px; font-weight: 800; color: var(--atlas-text); }
+    .filter-option.active { border-color: var(--atlas-blue); background: #eff6ff; color: var(--atlas-blue); }
+
+    .atlas-marker {
+      width: 34px; height: 34px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .atlas-marker span { transform: rotate(45deg); font-size: 16px; color: #fff; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .draft-marker { background: var(--atlas-blue); width: 34px; height: 34px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+
+    .event-card { width: 270px; }
+    .event-card img { display: block; width: 100%; height: 138px; margin: 0 0 10px; object-fit: cover; border-radius: 10px; background: #f2f4f7; }
+    .event-card h3 { margin: 0 0 7px; font-size: 18px; line-height: 1.22; }
+    .event-card p { margin: 5px 0; font-size: 13px; line-height: 1.35; }
+    .badge { display: inline-block; padding: 4px 8px; margin-bottom: 8px; color: #fff; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .event-card a.action, .event-card button.action { display: block; width: 100%; margin-top: 8px; padding: 9px 10px; color: #fff; border: 0; border-radius: 10px; font: inherit; font-weight: 800; text-decoration: none; text-align: center; cursor: pointer; }
+    .event-card a.official { background: var(--atlas-blue); }
+    .event-card a.directions { background: #0f766e; }
+    .event-card button.share { background: var(--atlas-dark); }
+
+    .event-preview { width: 220px; }
+    .event-preview img { width: 100%; height: 90px; object-fit: cover; border-radius: 9px; margin-bottom: 6px; background: #f2f4f7; }
+    .event-preview strong { display: block; margin-bottom: 4px; font-size: 14px; line-height: 1.25; }
+    .event-preview span { display: block; font-size: 12px; color: #555; line-height: 1.3; }
+
+    .legend { margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; color: #444; }
+    .legend-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+    .mobile-actions { display: none; position: absolute; left: 10px; right: 10px; bottom: 12px; z-index: 1200; gap: 8px; }
+    .bottom-sheet { display: none; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1500; max-height: 82vh; overflow-y: auto; background: #fff; border-radius: 22px 22px 0 0; box-shadow: 0 -8px 28px rgba(15,23,42,0.22); padding: 16px; }
+    .bottom-sheet.open { display: block; }
+    .sheet-handle { width: 42px; height: 5px; border-radius: 999px; background: #d0d5dd; margin: 0 auto 12px; }
+    .close-sheet { float: right; border: 0; background: #f3f4f6; border-radius: 999px; padding: 7px 10px; font-weight: 800; }
+
+    @media (max-width: 760px) {
+      .topbar { top: 8px; left: 8px; right: 8px; overflow-x: auto; padding-bottom: 3px; }
+      .brand-pill { font-size: 14px; padding: 8px 11px; }
+      .chip { font-size: 12px; padding: 8px 10px; white-space: nowrap; }
+      .desktop-panel { display: none; }
+      .mobile-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .filter-panel { left: 10px; right: 10px; top: 56px; width: auto; }
+    }
   </style>
 </head>
+
 <body>
-  <aside class="panel">
-    <h1>Project Atlas</h1>
-    <p>Scopri cosa succede vicino a te. Gli eventi inviati dal modulo entrano in revisione prima della pubblicazione.</p>
-    <div class="quick-tools">
-      <input id="searchPlace" placeholder="Cerca una località, es. Celleno">
-      <div class="quick-row">
-        <button id="searchPlaceButton" type="button" class="secondary">Cerca</button>
-        <button id="nearMeButton" type="button" class="light">Vicino a me</button>
-      </div>
+  <div class="topbar">
+    <div class="brand-pill">Project Atlas</div>
+    <button id="whenButton" class="chip primary" type="button">🗓 Quando: 15 giorni</button>
+    <button id="nearMeButtonTop" class="chip blue" type="button">📍 Vicino a me</button>
+  </div>
+
+  <aside class="desktop-panel" id="desktopPanel">
+    <h1>Scopri cosa succede vicino a te</h1>
+    <p>Esplora la mappa, cerca una località o segnala un evento. Le proposte entrano in revisione prima della pubblicazione.</p>
+
+    <div class="search-box">
+      <input id="searchPlace" placeholder="Cerca località, es. Celleno" />
+      <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
     </div>
-    <label for="title">Titolo evento</label><input id="title" placeholder="Es. Concerto in piazza">
-    <label for="category">Categoria</label>
-    <select id="category"><option value="music">Musica</option><option value="food">Enogastronomia</option><option value="culture">Cultura</option><option value="other">Altri eventi</option></select>
-    <label for="start_date">Inizio</label><input id="start_date" type="datetime-local">
-    <label for="end_date">Fine</label><input id="end_date" type="datetime-local">
-    <label for="venue">Luogo</label><input id="venue" placeholder="Es. Piazza San Lorenzo">
-    <label for="event_url">Pagina ufficiale dell'evento</label><input id="event_url" type="url" placeholder="https://...">
-    <label for="image_url">Immagine dell'evento (facoltativa)</label><input id="image_url" type="url" placeholder="https://...">
-    <label for="description">Breve descrizione (facoltativa)</label><textarea id="description" placeholder="Informazioni utili sull'evento"></textarea>
-    <label for="lat">Latitudine</label><input id="lat" placeholder="Clicca sulla mappa" readonly>
-    <label for="lng">Longitudine</label><input id="lng" placeholder="Clicca sulla mappa" readonly>
-    <button id="saveButton" class="submit" type="button">Invia evento per revisione</button>
-    <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
-    <div id="status" class="status" aria-live="polite"></div>
+
+    <div class="panel-section">
+      <label for="title">Titolo evento</label>
+      <input id="title" placeholder="Es. Concerto in piazza" />
+
+      <label for="category">Categoria</label>
+      <select id="category">
+        <option value="music">Musica</option>
+        <option value="food">Enogastronomia</option>
+        <option value="culture">Cultura</option>
+        <option value="other">Altri eventi</option>
+      </select>
+
+      <label for="start_date">Inizio</label>
+      <input id="start_date" type="datetime-local" />
+
+      <label for="end_date">Fine</label>
+      <input id="end_date" type="datetime-local" />
+
+      <label for="venue">Luogo</label>
+      <input id="venue" placeholder="Es. Piazza San Lorenzo" />
+
+      <label for="event_url">Pagina ufficiale dell'evento</label>
+      <input id="event_url" type="url" placeholder="https://..." />
+
+      <label for="image_url">Immagine dell'evento (facoltativa)</label>
+      <input id="image_url" type="url" placeholder="https://..." />
+
+      <label for="description">Breve descrizione (facoltativa)</label>
+      <textarea id="description" placeholder="Informazioni utili sull'evento"></textarea>
+
+      <label for="lat">Latitudine</label>
+      <input id="lat" placeholder="Clicca sulla mappa" readonly />
+
+      <label for="lng">Longitudine</label>
+      <input id="lng" placeholder="Clicca sulla mappa" readonly />
+
+      <button id="saveButton" class="btn full" type="button">Invia evento per revisione</button>
+
+      <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
+      <div id="status" class="status" aria-live="polite"></div>
+    </div>
+
     <div class="legend">
       <div class="legend-item"><span class="legend-dot" style="background:#d92d20"></span>Musica</div>
       <div class="legend-item"><span class="legend-dot" style="background:#2e8b57"></span>Enogastronomia</div>
@@ -78,62 +179,517 @@
       <div class="legend-item"><span class="legend-dot" style="background:#7a5af8"></span>Altri eventi</div>
     </div>
   </aside>
+
+  <div id="filterPanel" class="filter-panel">
+    <h3>Quando vuoi uscire?</h3>
+    <div class="filter-grid">
+      <button class="filter-option" data-range="today">Oggi</button>
+      <button class="filter-option" data-range="tomorrow">Domani</button>
+      <button class="filter-option" data-range="weekend">Weekend</button>
+      <button class="filter-option" data-range="7">7 giorni</button>
+      <button class="filter-option active" data-range="15">15 giorni</button>
+      <button class="filter-option" data-range="30">30 giorni</button>
+    </div>
+  </div>
+
   <div id="map"></div>
-<script>
-const SUPABASE_URL="https://gdyhkuvrncztjguvxofg.supabase.co";
-const SUPABASE_KEY="sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
-const EVENTS_ENDPOINT=`${SUPABASE_URL}/rest/v1/events`;
-const map=L.map("map").setView([42.4200,12.1040],10);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{ attribution:"&copy; OpenStreetMap contributors" }).addTo(map);
-let draftMarker=null,userMarker=null;
-function getColor(category){ switch(category){ case "music":return "#d92d20"; case "food":return "#2e8b57"; case "culture":return "#2f6fed"; case "other":return "#7a5af8"; default:return "#667085"; } }
-function getCategoryLabel(category){ switch(category){ case "music":return "Musica"; case "food":return "Enogastronomia"; case "culture":return "Cultura"; case "other":return "Altri eventi"; default:return "Evento"; } }
-function getCategoryIcon(category){ switch(category){ case "music":return "♪"; case "food":return "🍷"; case "culture":return "⌂"; case "other":return "★"; default:return "•"; } }
-function createMarkerIcon(category){ return L.divIcon({ className:"", html:`<div class="atlas-marker" style="background:${getColor(category)}"><span>${getCategoryIcon(category)}</span></div>`, iconSize:[34,34], iconAnchor:[17,34], popupAnchor:[0,-30], tooltipAnchor:[0,-30] }); }
-function createDraftIcon(){ return L.divIcon({ className:"", html:`<div class="draft-marker"></div>`, iconSize:[34,34], iconAnchor:[17,34], popupAnchor:[0,-30] }); }
-function escapeHtml(value){ return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
-function formatDate(value){ if(!value)return ""; const date=new Date(value); if(Number.isNaN(date.getTime()))return escapeHtml(value); return date.toLocaleString("it-IT",{dateStyle:"medium",timeStyle:"short"}); }
-function isVisibleNow(event){ if(event.verified!==true)return false; const now=new Date(); const start=event.start_date?new Date(event.start_date):null; const end=event.end_date?new Date(event.end_date):start; if(!start||Number.isNaN(start.getTime()))return false; if(end&&end<now)return false; const visibleFrom=new Date(start); visibleFrom.setDate(visibleFrom.getDate()-15); return now>=visibleFrom; }
-function createEventShareUrl(event){ const id=encodeURIComponent(event.date_event||""); return `${window.location.origin}${window.location.pathname}?event=${id}`; }
-function createEventCard(event){
-  const title=escapeHtml(event.title), venue=escapeHtml(event.venue), description=escapeHtml(event.description), categoryLabel=getCategoryLabel(event.category), categoryColor=getColor(event.category), shareUrl=createEventShareUrl(event);
-  const image=event.image_url?`<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`:"";
-  const dateText=event.start_date?`<p><strong>Inizio:</strong> ${formatDate(event.start_date)}</p>`:"";
-  const endText=event.end_date?`<p><strong>Fine:</strong> ${formatDate(event.end_date)}</p>`:"";
-  const venueText=venue?`<p><strong>Luogo:</strong> ${venue}</p>`:"";
-  const descriptionText=description?`<p>${description}</p>`:"";
-  const link=event.event_url?`<a class="action official" href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener noreferrer">Vedi evento ufficiale →</a>`:"";
-  return `<div class="event-card">${image}<span class="badge" style="background:${categoryColor}">${categoryLabel}</span><h3>${title}</h3>${dateText}${endText}${venueText}${descriptionText}<button class="action share" onclick="shareEvent('${encodeURIComponent(event.title||"Evento")}','${encodeURIComponent(shareUrl)}')">Invita / Condividi</button>${link}</div>`;
-}
-function createTooltip(event){ const title=escapeHtml(event.title), venue=escapeHtml(event.venue); const image=event.image_url?`<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`:""; return `<div class="event-preview">${image}<strong>${title}</strong><span>${formatDate(event.start_date)}</span>${venue?`<span>${venue}</span>`:""}</div>`; }
-function addEventMarker(event){
-  if(!Number.isFinite(Number(event.lat))||!Number.isFinite(Number(event.lng)))return;
-  const marker=L.marker([event.lat,event.lng],{icon:createMarkerIcon(event.category)}).addTo(map);
-  marker.bindTooltip(createTooltip(event),{direction:"top",offset:[0,-8],opacity:.98,sticky:true});
-  marker.bindPopup(createEventCard(event),{maxWidth:290});
-  const selectedEventId=new URLSearchParams(window.location.search).get("event");
-  if(selectedEventId&&event.date_event&&selectedEventId===String(event.date_event)){ map.setView([event.lat,event.lng],14); setTimeout(()=>marker.openPopup(),500); }
-}
-async function loadEvents(){ try{ const response=await fetch(`${EVENTS_ENDPOINT}?select=*&verified=eq.true&order=start_date.asc`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}}); if(!response.ok)throw new Error("Impossibile caricare gli eventi."); const events=await response.json(); events.filter(isVisibleNow).forEach(addEventMarker); }catch(error){ console.error(error); } }
-function setStatus(message,type=""){ const status=document.getElementById("status"); status.textContent=message; status.className=`status ${type}`; }
-function shareEvent(encodedTitle,encodedUrl){ const title=decodeURIComponent(encodedTitle), url=decodeURIComponent(encodedUrl), text=`Ti invito a vedere questo evento: ${title}`; if(navigator.share){ navigator.share({title,text,url}).catch(()=>{}); }else{ window.open(`https://wa.me/?text=${encodeURIComponent(text+" "+url)}`,"_blank"); } }
-function setDraftPosition(lat,lng){ document.getElementById("lat").value=Number(lat).toFixed(6); document.getElementById("lng").value=Number(lng).toFixed(6); if(draftMarker)map.removeLayer(draftMarker); draftMarker=L.marker([lat,lng],{icon:createDraftIcon()}).addTo(map).bindPopup("Posizione selezionata per il nuovo evento").openPopup(); setStatus("Posizione selezionata.","success"); }
-map.on("click",event=>setDraftPosition(event.latlng.lat,event.latlng.lng));
-async function searchPlace(){ const query=document.getElementById("searchPlace").value.trim(); if(!query){ setStatus("Inserisci una località da cercare.","error"); return; } setStatus("Ricerca località in corso..."); try{ const response=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`); const results=await response.json(); if(!results||results.length===0){ setStatus("Località non trovata.","error"); return; } map.setView([Number(results[0].lat),Number(results[0].lon)],13); setStatus("Località trovata.","success"); }catch(error){ console.error(error); setStatus("Ricerca non riuscita.","error"); } }
-function goNearMe(){ if(!navigator.geolocation){ setStatus("Geolocalizzazione non disponibile su questo dispositivo.","error"); return; } setStatus("Cerco la tua posizione..."); navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude,lng=pos.coords.longitude; map.setView([lat,lng],13); if(userMarker)map.removeLayer(userMarker); userMarker=L.circleMarker([lat,lng],{radius:7,color:"#fff",weight:2,fillColor:"#111827",fillOpacity:1}).addTo(map).bindPopup("Sei qui"); setStatus("Mappa centrata sulla tua posizione.","success"); },()=>setStatus("Non ho potuto rilevare la posizione.","error"),{enableHighAccuracy:true,timeout:8000}); }
-async function addEvent(){
-  const button=document.getElementById("saveButton"), title=document.getElementById("title").value.trim(), category=document.getElementById("category").value, startDate=document.getElementById("start_date").value, endDate=document.getElementById("end_date").value, venue=document.getElementById("venue").value.trim(), eventUrl=document.getElementById("event_url").value.trim(), imageUrl=document.getElementById("image_url").value.trim(), description=document.getElementById("description").value.trim(), lat=Number(document.getElementById("lat").value), lng=Number(document.getElementById("lng").value);
-  if(!title||!startDate||!Number.isFinite(lat)||!Number.isFinite(lng)){ setStatus("Inserisci titolo, data di inizio e posizione sulla mappa.","error"); return; }
-  if(endDate&&new Date(endDate)<new Date(startDate)){ setStatus("La data di fine non può essere precedente alla data di inizio.","error"); return; }
-  button.disabled=true; button.textContent="Invio in corso..."; setStatus("");
-  const payload={ title, category, start_date:new Date(startDate).toISOString(), end_date:endDate?new Date(endDate).toISOString():null, venue:venue||null, event_url:eventUrl||null, image_url:imageUrl||null, description:description||null, lat, lng, verified:false, review_status:"pending", source_id:null };
-  try{ const response=await fetch(EVENTS_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal",apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`},body:JSON.stringify(payload)}); if(!response.ok){ const details=await response.text(); throw new Error(details||"Errore durante l'invio."); } setStatus("Evento inviato: sarà pubblicato dopo la revisione.","success"); ["title","start_date","end_date","venue","event_url","image_url","description","lat","lng"].forEach(id=>document.getElementById(id).value=""); if(draftMarker){ map.removeLayer(draftMarker); draftMarker=null; } }catch(error){ console.error(error); setStatus("Invio non riuscito. Riprova più tardi.","error"); }finally{ button.disabled=false; button.textContent="Invia evento per revisione"; }
-}
-document.getElementById("saveButton").addEventListener("click",addEvent);
-document.getElementById("searchPlaceButton").addEventListener("click",searchPlace);
-document.getElementById("nearMeButton").addEventListener("click",goNearMe);
-document.getElementById("searchPlace").addEventListener("keydown",event=>{ if(event.key==="Enter")searchPlace(); });
-loadEvents();
-</script>
+
+  <div class="mobile-actions">
+    <button id="openSearchMobile" class="btn dark" type="button">🔎 Cerca / segnala</button>
+    <button id="nearMeButtonMobile" class="btn" type="button">📍 Vicino a me</button>
+  </div>
+
+  <div id="mobileSheet" class="bottom-sheet">
+    <div class="sheet-handle"></div>
+    <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
+    <h2>Cerca o segnala un evento</h2>
+    <p>Su smartphone la mappa resta protagonista. Questo pannello si apre solo quando serve.</p>
+
+    <div class="search-box">
+      <input id="searchPlaceMobile" placeholder="Cerca località, es. Viterbo" />
+      <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>
+    </div>
+
+    <div class="panel-section">
+      <label for="titleMobile">Titolo evento</label>
+      <input id="titleMobile" placeholder="Es. Concerto in piazza" />
+
+      <label for="categoryMobile">Categoria</label>
+      <select id="categoryMobile">
+        <option value="music">Musica</option>
+        <option value="food">Enogastronomia</option>
+        <option value="culture">Cultura</option>
+        <option value="other">Altri eventi</option>
+      </select>
+
+      <label for="start_dateMobile">Inizio</label>
+      <input id="start_dateMobile" type="datetime-local" />
+
+      <label for="end_dateMobile">Fine</label>
+      <input id="end_dateMobile" type="datetime-local" />
+
+      <label for="venueMobile">Luogo</label>
+      <input id="venueMobile" placeholder="Es. Piazza San Lorenzo" />
+
+      <label for="event_urlMobile">Pagina ufficiale dell'evento</label>
+      <input id="event_urlMobile" type="url" placeholder="https://..." />
+
+      <label for="image_urlMobile">Immagine dell'evento (facoltativa)</label>
+      <input id="image_urlMobile" type="url" placeholder="https://..." />
+
+      <label for="descriptionMobile">Breve descrizione (facoltativa)</label>
+      <textarea id="descriptionMobile" placeholder="Informazioni utili sull'evento"></textarea>
+
+      <label for="latMobile">Latitudine</label>
+      <input id="latMobile" placeholder="Clicca sulla mappa" readonly />
+
+      <label for="lngMobile">Longitudine</label>
+      <input id="lngMobile" placeholder="Clicca sulla mappa" readonly />
+
+      <button id="saveButtonMobile" class="btn full" type="button">Invia evento per revisione</button>
+
+      <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
+      <div id="statusMobile" class="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://gdyhkuvrncztjguvxofg.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_q1QxiWruBpfFl5EQwpgHQQ_RptPsj6A";
+    const EVENTS_ENDPOINT = `${SUPABASE_URL}/rest/v1/events`;
+
+    const map = L.map("map").setView([42.4200, 12.1040], 10);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    let draftMarker = null;
+    let userMarker = null;
+    let eventLayer = L.layerGroup().addTo(map);
+    let allEvents = [];
+    let currentRange = "15";
+
+    function getColor(category) {
+      switch (category) {
+        case "music": return "#d92d20";
+        case "food": return "#2e8b57";
+        case "culture": return "#2f6fed";
+        case "other": return "#7a5af8";
+        default: return "#667085";
+      }
+    }
+
+    function getCategoryLabel(category) {
+      switch (category) {
+        case "music": return "Musica";
+        case "food": return "Enogastronomia";
+        case "culture": return "Cultura";
+        case "other": return "Altri eventi";
+        default: return "Evento";
+      }
+    }
+
+    function getCategoryIcon(category) {
+      switch (category) {
+        case "music": return "♪";
+        case "food": return "🍷";
+        case "culture": return "⌂";
+        case "other": return "★";
+        default: return "•";
+      }
+    }
+
+    function createMarkerIcon(category) {
+      return L.divIcon({
+        className: "",
+        html: `<div class="atlas-marker" style="background:${getColor(category)}"><span>${getCategoryIcon(category)}</span></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -30],
+        tooltipAnchor: [0, -30]
+      });
+    }
+
+    function createDraftIcon() {
+      return L.divIcon({
+        className: "",
+        html: `<div class="draft-marker"></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -30]
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return escapeHtml(value);
+      return date.toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    function startOfDay(date) {
+      const d = new Date(date);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    function endOfDay(date) {
+      const d = new Date(date);
+      d.setHours(23,59,59,999);
+      return d;
+    }
+
+    function nextSaturday(now) {
+      const d = startOfDay(now);
+      const day = d.getDay();
+      const diff = (6 - day + 7) % 7;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function getRangeWindow(range) {
+      const now = new Date();
+      let from = now;
+      let to = new Date(now);
+
+      if (range === "today") {
+        from = startOfDay(now);
+        to = endOfDay(now);
+      } else if (range === "tomorrow") {
+        from = startOfDay(now);
+        from.setDate(from.getDate() + 1);
+        to = endOfDay(from);
+      } else if (range === "weekend") {
+        from = nextSaturday(now);
+        to = endOfDay(from);
+        to.setDate(to.getDate() + 1);
+      } else {
+        const days = Number(range) || 15;
+        from = now;
+        to.setDate(to.getDate() + days);
+      }
+
+      return { from, to };
+    }
+
+    function isVisibleByRange(event) {
+      if (event.verified !== true) return false;
+      const start = event.start_date ? new Date(event.start_date) : null;
+      const end = event.end_date ? new Date(event.end_date) : start;
+      if (!start || Number.isNaN(start.getTime())) return false;
+      if (end && end < new Date()) return false;
+      const { from, to } = getRangeWindow(currentRange);
+      return start <= to && (end || start) >= from;
+    }
+
+    function createEventShareUrl(event) {
+      const id = encodeURIComponent(event.date_event || "");
+      return `${window.location.origin}${window.location.pathname}?event=${id}`;
+    }
+
+    function directionsUrl(event) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.lat + "," + event.lng)}`;
+    }
+
+    function createEventCard(event) {
+      const title = escapeHtml(event.title);
+      const venue = escapeHtml(event.venue);
+      const description = escapeHtml(event.description);
+      const categoryLabel = getCategoryLabel(event.category);
+      const categoryColor = getColor(event.category);
+      const shareUrl = createEventShareUrl(event);
+
+      const image = event.image_url
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        : "";
+
+      const dateText = event.start_date ? `<p><strong>Inizio:</strong> ${formatDate(event.start_date)}</p>` : "";
+      const endText = event.end_date ? `<p><strong>Fine:</strong> ${formatDate(event.end_date)}</p>` : "";
+      const venueText = venue ? `<p><strong>Luogo:</strong> ${venue}</p>` : "";
+      const descriptionText = description ? `<p>${description}</p>` : "";
+
+      const officialLink = event.event_url
+        ? `<a class="action official" href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener noreferrer">Vedi evento ufficiale →</a>`
+        : "";
+
+      return `
+        <div class="event-card">
+          ${image}
+          <span class="badge" style="background:${categoryColor}">${categoryLabel}</span>
+          <h3>${title}</h3>
+          ${dateText}
+          ${endText}
+          ${venueText}
+          ${descriptionText}
+          <button class="action share" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(shareUrl)}')">Invita / Condividi</button>
+          <a class="action directions" href="${directionsUrl(event)}" target="_blank" rel="noopener noreferrer">Come arrivare</a>
+          ${officialLink}
+        </div>
+      `;
+    }
+
+    function createTooltip(event) {
+      const title = escapeHtml(event.title);
+      const venue = escapeHtml(event.venue);
+      const image = event.image_url
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        : "";
+
+      return `
+        <div class="event-preview">
+          ${image}
+          <strong>${title}</strong>
+          <span>${formatDate(event.start_date)}</span>
+          ${venue ? `<span>${venue}</span>` : ""}
+        </div>
+      `;
+    }
+
+    function renderEvents() {
+      eventLayer.clearLayers();
+
+      allEvents.filter(isVisibleByRange).forEach((event) => {
+        if (!Number.isFinite(Number(event.lat)) || !Number.isFinite(Number(event.lng))) return;
+
+        const marker = L.marker([event.lat, event.lng], { icon: createMarkerIcon(event.category) });
+        marker.bindTooltip(createTooltip(event), { direction: "top", offset: [0, -8], opacity: 0.98, sticky: true });
+        marker.bindPopup(createEventCard(event), { maxWidth: 290 });
+        marker.addTo(eventLayer);
+
+        const selectedEventId = new URLSearchParams(window.location.search).get("event");
+        if (selectedEventId && event.date_event && selectedEventId === String(event.date_event)) {
+          map.setView([event.lat, event.lng], 14);
+          setTimeout(() => marker.openPopup(), 500);
+        }
+      });
+    }
+
+    async function loadEvents() {
+      try {
+        const response = await fetch(`${EVENTS_ENDPOINT}?select=*&verified=eq.true&order=start_date.asc`, {
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+        });
+        if (!response.ok) throw new Error("Impossibile caricare gli eventi.");
+        allEvents = await response.json();
+        renderEvents();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function setStatus(message, type = "") {
+      document.querySelectorAll(".status").forEach((status) => {
+        status.textContent = message;
+        status.className = `status ${type}`;
+      });
+    }
+
+    function shareEvent(encodedTitle, encodedUrl) {
+      const title = decodeURIComponent(encodedTitle);
+      const url = decodeURIComponent(encodedUrl);
+      const text = `Ti invito a vedere questo evento: ${title}`;
+      if (navigator.share) {
+        navigator.share({ title, text, url }).catch(() => {});
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
+      }
+    }
+
+    function syncFormValues(source) {
+      const suffix = source === "mobile" ? "Mobile" : "";
+      return {
+        title: document.getElementById(`title${suffix}`).value.trim(),
+        category: document.getElementById(`category${suffix}`).value,
+        startDate: document.getElementById(`start_date${suffix}`).value,
+        endDate: document.getElementById(`end_date${suffix}`).value,
+        venue: document.getElementById(`venue${suffix}`).value.trim(),
+        eventUrl: document.getElementById(`event_url${suffix}`).value.trim(),
+        imageUrl: document.getElementById(`image_url${suffix}`).value.trim(),
+        description: document.getElementById(`description${suffix}`).value.trim(),
+        lat: Number(document.getElementById(`lat${suffix}`).value),
+        lng: Number(document.getElementById(`lng${suffix}`).value)
+      };
+    }
+
+    function clearForm(source) {
+      const suffix = source === "mobile" ? "Mobile" : "";
+      ["title","start_date","end_date","venue","event_url","image_url","description","lat","lng"].forEach((id) => {
+        document.getElementById(`${id}${suffix}`).value = "";
+      });
+    }
+
+    function setDraftPosition(lat, lng) {
+      ["lat", "latMobile"].forEach(id => document.getElementById(id).value = Number(lat).toFixed(6));
+      ["lng", "lngMobile"].forEach(id => document.getElementById(id).value = Number(lng).toFixed(6));
+
+      if (draftMarker) map.removeLayer(draftMarker);
+
+      draftMarker = L.marker([lat, lng], { icon: createDraftIcon() })
+        .addTo(map)
+        .bindPopup("Posizione selezionata per il nuovo evento")
+        .openPopup();
+
+      setStatus("Posizione selezionata.", "success");
+    }
+
+    map.on("click", (event) => setDraftPosition(event.latlng.lat, event.latlng.lng));
+
+    async function searchPlace(inputId) {
+      const query = document.getElementById(inputId).value.trim();
+      if (!query) {
+        setStatus("Inserisci una località da cercare.", "error");
+        return;
+      }
+
+      setStatus("Ricerca località in corso...");
+
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+        const results = await response.json();
+        if (!results || results.length === 0) {
+          setStatus("Località non trovata.", "error");
+          return;
+        }
+        map.setView([Number(results[0].lat), Number(results[0].lon)], 13);
+        setStatus("Località trovata.", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus("Ricerca non riuscita.", "error");
+      }
+    }
+
+    function goNearMe() {
+      if (!navigator.geolocation) {
+        setStatus("Geolocalizzazione non disponibile su questo dispositivo.", "error");
+        return;
+      }
+      setStatus("Cerco la tua posizione...");
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          map.setView([lat, lng], 13);
+          if (userMarker) map.removeLayer(userMarker);
+          userMarker = L.circleMarker([lat, lng], {
+            radius: 7,
+            color: "#ffffff",
+            weight: 2,
+            fillColor: "#111827",
+            fillOpacity: 1
+          }).addTo(map).bindPopup("Sei qui");
+          setStatus("Mappa centrata sulla tua posizione.", "success");
+        },
+        () => setStatus("Non ho potuto rilevare la posizione.", "error"),
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    async function addEvent(source = "desktop") {
+      const button = document.getElementById(source === "mobile" ? "saveButtonMobile" : "saveButton");
+      const form = syncFormValues(source);
+
+      if (!form.title || !form.startDate || !Number.isFinite(form.lat) || !Number.isFinite(form.lng)) {
+        setStatus("Inserisci titolo, data di inizio e posizione sulla mappa.", "error");
+        return;
+      }
+
+      if (form.endDate && new Date(form.endDate) < new Date(form.startDate)) {
+        setStatus("La data di fine non può essere precedente alla data di inizio.", "error");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Invio in corso...";
+      setStatus("");
+
+      const payload = {
+        title: form.title,
+        category: form.category,
+        start_date: new Date(form.startDate).toISOString(),
+        end_date: form.endDate ? new Date(form.endDate).toISOString() : null,
+        venue: form.venue || null,
+        event_url: form.eventUrl || null,
+        image_url: form.imageUrl || null,
+        description: form.description || null,
+        lat: form.lat,
+        lng: form.lng,
+        verified: false,
+        review_status: "pending",
+        source_id: null
+      };
+
+      try {
+        const response = await fetch(EVENTS_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const details = await response.text();
+          throw new Error(details || "Errore durante l'invio.");
+        }
+        setStatus("Evento inviato: sarà pubblicato dopo la revisione.", "success");
+        clearForm(source);
+        if (draftMarker) {
+          map.removeLayer(draftMarker);
+          draftMarker = null;
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus("Invio non riuscito. Riprova più tardi.", "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Invia evento per revisione";
+      }
+    }
+
+    function updateWhenButtonLabel() {
+      const labels = { today: "Oggi", tomorrow: "Domani", weekend: "Weekend", "7": "7 giorni", "15": "15 giorni", "30": "30 giorni" };
+      document.getElementById("whenButton").textContent = `🗓 Quando: ${labels[currentRange] || "15 giorni"}`;
+    }
+
+    document.getElementById("whenButton").addEventListener("click", () => {
+      document.getElementById("filterPanel").classList.toggle("open");
+    });
+
+    document.querySelectorAll(".filter-option").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentRange = button.dataset.range;
+        document.querySelectorAll(".filter-option").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        updateWhenButtonLabel();
+        renderEvents();
+        document.getElementById("filterPanel").classList.remove("open");
+      });
+    });
+
+    document.getElementById("nearMeButtonTop").addEventListener("click", goNearMe);
+    document.getElementById("nearMeButtonMobile").addEventListener("click", goNearMe);
+    document.getElementById("searchPlaceButton").addEventListener("click", () => searchPlace("searchPlace"));
+    document.getElementById("searchPlaceButtonMobile").addEventListener("click", () => searchPlace("searchPlaceMobile"));
+    document.getElementById("searchPlace").addEventListener("keydown", (event) => { if (event.key === "Enter") searchPlace("searchPlace"); });
+    document.getElementById("searchPlaceMobile").addEventListener("keydown", (event) => { if (event.key === "Enter") searchPlace("searchPlaceMobile"); });
+    document.getElementById("saveButton").addEventListener("click", () => addEvent("desktop"));
+    document.getElementById("saveButtonMobile").addEventListener("click", () => addEvent("mobile"));
+    document.getElementById("openSearchMobile").addEventListener("click", () => document.getElementById("mobileSheet").classList.add("open"));
+    document.getElementById("closeSheet").addEventListener("click", () => document.getElementById("mobileSheet").classList.remove("open"));
+
+    loadEvents();
+  </script>
 </body>
 </html>
