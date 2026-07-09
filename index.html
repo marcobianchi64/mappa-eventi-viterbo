@@ -165,154 +165,174 @@
     }
 
 
-    .atlas-event-sheet {
+    .stable-event-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1700;
+      background: rgba(15, 23, 42, 0.22);
+      display: none;
+    }
+
+    .stable-event-overlay.open {
+      display: block;
+    }
+
+    .stable-event-sheet {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 1800;
-      height: 84vh;
+      max-height: 88vh;
+      overflow-y: auto;
       background: #fff;
-      border-radius: 28px 28px 0 0;
-      box-shadow: 0 16px 46px rgba(15,23,42,.24);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -12px 38px rgba(15,23,42,.26);
       transform: translateY(110%);
-      transition: transform .34s cubic-bezier(.2,.8,.2,1);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      transition: transform .25s ease;
     }
 
-    .atlas-event-sheet.open {
-      transform: translateY(34vh);
+    .stable-event-sheet.open {
+      transform: translateY(0);
     }
 
-    .atlas-event-sheet.full {
-      transform: translateY(3vh);
-    }
-
-    .atlas-sheet-handle-zone {
-      padding: 10px 18px 7px;
+    .stable-event-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      z-index: 4;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.96);
+      color: #111827;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(15,23,42,.18);
       cursor: pointer;
     }
 
-    .atlas-sheet-handle {
-      width: 44px;
-      height: 5px;
-      border-radius: 999px;
-      background: #d0d5dd;
-      margin: 0 auto;
-    }
-
-    .atlas-sheet-content {
-      overflow-y: auto;
-      padding-bottom: 26px;
-    }
-
-    .atlas-sheet-photo {
-      height: 220px;
-      margin: 0 16px 14px;
-      border-radius: 24px;
-      overflow: hidden;
+    .stable-event-cover {
       position: relative;
+      height: 170px;
+      margin: 0;
       background-size: cover;
       background-position: center;
-      background-color: #f2f4f7;
+      border-radius: 24px 24px 0 0;
+      overflow: hidden;
     }
 
-    .atlas-sheet-photo::after {
+    .stable-event-cover::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.42), transparent 58%);
+      background: linear-gradient(to top, rgba(0,0,0,.42), transparent 60%);
     }
 
-    .atlas-sheet-badge {
+    .stable-event-cover-icon {
       position: absolute;
-      left: 14px;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      color: rgba(255,255,255,.88);
+    }
+
+    .stable-event-badge {
+      position: absolute;
+      left: 16px;
       bottom: 14px;
       z-index: 2;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.94);
       padding: 5px 10px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
     }
 
-    .atlas-sheet-title {
-      padding: 0 18px 14px;
-      border-bottom: 1px solid #e5e7eb;
+    .stable-event-body {
+      padding: 16px;
     }
 
-    .atlas-sheet-title h2 {
-      font-size: 25px;
-      line-height: 1.08;
+    .stable-event-title {
       margin: 0 0 10px;
-      letter-spacing: -0.03em;
+      font-size: 23px;
+      line-height: 1.12;
       color: #111827;
+      letter-spacing: -0.02em;
     }
 
-    .atlas-sheet-facts {
+    .stable-event-facts {
       display: grid;
-      gap: 7px;
+      gap: 6px;
+      margin-bottom: 14px;
       color: #475467;
       font-size: 14px;
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
-    .atlas-sheet-actions {
+    .stable-event-main-action {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #111827;
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15,23,42,.06);
+      margin-bottom: 10px;
+    }
+
+    .stable-event-actions {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      padding: 14px 18px;
-      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 16px;
     }
 
-    .atlas-sheet-action {
+    .stable-event-action {
       border: 1px solid #e5e7eb;
       background: #fff;
-      border-radius: 16px;
+      border-radius: 14px;
+      padding: 9px 5px;
       min-height: 58px;
-      padding: 8px 5px;
       text-align: center;
+      font-size: 12px;
       font-weight: 800;
       color: #1f2937;
-      font-size: 12px;
       cursor: pointer;
     }
 
-    .atlas-sheet-action span {
+    .stable-event-action span {
       display: block;
       font-size: 19px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
-    .atlas-sheet-action.main {
-      grid-column: 1 / -1;
-      min-height: 46px;
-      font-size: 14px;
-      box-shadow: 0 4px 14px rgba(15,23,42,.06);
-      border-color: #cbd5e1;
+    .stable-event-section {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 14px;
+      margin-top: 14px;
     }
 
-    .atlas-sheet-section {
-      padding: 16px 18px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .atlas-sheet-section h3 {
-      font-size: 14px;
+    .stable-event-section h3 {
       margin: 0 0 8px;
+      font-size: 14px;
       color: #111827;
     }
 
-    .atlas-sheet-section p {
+    .stable-event-section p {
       margin: 0;
       color: #475467;
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.48;
     }
 
-    .atlas-toast {
+    .stable-toast {
       position: fixed;
       left: 14px;
       right: 14px;
@@ -329,9 +349,24 @@
       transition: .25s;
     }
 
-    .atlas-toast.show {
+    .stable-toast.show {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    @media (min-width: 760px) {
+      .stable-event-sheet {
+        left: auto;
+        right: 24px;
+        bottom: 24px;
+        width: 430px;
+        border-radius: 24px;
+        max-height: 86vh;
+      }
+
+      .stable-event-cover {
+        border-radius: 24px 24px 0 0;
+      }
     }
 
     @media (max-width: 760px) {
@@ -492,14 +527,13 @@
   </div>
 
 
-  <section id="atlasEventSheet" class="atlas-event-sheet">
-    <div class="atlas-sheet-handle-zone" id="atlasSheetHandle">
-      <div class="atlas-sheet-handle"></div>
-    </div>
-    <div id="atlasSheetContent" class="atlas-sheet-content"></div>
+  <div id="stableEventOverlay" class="stable-event-overlay" onclick="closeStableEventSheet()"></div>
+
+  <section id="stableEventSheet" class="stable-event-sheet" aria-live="polite">
+    <div id="stableEventContent"></div>
   </section>
 
-  <div id="atlasToast" class="atlas-toast"></div>
+  <div id="stableToast" class="stable-toast"></div>
 
   <script>
     const SUPABASE_URL = "https://gdyhkuvrncztjguvxofg.supabase.co";
@@ -712,13 +746,13 @@
 
         const marker = L.marker([event.lat, event.lng], { icon: createMarkerIcon(event.category) });
         marker.bindTooltip(createTooltip(event), { direction: "top", offset: [0, -8], opacity: 0.98, sticky: true });
-        marker.on("click", () => openAtlasEventSheet(event));
+        marker.on("click", () => openStableEventSheet(event));
         marker.addTo(eventLayer);
 
         const selectedEventId = new URLSearchParams(window.location.search).get("event");
         if (selectedEventId && event.date_event && selectedEventId === String(event.date_event)) {
           map.setView([event.lat, event.lng], 14);
-          setTimeout(() => openAtlasEventSheet(event), 500);
+          setTimeout(() => openStableEventSheet(event), 500);
         }
       });
     }
@@ -842,83 +876,81 @@
     }
 
 
-    let selectedAtlasEvent = null;
-    let atlasSheetState = 0;
-
-    function showAtlasToast(message) {
-      const toast = document.getElementById("atlasToast");
+    function showStableToast(message) {
+      const toast = document.getElementById("stableToast");
       toast.textContent = message;
       toast.classList.add("show");
       setTimeout(() => toast.classList.remove("show"), 2200);
     }
 
-    function openAtlasEventSheet(event) {
-      selectedAtlasEvent = event;
-      atlasSheetState = 1;
+    function closeStableEventSheet() {
+      document.getElementById("stableEventOverlay").classList.remove("open");
+      document.getElementById("stableEventSheet").classList.remove("open");
+    }
 
-      const sheet = document.getElementById("atlasEventSheet");
-      const content = document.getElementById("atlasSheetContent");
+    function openStableEventSheet(event) {
+      const content = document.getElementById("stableEventContent");
+      const overlay = document.getElementById("stableEventOverlay");
+      const sheet = document.getElementById("stableEventSheet");
 
       const title = escapeHtml(event.title);
       const venue = escapeHtml(event.venue);
       const description = escapeHtml(event.description);
       const categoryLabel = getCategoryLabel(event.category);
       const categoryColor = getColor(event.category);
+      const categoryIcon = getCategoryIcon(event.category);
       const imageUrl = event.image_url ? escapeHtml(event.image_url) : "";
-      const photoStyle = imageUrl
-        ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
-        : `background-image: linear-gradient(135deg, ${categoryColor}, #111827)`;
 
-      const officialButton = event.event_url
-        ? `<button class="atlas-sheet-action" onclick="window.open('${escapeHtml(event.event_url)}','_blank')"><span>ℹ️</span>Info</button>`
-        : `<button class="atlas-sheet-action" onclick="showAtlasToast('Nessuna pagina ufficiale indicata')"><span>ℹ️</span>Info</button>`;
+      const coverStyle = imageUrl
+        ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
+        : `background:
+             radial-gradient(circle at 22% 22%, rgba(255,255,255,.35), transparent 18%),
+             radial-gradient(circle at 78% 28%, rgba(255,255,255,.20), transparent 20%),
+             linear-gradient(135deg, ${categoryColor}, #111827)`;
+
+      const officialAction = event.event_url
+        ? `<button class="stable-event-action" onclick="window.open('${escapeHtml(event.event_url)}','_blank')"><span>ℹ️</span>Info</button>`
+        : `<button class="stable-event-action" onclick="showStableToast('Nessuna pagina ufficiale indicata')"><span>ℹ️</span>Info</button>`;
 
       content.innerHTML = `
-        <div class="atlas-sheet-photo" style="${photoStyle}">
-          <div class="atlas-sheet-badge" style="color:${categoryColor}">${categoryLabel}</div>
+        <button class="stable-event-close" onclick="closeStableEventSheet()">×</button>
+
+        <div class="stable-event-cover" style="${coverStyle}">
+          ${imageUrl ? "" : `<div class="stable-event-cover-icon">${categoryIcon}</div>`}
+          <div class="stable-event-badge" style="color:${categoryColor}">${categoryLabel}</div>
         </div>
 
-        <div class="atlas-sheet-title">
-          <h2>${title}</h2>
-          <div class="atlas-sheet-facts">
+        <div class="stable-event-body">
+          <h2 class="stable-event-title">${title}</h2>
+
+          <div class="stable-event-facts">
             ${event.start_date ? `<div>📅 ${formatDate(event.start_date)}</div>` : ""}
             ${venue ? `<div>📍 ${venue}</div>` : ""}
           </div>
-        </div>
 
-        <div class="atlas-sheet-actions">
-          <button class="atlas-sheet-action main" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}'); showAtlasToast('Evento salvato. Te lo ricorderemo il giorno prima.')">🔖 Ricordamelo</button>
-          <button class="atlas-sheet-action" onclick="window.open('${directionsUrl(event)}','_blank')"><span>📍</span>Guidami</button>
-          <button class="atlas-sheet-action" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(createEventShareUrl(event))}')"><span>📤</span>Condividi</button>
-          ${officialButton}
-          <button class="atlas-sheet-action" onclick="showAtlasToast('Accesso e partecipazione saranno gestiti dal modulo futuro')"><span>🎟</span>Accesso</button>
-        </div>
+          <button class="stable-event-main-action" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}'); showStableToast('Evento salvato. Te lo ricorderemo il giorno prima.')">🔖 Ricordamelo</button>
 
-        <div class="atlas-sheet-section">
-          <h3>Informazioni</h3>
-          <p>${description || "Informazioni essenziali sull’evento. Atlas mostra prima ciò che serve per decidere, poi consente di approfondire."}</p>
-        </div>
+          <div class="stable-event-actions">
+            <button class="stable-event-action" onclick="window.open('${directionsUrl(event)}','_blank')"><span>📍</span>Guidami</button>
+            <button class="stable-event-action" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(createEventShareUrl(event))}')"><span>📤</span>Condividi</button>
+            ${officialAction}
+            <button class="stable-event-action" onclick="showStableToast('Accesso e partecipazione saranno gestiti dal modulo futuro')"><span>🎟</span>Accesso</button>
+          </div>
 
-        <div class="atlas-sheet-section">
-          <h3>Dettagli</h3>
-          <p>Qui potranno comparire programma, organizzatore, accessibilità, modalità di partecipazione e altri dettagli utili.</p>
+          <div class="stable-event-section">
+            <h3>Informazioni</h3>
+            <p>${description || "Informazioni essenziali sull’evento. Atlas mostra prima ciò che serve per decidere, poi consente di approfondire."}</p>
+          </div>
+
+          <div class="stable-event-section">
+            <h3>Dettagli</h3>
+            <p>Qui potranno comparire programma, organizzatore, accessibilità, modalità di partecipazione e altri dettagli utili.</p>
+          </div>
         </div>
       `;
 
-      sheet.className = "atlas-event-sheet open";
-    }
-
-    function cycleAtlasSheet() {
-      const sheet = document.getElementById("atlasEventSheet");
-      atlasSheetState = (atlasSheetState + 1) % 3;
-
-      if (atlasSheetState === 0) {
-        sheet.className = "atlas-event-sheet";
-      } else if (atlasSheetState === 1) {
-        sheet.className = "atlas-event-sheet open";
-      } else {
-        sheet.className = "atlas-event-sheet full";
-      }
+      overlay.classList.add("open");
+      sheet.classList.add("open");
     }
 
 
@@ -1114,7 +1146,6 @@
     document.getElementById("closeSheet").addEventListener("click", () => document.getElementById("mobileSheet").classList.remove("open"));
 
     renderPrograms();
-    document.getElementById("atlasSheetHandle").addEventListener("click", cycleAtlasSheet);
     loadEvents();
   </script>
 </body>
