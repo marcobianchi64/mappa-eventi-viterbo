@@ -103,6 +103,67 @@
     .sheet-handle { width: 42px; height: 5px; border-radius: 999px; background: #d0d5dd; margin: 0 auto 12px; }
     .close-sheet { float: right; border: 0; background: #f3f4f6; border-radius: 999px; padding: 7px 10px; font-weight: 800; }
 
+
+    .programs-panel {
+      position: absolute;
+      top: 62px;
+      left: 12px;
+      z-index: 1300;
+      width: 320px;
+      max-height: calc(100vh - 84px);
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid var(--atlas-border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      display: none;
+    }
+
+    .programs-panel.open { display: block; }
+
+    .programs-panel h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .program-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+    }
+
+    .program-item strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .program-item span {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.35;
+    }
+
+    .program-item button {
+      margin-top: 8px;
+      border: 0;
+      background: #fee2e2;
+      color: #991b1b;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .event-card button.interest {
+      background: #be123c;
+    }
+
     @media (max-width: 760px) {
       .topbar { top: 8px; left: 8px; right: 8px; overflow-x: auto; padding-bottom: 3px; }
       .brand-pill { font-size: 14px; padding: 8px 11px; }
@@ -118,6 +179,7 @@
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Quando: 15 giorni</button>
+    <button id="programsButton" class="chip" type="button">❤️ I miei programmi</button>
     <button id="nearMeButtonTop" class="chip blue" type="button">📍 Vicino a me</button>
   </div>
 
@@ -190,6 +252,12 @@
       <button class="filter-option active" data-range="15">15 giorni</button>
       <button class="filter-option" data-range="30">30 giorni</button>
     </div>
+  </div>
+
+
+  <div id="programsPanel" class="programs-panel">
+    <h3>❤️ I miei programmi</h3>
+    <div id="programsList">Nessun evento salvato.</div>
   </div>
 
   <div id="map"></div>
@@ -431,6 +499,7 @@
           ${endText}
           ${venueText}
           ${descriptionText}
+          <button class="action interest" onclick="saveInterest('${encodeURIComponent(event.date_event || "")}')">❤️ Mi interessa</button>
           <button class="action share" onclick="shareEvent('${encodeURIComponent(event.title || "Evento")}', '${encodeURIComponent(shareUrl)}')">Invita / Condividi</button>
           <a class="action directions" href="${directionsUrl(event)}" target="_blank" rel="noopener noreferrer">Come arrivare</a>
           ${officialLink}
@@ -503,6 +572,93 @@
       } else {
         window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
       }
+    }
+
+
+    function getInterests() {
+      try {
+        return JSON.parse(localStorage.getItem("atlas_interests") || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function setInterests(interests) {
+      localStorage.setItem("atlas_interests", JSON.stringify(interests));
+      renderPrograms();
+    }
+
+    function reminderText(startDate) {
+      if (!startDate) return "Ti ricorderemo questo evento.";
+      const start = new Date(startDate);
+      if (Number.isNaN(start.getTime())) return "Ti ricorderemo questo evento.";
+      const reminder = new Date(start);
+      reminder.setDate(reminder.getDate() - 1);
+      return `Promemoria consigliato: ${reminder.toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}`;
+    }
+
+    function saveInterest(encodedId) {
+      const id = decodeURIComponent(encodedId);
+      if (!id) {
+        alert("Impossibile salvare questo evento.");
+        return;
+      }
+
+      const event = allEvents.find(e => String(e.date_event) === String(id));
+      if (!event) {
+        alert("Evento non trovato.");
+        return;
+      }
+
+      const interests = getInterests();
+      interests[id] = {
+        id,
+        title: event.title || "Evento",
+        start_date: event.start_date || null,
+        venue: event.venue || "",
+        lat: event.lat,
+        lng: event.lng,
+        event_url: event.event_url || "",
+        saved_at: new Date().toISOString(),
+        reminder: "day_before"
+      };
+
+      setInterests(interests);
+      alert("Evento salvato nei tuoi programmi. Ti ricorderemo l'evento il giorno prima.");
+    }
+
+    function removeInterest(id) {
+      const interests = getInterests();
+      delete interests[id];
+      setInterests(interests);
+    }
+
+    function renderPrograms() {
+      const list = document.getElementById("programsList");
+      const interests = Object.values(getInterests())
+        .sort((a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0));
+
+      const button = document.getElementById("programsButton");
+      if (button) {
+        button.textContent = interests.length ? `❤️ I miei programmi (${interests.length})` : "❤️ I miei programmi";
+      }
+
+      if (!list) return;
+
+      if (interests.length === 0) {
+        list.innerHTML = "Nessun evento salvato.";
+        return;
+      }
+
+      list.innerHTML = interests.map(item => `
+        <div class="program-item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${formatDate(item.start_date)}</span>
+          ${item.venue ? `<span>${escapeHtml(item.venue)}</span>` : ""}
+          <span>${reminderText(item.start_date)}</span>
+          <button onclick="removeInterest('${escapeHtml(item.id)}')">Rimuovi</button>
+        </div>
+      `).join("");
     }
 
     function syncFormValues(source) {
@@ -665,6 +821,13 @@
 
     document.getElementById("whenButton").addEventListener("click", () => {
       document.getElementById("filterPanel").classList.toggle("open");
+      document.getElementById("programsPanel").classList.remove("open");
+    });
+
+    document.getElementById("programsButton").addEventListener("click", () => {
+      renderPrograms();
+      document.getElementById("programsPanel").classList.toggle("open");
+      document.getElementById("filterPanel").classList.remove("open");
     });
 
     document.querySelectorAll(".filter-option").forEach((button) => {
@@ -689,6 +852,7 @@
     document.getElementById("openSearchMobile").addEventListener("click", () => document.getElementById("mobileSheet").classList.add("open"));
     document.getElementById("closeSheet").addEventListener("click", () => document.getElementById("mobileSheet").classList.remove("open"));
 
+    renderPrograms();
     loadEvents();
   </script>
 </body>
