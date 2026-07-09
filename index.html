@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <!-- ATLAS VERSIONE 0.5.6 GUIDAMI FIX -->
+  <!-- ATLAS VERSIONE 0.5.8 LABEL FIX -->
 <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -24,7 +24,7 @@
     #map { height: 100vh; width: 100%; }
 
     .topbar {
-      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1100;
+      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1900;
       display: flex; gap: 8px; align-items: center; pointer-events: none;
     }
     .brand-pill, .chip {
@@ -460,16 +460,95 @@
       pointer-events: none;
     }
 
+
+    /* ATLAS 0.5.7 - PREMIUM FEEL */
+    .atlas-version-check {
+      opacity: .45 !important;
+    }
+
+    .stable-event-cover {
+      height: 145px !important;
+    }
+
+    .stable-event-cover-icon {
+      font-size: 54px !important;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.22));
+    }
+
+    .stable-event-cover.music-cover {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,255,255,.33), transparent 18%),
+        radial-gradient(circle at 78% 22%, rgba(255,255,255,.18), transparent 20%),
+        linear-gradient(135deg, #d92d20, #7f1d1d) !important;
+    }
+
+    .stable-event-cover.food-cover {
+      background:
+        radial-gradient(circle at 22% 22%, rgba(255,255,255,.34), transparent 18%),
+        radial-gradient(circle at 76% 32%, rgba(255,255,255,.20), transparent 22%),
+        linear-gradient(135deg, #2e8b57, #064e3b) !important;
+    }
+
+    .stable-event-cover.culture-cover {
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,.32), transparent 18%),
+        radial-gradient(circle at 78% 30%, rgba(255,255,255,.18), transparent 21%),
+        linear-gradient(135deg, #2f6fed, #1e3a8a) !important;
+    }
+
+    .stable-event-cover.other-cover {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.32), transparent 18%),
+        radial-gradient(circle at 78% 30%, rgba(255,255,255,.18), transparent 21%),
+        linear-gradient(135deg, #7a5af8, #4c1d95) !important;
+    }
+
+    .stable-event-badge {
+      letter-spacing: .01em;
+      box-shadow: 0 6px 18px rgba(15,23,42,.16);
+    }
+
+    .stable-event-title {
+      letter-spacing: -0.03em !important;
+    }
+
+    .stable-event-action {
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .stable-event-action:active {
+      transform: scale(.96);
+    }
+
+    .stable-event-action.reminder {
+      background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+      border-color: #cbd5e1 !important;
+    }
+
+
+    /* ATLAS 0.5.8 - label and topbar fixes */
+    .topbar {
+      z-index: 1900 !important;
+    }
+
+    .bottom-sheet {
+      z-index: 1600 !important;
+    }
+
+    .mobile-actions {
+      z-index: 1500 !important;
+    }
+
 </style>
 </head>
 
 <body>
-  <div class="atlas-version-check">v0.5.6</div>
+  <div class="atlas-version-check">v0.5.8</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
-    <button id="whenButton" class="chip primary" type="button">🗓 Quando: 15 giorni</button>
-    <button id="programsButton" class="chip" type="button">❤️ I miei programmi</button>
-    <button id="nearMeButtonTop" class="chip blue" type="button">📍 Vicino a me</button>
+    <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: 15 giorni</button>
+    <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
+    <button id="nearMeButtonTop" class="chip blue" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te">📍 Scopri vicino a te</button>
   </div>
 
   <aside class="desktop-panel" id="desktopPanel">
@@ -545,7 +624,7 @@
 
 
   <div id="programsPanel" class="programs-panel">
-    <h3>❤️ I miei programmi</h3>
+    <h3>🔖 Eventi salvati</h3>
     <div id="programsList">Nessun evento salvato.</div>
   </div>
 
@@ -553,7 +632,7 @@
 
   <div class="mobile-actions">
     <button id="openSearchMobile" class="btn dark" type="button">🔎 Cerca / segnala</button>
-    <button id="nearMeButtonMobile" class="btn" type="button">📍 Vicino a me</button>
+    <button id="nearMeButtonMobile" class="btn" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te">📍 Scopri vicino a te</button>
   </div>
 
   <div id="mobileSheet" class="bottom-sheet">
@@ -938,7 +1017,7 @@
 
       const button = document.getElementById("programsButton");
       if (button) {
-        button.textContent = interests.length ? `❤️ I miei programmi (${interests.length})` : "❤️ I miei programmi";
+        button.textContent = interests.length ? `🔖 Eventi salvati (${interests.length})` : "🔖 Eventi salvati";
       }
 
       if (!list) return;
@@ -987,10 +1066,8 @@
 
       const coverStyle = imageUrl
         ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
-        : `background:
-             radial-gradient(circle at 22% 22%, rgba(255,255,255,.35), transparent 18%),
-             radial-gradient(circle at 78% 28%, rgba(255,255,255,.20), transparent 20%),
-             linear-gradient(135deg, ${categoryColor}, #111827)`;
+        : "";
+      const coverClass = imageUrl ? "" : `${event.category || "other"}-cover`;
 
       const officialAction = event.event_url
         ? `<button class="stable-event-action" onclick="window.open('${escapeHtml(event.event_url)}','_blank')"><span>ℹ️</span>Info</button>`
@@ -999,7 +1076,7 @@
       content.innerHTML = `
         <button class="stable-event-close" onclick="closeStableEventSheet()">×</button>
 
-        <div class="stable-event-cover" style="${coverStyle}">
+        <div class="stable-event-cover ${coverClass}" style="${coverStyle}">
           ${imageUrl ? "" : `<div class="stable-event-cover-icon">${categoryIcon}</div>`}
           <div class="stable-event-badge" style="color:${categoryColor}">${categoryLabel}</div>
         </div>
@@ -1105,7 +1182,7 @@
         setStatus("Geolocalizzazione non disponibile su questo dispositivo.", "error");
         return;
       }
-      setStatus("Cerco la tua posizione...");
+      setStatus("Cerco gli eventi vicino a te...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const lat = position.coords.latitude;
@@ -1119,9 +1196,9 @@
             fillColor: "#111827",
             fillOpacity: 1
           }).addTo(map).bindPopup("Sei qui");
-          setStatus("Mappa centrata sulla tua posizione.", "success");
+          setStatus("Mappa centrata sulla tua zona.", "success");
         },
-        () => setStatus("Non ho potuto rilevare la posizione.", "error"),
+        () => setStatus("Non ho potuto rilevare la posizione. Puoi cercare una località manualmente.", "error"),
         { enableHighAccuracy: true, timeout: 8000 }
       );
     }
@@ -1192,7 +1269,7 @@
 
     function updateWhenButtonLabel() {
       const labels = { today: "Oggi", tomorrow: "Domani", weekend: "Weekend", "7": "7 giorni", "15": "15 giorni", "30": "30 giorni" };
-      document.getElementById("whenButton").textContent = `🗓 Quando: ${labels[currentRange] || "15 giorni"}`;
+      document.getElementById("whenButton").textContent = `🗓 Cerca entro: ${labels[currentRange] || "15 giorni"}`;
     }
 
     document.getElementById("whenButton").addEventListener("click", () => {
