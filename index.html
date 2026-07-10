@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <!-- ATLAS VERSIONE 0.6.0 CORREZIONI UX E POSIZIONE -->
+  <!-- ATLAS VERSIONE 0.6.3 RIPARATA -->
 <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -577,12 +577,12 @@
 </head>
 
 <body>
-  <div class="atlas-version-check">v0.6.0</div>
+  <div class="atlas-version-check">v0.6.3</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: 15 giorni</button>
     <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
-    <button id="nearMeButtonTop" class="chip blue" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te" aria-label="Condividi la posizione per scoprire gli eventi intorno a te">📍 Condividi posizione</button>
+    <button id="nearMeButtonTop" class="chip blue" type="button" onclick="goNearMe()" title="Usa la posizione per cercare gli eventi intorno a te" aria-label="Cerca gli eventi vicino alla mia posizione">📍 Cerca vicino a me</button>
   </div>
 
   <aside class="desktop-panel" id="desktopPanel">
@@ -666,7 +666,7 @@
 
   <div class="mobile-actions">
     <button id="openSearchMobile" class="btn dark" type="button">🔎 Cerca / segnala</button>
-    <button id="nearMeButtonMobile" class="btn" type="button" title="Condividi la posizione per scoprire gli eventi intorno a te" aria-label="Condividi la posizione per scoprire gli eventi intorno a te">📍 Condividi posizione</button>
+    <button id="nearMeButtonMobile" class="btn" type="button" onclick="goNearMe()" title="Usa la posizione per cercare gli eventi intorno a te" aria-label="Cerca gli eventi vicino alla mia posizione">📍 Cerca vicino a me</button>
   </div>
 
   <div id="mobileSheet" class="bottom-sheet">
@@ -1273,69 +1273,111 @@
       showStableToast(`${matches.length} eventi corrispondenti visibili sulla mappa.`);
     }
 
+    let atlasLocationRequestRunning = false;
+
     function setLocationButtonsBusy(isBusy) {
-      ["nearMeButtonTop", "nearMeButtonMobile"].forEach(id => {
+      ["nearMeButtonTop", "nearMeButtonMobile"].forEach((id) => {
         const button = document.getElementById(id);
         if (!button) return;
         button.disabled = isBusy;
-        button.textContent = isBusy ? "📍 Posizione..." : "📍 Condividi posizione";
+        button.textContent = isBusy ? "📍 Cerco vicino a te..." : "📍 Cerca vicino a me";
       });
     }
 
-    function goNearMe() {
-      if (!window.isSecureContext) {
-        showStableToast("La posizione richiede una connessione sicura HTTPS.");
-        return;
+    function showLocationMessage(message) {
+      showStableToast(message);
+
+      const statusMobile = document.getElementById("statusMobile");
+      const statusDesktop = document.getElementById("status");
+
+      if (statusMobile) {
+        statusMobile.textContent = message;
+        statusMobile.className = "status";
       }
+
+      if (statusDesktop) {
+        statusDesktop.textContent = message;
+        statusDesktop.className = "status";
+      }
+    }
+
+    function goNearMe() {
+      if (atlasLocationRequestRunning) return;
 
       if (!navigator.geolocation) {
-        showStableToast("La geolocalizzazione non è disponibile su questo dispositivo.");
+        showLocationMessage("Questo browser non supporta la condivisione della posizione.");
         return;
       }
 
+      if (!window.isSecureContext) {
+        showLocationMessage("La posizione funziona solo sulla pagina HTTPS pubblicata su GitHub Pages.");
+        return;
+      }
+
+
+      atlasLocationRequestRunning = true;
       setLocationButtonsBusy(true);
-      showStableToast("Consenti al browser di usare la posizione.");
+      showLocationMessage("Consenti al browser di usare la posizione per cercare gli eventi vicino a te.");
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+          const lat = Number(position.coords.latitude);
+          const lng = Number(position.coords.longitude);
 
-          document.getElementById("mobileSheet").classList.remove("open");
-          map.invalidateSize();
-          map.setView([lat, lng], 14);
+          atlasLocationRequestRunning = false;
+          setLocationButtonsBusy(false);
 
-          if (userMarker) map.removeLayer(userMarker);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            showLocationMessage("Il dispositivo ha restituito una posizione non valida.");
+            return;
+          }
+
+          const mobileSheet = document.getElementById("mobileSheet");
+          if (mobileSheet) mobileSheet.classList.remove("open");
+
+          if (userMarker) {
+            map.removeLayer(userMarker);
+          }
 
           userMarker = L.circleMarker([lat, lng], {
-            radius: 8,
+            radius: 9,
             color: "#ffffff",
             weight: 3,
             fillColor: "#2563eb",
             fillOpacity: 1
-          }).addTo(map).bindPopup("Sei qui").openPopup();
+          }).addTo(map);
 
-          setLocationButtonsBusy(false);
-          showStableToast("Posizione condivisa. La mappa è centrata intorno a te.");
+          userMarker.bindPopup("Sei qui").openPopup();
+
+          map.invalidateSize(true);
+          map.flyTo([lat, lng], 14, {
+            animate: true,
+            duration: 0.8
+          });
+
+          showLocationMessage("Mappa centrata sulla tua posizione.");
         },
         (error) => {
+          atlasLocationRequestRunning = false;
           setLocationButtonsBusy(false);
 
           let message = "Non è stato possibile rilevare la posizione.";
-          if (error && error.code === 1) {
-            message = "Permesso posizione non concesso. Abilitalo nelle impostazioni del browser.";
-          } else if (error && error.code === 2) {
-            message = "Posizione non disponibile. Riprova all'aperto o con il GPS attivo.";
-          } else if (error && error.code === 3) {
-            message = "Rilevamento troppo lento. Riprova.";
+
+          if (error && error.code === error.PERMISSION_DENIED) {
+            message = "Permesso posizione negato. Apri le autorizzazioni del sito, consenti Posizione e riprova.";
+          } else if (error && error.code === error.POSITION_UNAVAILABLE) {
+            message = "Posizione non disponibile. Attiva la localizzazione del telefono e riprova.";
+          } else if (error && error.code === error.TIMEOUT) {
+            message = "Il rilevamento ha impiegato troppo tempo. Riprova con la localizzazione del telefono attiva.";
           }
 
-          showStableToast(message);
+          showLocationMessage(message);
+          console.error("Errore geolocalizzazione:", error);
         },
         {
-          enableHighAccuracy: false,
-          timeout: 15000,
-          maximumAge: 300000
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
         }
       );
     }
@@ -1431,8 +1473,6 @@
       });
     });
 
-    document.getElementById("nearMeButtonTop").addEventListener("click", goNearMe);
-    document.getElementById("nearMeButtonMobile").addEventListener("click", goNearMe);
     document.getElementById("searchPlaceButton").addEventListener("click", () => searchPlace("searchPlace"));
     document.getElementById("searchPlaceButtonMobile").addEventListener("click", () => searchPlace("searchPlaceMobile"));
     document.getElementById("searchPlace").addEventListener("keydown", (event) => { if (event.key === "Enter") searchPlace("searchPlace"); });
