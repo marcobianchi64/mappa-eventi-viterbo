@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <!-- ATLAS VERSIONE 0.6.3 RIPARATA -->
+  <!-- ATLAS VERSIONE 0.6.4 POSIZIONE DIRETTA -->
 <title>Project Atlas - Eventi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -577,7 +577,7 @@
 </head>
 
 <body>
-  <div class="atlas-version-check">v0.6.3</div>
+  <div class="atlas-version-check">v0.6.4</div>
   <div class="topbar">
     <div class="brand-pill">Project Atlas</div>
     <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: 15 giorni</button>
@@ -1305,30 +1305,28 @@
       if (atlasLocationRequestRunning) return;
 
       if (!navigator.geolocation) {
-        showLocationMessage("Questo browser non supporta la condivisione della posizione.");
+        showLocationMessage("Questo browser non supporta la posizione.");
         return;
       }
 
       if (!window.isSecureContext) {
-        showLocationMessage("La posizione funziona solo sulla pagina HTTPS pubblicata su GitHub Pages.");
+        showLocationMessage("Apri Atlas dalla pagina HTTPS pubblicata su GitHub Pages.");
         return;
       }
 
-
       atlasLocationRequestRunning = true;
       setLocationButtonsBusy(true);
-      showLocationMessage("Consenti al browser di usare la posizione per cercare gli eventi vicino a te.");
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const lat = Number(position.coords.latitude);
-          const lng = Number(position.coords.longitude);
-
           atlasLocationRequestRunning = false;
           setLocationButtonsBusy(false);
 
+          const lat = Number(position.coords.latitude);
+          const lng = Number(position.coords.longitude);
+
           if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-            showLocationMessage("Il dispositivo ha restituito una posizione non valida.");
+            showLocationMessage("Il dispositivo non ha restituito una posizione valida.");
             return;
           }
 
@@ -1363,12 +1361,12 @@
 
           let message = "Non è stato possibile rilevare la posizione.";
 
-          if (error && error.code === error.PERMISSION_DENIED) {
-            message = "Permesso posizione negato. Apri le autorizzazioni del sito, consenti Posizione e riprova.";
-          } else if (error && error.code === error.POSITION_UNAVAILABLE) {
+          if (error && error.code === 1) {
+            message = "La posizione è bloccata per questo sito. Apri le impostazioni del browser, consenti la posizione ad Atlas e premi di nuovo “Cerca vicino a me”.";
+          } else if (error && error.code === 2) {
             message = "Posizione non disponibile. Attiva la localizzazione del telefono e riprova.";
-          } else if (error && error.code === error.TIMEOUT) {
-            message = "Il rilevamento ha impiegato troppo tempo. Riprova con la localizzazione del telefono attiva.";
+          } else if (error && error.code === 3) {
+            message = "Il rilevamento ha impiegato troppo tempo. Riprova.";
           }
 
           showLocationMessage(message);
