@@ -24,11 +24,11 @@ Orientamento: Viterbo (pilota) → provincia completa → regione → nazionale 
 
 **Obiettivo:** Automatismi funzionanti; revisione manuale sulle eccezioni.
 
-- [ ] Motore raccolta: Comune Viterbo + Tuscia Eventi + Eventi della Tuscia
-- [ ] Normalizzazione e scarto eventi passati
-- [ ] Motore qualità: validazione campi, geocodifica, dedup base
-- [ ] Scheduler e log acquisizioni
-- [ ] Auto-pubblicazione per fonti affidabili
+- [x] Motore raccolta: Comune Viterbo + Tuscia Eventi + Eventi della Tuscia
+- [x] Normalizzazione e scarto eventi passati
+- [x] Motore qualità: validazione campi, geocodifica, dedup base
+- [x] Scheduler e log acquisizioni (GitHub Actions + `npm run collect`)
+- [x] Auto-pubblicazione per fonti affidabili
 
 **Criterio uscita:** ≥1 fonte si aggiorna da sola; revisione manuale <20% eventi nuovi.
 

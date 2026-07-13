@@ -23,6 +23,7 @@ export interface AtlasEvent {
   archived?: boolean;
   promoted?: boolean;
   external_url?: string | null;
+  external_id?: string | null;
   slug?: string | null;
   province?: string | null;
   city?: string | null;

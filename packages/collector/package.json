@@ -1,0 +1,25 @@
+{
+  "name": "@atlas/collector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "atlas-collect": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "npm run build -w @atlas/core && tsc",
+    "typecheck": "npm run build -w @atlas/core && tsc --noEmit",
+    "collect": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@atlas/core": "1.0.0",
+    "@supabase/supabase-js": "^2.49.8",
+    "fast-xml-parser": "^5.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3"
+  }
+}
