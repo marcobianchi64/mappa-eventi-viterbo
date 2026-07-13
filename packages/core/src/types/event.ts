@@ -1,4 +1,4 @@
-export type EventCategory = "music" | "food" | "culture" | "other";
+export type EventCategory = "music" | "food" | "culture" | "sport" | "families" | "other";
 
 export type ReviewStatus = "pending" | "approved" | "rejected";
 
@@ -19,6 +19,11 @@ export interface AtlasEvent {
   verified: boolean;
   review_status: ReviewStatus;
   source_id?: string | null;
+  territory_id?: string | null;
+  archived?: boolean;
+  promoted?: boolean;
+  external_url?: string | null;
+  slug?: string | null;
   province?: string | null;
   city?: string | null;
   comune?: string | null;

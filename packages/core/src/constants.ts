@@ -6,10 +6,12 @@ export const DEFAULT_MAP_CENTER: [number, number] = [42.42, 12.104];
 export const DEFAULT_MAP_ZOOM = 10;
 
 export const CATEGORY_META: Record<EventCategory, CategoryMeta> = {
-  music: { label: "Musica", color: "#d92d20", icon: "♪" },
-  food: { label: "Enogastronomia", color: "#2e8b57", icon: "🍷" },
-  culture: { label: "Cultura", color: "#2f6fed", icon: "⌂" },
-  other: { label: "Altri eventi", color: "#7a5af8", icon: "★" },
+  music: { label: "Musica", color: "#2563eb", icon: "♪" },
+  food: { label: "Enogastronomia", color: "#ea580c", icon: "🍷" },
+  culture: { label: "Cultura", color: "#7c3aed", icon: "⌂" },
+  sport: { label: "Sport", color: "#16a34a", icon: "⚽" },
+  families: { label: "Famiglie", color: "#0891b2", icon: "👨‍👩‍👧" },
+  other: { label: "Altri eventi", color: "#64748b", icon: "★" },
 };
 
 export const DATE_RANGE_LABELS: Record<string, string> = {

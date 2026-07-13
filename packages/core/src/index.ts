@@ -9,6 +9,22 @@ export type {
   CategoryMeta,
 } from "./types/event.js";
 
+export type { Territory, TerritoryLevel } from "./types/territory.js";
+export type {
+  AtlasSource,
+  SourceType,
+  AcquisitionMode,
+  SourceReliability,
+  SourceStatus,
+  SourceInput,
+} from "./types/source.js";
+export type {
+  EventSubmissionInput,
+  EventSubmissionRecord,
+  SubmissionStatus,
+  ContactType,
+} from "./types/submission.js";
+
 export {
   ATLAS_VERSION,
   DEFAULT_MAP_CENTER,
@@ -30,4 +46,6 @@ export {
   directionsUrl,
   createEventShareUrl,
   reminderText,
+  eventsLookSimilar,
+  detectContactType,
 } from "./utils.js";

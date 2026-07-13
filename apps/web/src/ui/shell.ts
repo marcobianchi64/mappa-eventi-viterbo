@@ -29,16 +29,18 @@ export function renderShell(): string {
 
       <div class="panel-section" id="desktopInsertForm">
         ${insertFormFields("")}
-        <button id="saveButton" class="btn full" type="button">Invia evento per revisione</button>
+        <button id="saveButton" class="btn full" type="button">Invia segnalazione per revisione</button>
         <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
         <div id="status" class="status" aria-live="polite"></div>
       </div>
 
       <div class="legend">
-        <div class="legend-item"><span class="legend-dot" style="background:#d92d20"></span>Musica</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#2e8b57"></span>Enogastronomia</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#2f6fed"></span>Cultura</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#7a5af8"></span>Altri eventi</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Musica</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ea580c"></span>Enogastronomia</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span>Cultura</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>Sport</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#0891b2"></span>Famiglie</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span>Altri</div>
       </div>
     </aside>
 
@@ -79,7 +81,7 @@ export function renderShell(): string {
         <div class="panel-section">
           <h3>Inserisci un evento</h3>
           ${insertFormFields("Mobile")}
-          <button id="saveButtonMobile" class="btn full" type="button">Invia evento per revisione</button>
+          <button id="saveButtonMobile" class="btn full" type="button">Invia segnalazione per revisione</button>
           <div class="hint">Chiudi il pannello e clicca sulla mappa per impostare la posizione dell'evento.</div>
           <div id="statusMobile" class="status" aria-live="polite"></div>
         </div>
@@ -115,6 +117,9 @@ function filterButtons(active: DateRangeKey): string {
 
 function insertFormFields(suffix: string): string {
   return `
+    <label for="event_url${suffix}">Link della pagina dell'evento</label>
+    <input id="event_url${suffix}" type="url" placeholder="https://..." />
+
     <label for="title${suffix}">Titolo evento</label>
     <input id="title${suffix}" placeholder="Es. Concerto in piazza" />
 
@@ -123,6 +128,8 @@ function insertFormFields(suffix: string): string {
       <option value="music">Musica</option>
       <option value="food">Enogastronomia</option>
       <option value="culture">Cultura</option>
+      <option value="sport">Sport</option>
+      <option value="families">Famiglie</option>
       <option value="other">Altri eventi</option>
     </select>
 
@@ -133,16 +140,16 @@ function insertFormFields(suffix: string): string {
     <input id="end_date${suffix}" type="datetime-local" />
 
     <label for="venue${suffix}">Luogo</label>
-    <input id="venue${suffix}" placeholder="Es. Piazza San Lorenzo" />
-
-    <label for="event_url${suffix}">Pagina ufficiale dell'evento</label>
-    <input id="event_url${suffix}" type="url" placeholder="https://..." />
+    <input id="venue${suffix}" placeholder="Es. Piazza San Lorenzo, Viterbo" />
 
     <label for="image_url${suffix}">Immagine dell'evento (facoltativa)</label>
     <input id="image_url${suffix}" type="url" placeholder="https://..." />
 
     <label for="description${suffix}">Breve descrizione (facoltativa)</label>
     <textarea id="description${suffix}" placeholder="Informazioni utili sull'evento"></textarea>
+
+    <label for="contact${suffix}">Contatto per verifica *</label>
+    <input id="contact${suffix}" type="text" placeholder="Email, WhatsApp o telefono" required />
 
     <label for="lat${suffix}">Latitudine</label>
     <input id="lat${suffix}" placeholder="Clicca sulla mappa" readonly />

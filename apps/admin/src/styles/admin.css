@@ -42,8 +42,74 @@ button {
 
 .primary { background: #2563eb; color: white; }
 .approve { background: #15803d; color: white; width: auto; margin-right: 8px; }
-.reject { background: #b91c1c; color: white; width: auto; }
+.reject { background: #b91c1c; color: white; width: auto; margin-right: 8px; }
+.duplicate { background: #6b7280; color: white; width: auto; }
 .hidden { display: none; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  width: auto;
+  background: #e5e7eb;
+  color: #111827;
+  padding: 10px 14px;
+}
+
+.tab.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.stat {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.source-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.source-form button {
+  grid-column: 1 / -1;
+}
+
+.source-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.row-actions button {
+  width: auto;
+  margin-top: 8px;
+}
+
+.error { color: #b91c1c; }
 
 .event {
   border: 1px solid #ddd;

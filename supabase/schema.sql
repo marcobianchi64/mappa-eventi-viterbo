@@ -8,7 +8,7 @@
 CREATE TABLE IF NOT EXISTS public.events (
   date_event TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   title TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('music', 'food', 'culture', 'other')),
+  category TEXT NOT NULL CHECK (category IN ('music', 'food', 'culture', 'sport', 'families', 'other')),
   start_date TIMESTAMPTZ NOT NULL,
   end_date TIMESTAMPTZ,
   venue TEXT,
@@ -21,6 +21,11 @@ CREATE TABLE IF NOT EXISTS public.events (
   review_status TEXT NOT NULL DEFAULT 'pending'
     CHECK (review_status IN ('pending', 'approved', 'rejected')),
   source_id TEXT,
+  territory_id TEXT,
+  archived BOOLEAN NOT NULL DEFAULT false,
+  promoted BOOLEAN NOT NULL DEFAULT false,
+  external_url TEXT,
+  slug TEXT,
   province TEXT,
   city TEXT,
   comune TEXT,

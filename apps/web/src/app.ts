@@ -1,7 +1,9 @@
 import {
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
+  detectContactType,
   escapeHtml,
+  eventsLookSimilar,
   formatDate,
   isEventVisibleInRange,
   normalizeSearchText,
@@ -10,10 +12,10 @@ import {
   type AtlasEvent,
   type DateRangeKey,
   type EventCategory,
-  type EventSubmission,
+  type EventSubmissionInput,
   type SavedInterest,
 } from "@atlas/core";
-import { fetchVerifiedEvents, submitEvent } from "@atlas/supabase-client";
+import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
 import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, shareEvent } from "./ui/event-sheet";
@@ -29,6 +31,7 @@ interface FormValues {
   eventUrl: string;
   imageUrl: string;
   description: string;
+  contact: string;
   lat: number;
   lng: number;
 }
@@ -186,6 +189,7 @@ export class AtlasApp {
       eventUrl: (document.getElementById(`event_url${suffix}`) as HTMLInputElement).value.trim(),
       imageUrl: (document.getElementById(`image_url${suffix}`) as HTMLInputElement).value.trim(),
       description: (document.getElementById(`description${suffix}`) as HTMLTextAreaElement).value.trim(),
+      contact: (document.getElementById(`contact${suffix}`) as HTMLInputElement).value.trim(),
       lat: Number((document.getElementById(`lat${suffix}`) as HTMLInputElement).value),
       lng: Number((document.getElementById(`lng${suffix}`) as HTMLInputElement).value),
     };
@@ -193,7 +197,7 @@ export class AtlasApp {
 
   private clearForm(source: "desktop" | "mobile"): void {
     const suffix = source === "mobile" ? "Mobile" : "";
-    ["title", "start_date", "end_date", "venue", "event_url", "image_url", "description", "lat", "lng"].forEach((id) => {
+    ["title", "start_date", "end_date", "venue", "event_url", "image_url", "description", "contact", "lat", "lng"].forEach((id) => {
       const el = document.getElementById(`${id}${suffix}`) as HTMLInputElement | HTMLTextAreaElement | null;
       if (el) el.value = "";
     });
@@ -203,8 +207,8 @@ export class AtlasApp {
     const button = document.getElementById(source === "mobile" ? "saveButtonMobile" : "saveButton") as HTMLButtonElement;
     const form = this.syncFormValues(source);
 
-    if (!form.title || !form.startDate || !Number.isFinite(form.lat) || !Number.isFinite(form.lng)) {
-      setStatus("Inserisci titolo, data di inizio e posizione sulla mappa.", "error");
+    if (!form.title || !form.startDate || !form.contact || !Number.isFinite(form.lat) || !Number.isFinite(form.lng)) {
+      setStatus("Inserisci titolo, data di inizio, contatto e posizione sulla mappa.", "error");
       return;
     }
 
@@ -213,7 +217,23 @@ export class AtlasApp {
       return;
     }
 
-    const payload: EventSubmission = {
+    const candidate = {
+      title: form.title,
+      start_date: new Date(form.startDate).toISOString(),
+      venue: form.venue,
+      lat: form.lat,
+      lng: form.lng,
+    };
+
+    const duplicate = this.allEvents.find((event) => eventsLookSimilar(candidate, event));
+    if (duplicate) {
+      setStatus("Questo evento risulta già presente su Atlas.", "error");
+      this.mapService.fitToCoordinates([[duplicate.lat, duplicate.lng]]);
+      setTimeout(() => this.handleOpenEvent(duplicate), 300);
+      return;
+    }
+
+    const payload: EventSubmissionInput = {
       title: form.title,
       category: form.category,
       start_date: new Date(form.startDate).toISOString(),
@@ -224,6 +244,9 @@ export class AtlasApp {
       description: form.description || null,
       lat: form.lat,
       lng: form.lng,
+      contact: form.contact,
+      contact_type: detectContactType(form.contact),
+      territory_id: "IT-VT",
     };
 
     button.disabled = true;
@@ -231,8 +254,8 @@ export class AtlasApp {
     setStatus("");
 
     try {
-      await submitEvent(payload);
-      setStatus("Evento inviato: sarà pubblicato dopo la revisione.", "success");
+      await submitUserReport(payload);
+      setStatus("Segnalazione inviata: verrà pubblicata se non già presente tra le fonti.", "success");
       this.clearForm(source);
       this.mapService.clearDraftMarker();
     } catch (error) {
@@ -240,7 +263,7 @@ export class AtlasApp {
       setStatus("Invio non riuscito. Riprova più tardi.", "error");
     } finally {
       button.disabled = false;
-      button.textContent = "Invia evento per revisione";
+      button.textContent = "Invia segnalazione per revisione";
     }
   }
 

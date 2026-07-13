@@ -8,13 +8,13 @@ Orientamento: Viterbo (pilota) → provincia completa → regione → nazionale 
 
 **Obiettivo:** Base modulare stabile, gestibile da 1–2 persone.
 
-- [ ] Modello dati: Territorio, Fonte, Evento, Segnalazione
-- [ ] API layer (frontend non accede direttamente al DB)
-- [ ] Frontend modulare (mappa, scheda, filtri, ricerca)
-- [ ] Control Center v2: fonti, eventi, coda revisione
-- [ ] Pagina evento dedicata (URL condivisibile)
-- [ ] Popolamento manuale fonti Viterbo (vedi FONTI_VITERBO.md)
-- [ ] Segnala evento con contatto obbligatorio
+- [x] Modello dati: Territorio, Fonte, Evento, Segnalazione
+- [x] API layer (`@atlas/supabase-client`)
+- [x] Frontend modulare (mappa, scheda, filtri, ricerca)
+- [x] Control Center v2: fonti, eventi, segnalazioni
+- [x] Pagina evento dedicata (`event.html`)
+- [x] Popolamento manuale fonti Viterbo (seed SQL)
+- [x] Segnala evento con contatto obbligatorio e dedup
 
 **Criterio uscita:** Mappa usabile ogni giorno; contenuti gestibili senza toccare codice.
 

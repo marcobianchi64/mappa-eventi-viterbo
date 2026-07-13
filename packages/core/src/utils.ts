@@ -72,6 +72,7 @@ export function getRangeWindow(range: DateRangeKey): DateRangeWindow {
 
 export function isEventVisibleInRange(event: AtlasEvent, range: DateRangeKey): boolean {
   if (event.verified !== true) return false;
+  if (event.archived === true) return false;
 
   const start = event.start_date ? new Date(event.start_date) : null;
   const end = event.end_date ? new Date(event.end_date) : start;
@@ -114,7 +115,8 @@ export function directionsUrl(lat: number, lng: number): string {
 
 export function createEventShareUrl(event: AtlasEvent, baseUrl: string): string {
   const id = encodeURIComponent(event.date_event ?? "");
-  return `${baseUrl}?event=${id}`;
+  const origin = baseUrl.replace(/\/?$/, "/");
+  return `${origin}event.html?id=${id}`;
 }
 
 export function reminderText(startDate: string | null | undefined): string {
@@ -124,4 +126,46 @@ export function reminderText(startDate: string | null | undefined): string {
   const reminder = new Date(start);
   reminder.setDate(reminder.getDate() - 1);
   return `Promemoria consigliato: ${reminder.toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}`;
+}
+
+/** Confronto base per deduplicazione segnalazioni vs eventi esistenti */
+export function eventsLookSimilar(
+  a: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
+  b: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
+): boolean {
+  const titleA = normalizeSearchText(a.title);
+  const titleB = normalizeSearchText(b.title);
+  if (!titleA || !titleB) return false;
+
+  const sameDay =
+    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime();
+
+  const titleMatch = titleA === titleB || titleA.includes(titleB) || titleB.includes(titleA);
+  const venueMatch =
+    normalizeSearchText(a.venue) && normalizeSearchText(b.venue)
+      ? normalizeSearchText(a.venue) === normalizeSearchText(b.venue)
+      : false;
+
+  const distanceKm = haversineKm(a.lat, a.lng, b.lat, b.lng);
+  const near = distanceKm < 0.5;
+
+  return sameDay && titleMatch && (venueMatch || near);
+}
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+export function detectContactType(contact: string): "email" | "whatsapp" | "phone" | "other" {
+  const value = contact.trim().toLowerCase();
+  if (value.includes("@")) return "email";
+  if (value.includes("wa.me") || value.includes("whatsapp")) return "whatsapp";
+  if (/^\+?[\d\s\-().]{8,}$/.test(value)) return "phone";
+  return "other";
 }
