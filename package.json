@@ -1,0 +1,21 @@
+{
+  "name": "mappa-eventi-viterbo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Project Atlas — mappa eventi per Viterbo e provincia",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @atlas/web",
+    "dev:admin": "npm run dev -w @atlas/admin",
+    "build": "npm run build -w @atlas/core && npm run build -w @atlas/supabase-client && npm run build -w @atlas/web && npm run build -w @atlas/admin",
+    "build:web": "npm run build -w @atlas/web",
+    "build:admin": "npm run build -w @atlas/admin",
+    "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
