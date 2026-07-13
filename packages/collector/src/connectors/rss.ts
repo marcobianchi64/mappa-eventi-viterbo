@@ -57,7 +57,7 @@ export async function collectEventiTusciaRss(feedUrl: string): Promise<Collected
 
   for (const item of items) {
     const link = String(item.link ?? "").trim();
-    const rawTitle = stripHtml(String(item.title ?? ""));
+    const rawTitle = decodeHtmlEntities(stripHtml(String(item.title ?? "")));
     const title = cleanTitle(rawTitle);
     if (!link || !title) continue;
 
