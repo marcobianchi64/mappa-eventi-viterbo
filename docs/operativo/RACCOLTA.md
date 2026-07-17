@@ -1,12 +1,14 @@
 # Raccolta automatica eventi — Fase 1
 
-## Fonti pilota (AUTO-1)
+## Fonti pilota (AUTO-1 + AUTO-2)
 
 | ID | Metodo | URL feed/pagina |
 |----|--------|-----------------|
 | `src-tuscia-eventi` | RSS | https://www.tusciaeventi.it/eventi/feed/ |
 | `src-eventi-tuscia` | RSS | https://www.eventidellatuscia.it/feed/ |
 | `src-comune-viterbo` | HTML | https://comune.viterbo.it/vivere-il-comune/eventi/ |
+| `src-viterbotoday` | HTML | https://www.viterbotoday.it/eventi/ |
+| `src-tusciaup` | HTML | https://www.tusciaup.it/eventi/ |
 
 ## Esecuzione manuale
 
@@ -16,6 +18,8 @@ cp packages/collector/.env.example packages/collector/.env
 
 npm run collect
 ```
+
+Il file `.env` viene letto automaticamente dal collector (non serve più `source` manuale).
 
 Solo una fonte:
 

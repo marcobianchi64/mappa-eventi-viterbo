@@ -7,8 +7,7 @@ import {
   parseItalianDateRange,
   stripHtml,
 } from "../normalize.js";
-
-const USER_AGENT = "ProjectAtlas/1.0 (+https://github.com/marcobianchi64/mappa-eventi-viterbo)";
+import { fetchHtml } from "./fetch-html.js";
 
 export async function collectComuneViterboHtml(pageUrl: string): Promise<CollectedEvent[]> {
   const html = await fetchHtml(pageUrl);
@@ -49,11 +48,3 @@ export function parseComuneViterboListing(html: string): CollectedEvent[] {
   return [...map.values()];
 }
 
-async function fetchHtml(url: string): Promise<string> {
-  const response = await fetch(url, {
-    headers: { "User-Agent": USER_AGENT, Accept: "text/html" },
-    signal: AbortSignal.timeout(25000),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status} per ${url}`);
-  return response.text();
-}

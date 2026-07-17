@@ -38,7 +38,8 @@ Orientamento: Viterbo (pilota) → provincia completa → regione → nazionale 
 
 **Obiettivo:** Superare il test pilota (offerta completa, intervento minimo).
 
-- [ ] Espansione fonti (AUTO-2 + comuni principali)
+- [x] Espansione fonti AUTO-2 (ViterboToday + TusciaUp)
+- [ ] Espansione fonti (comuni principali, Eventbrite, …)
 - [ ] Filtro territorio in UI
 - [ ] Ricerca per comune/località
 - [ ] Archiviazione eventi conclusi

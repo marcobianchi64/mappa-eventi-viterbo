@@ -1,5 +1,11 @@
 #!/usr/bin/env node
+import { config } from "dotenv";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { runCollector } from "./index.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, "../.env") });
 
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -10,7 +16,7 @@ if (!url || !serviceRoleKey) {
   process.exit(1);
 }
 
-console.log("Atlas Collector — avvio sincronizzazione fonti pilota Viterbo");
+console.log("Atlas Collector — sincronizzazione fonti Viterbo (AUTO-1 + AUTO-2)");
 
 runCollector({ supabaseUrl: url, serviceRoleKey, sourceIds: sourceFilter })
   .then((reports) => {

@@ -152,3 +152,75 @@ export function isPastEvent(endDate: string | null | undefined, startDate: strin
   const end = endDate ? new Date(endDate) : new Date(startDate);
   return end.getTime() < Date.now() - 24 * 60 * 60 * 1000;
 }
+
+export function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+/** Estrae date da testo libero, slug URL o intervalli cross-mese (es. 27-giugno-30-agosto-2026). */
+export function parseEventDateHints(text: string, fallbackYear = new Date().getFullYear()): {
+  start: Date | null;
+  end: Date | null;
+} {
+  const plain = decodeHtmlEntities(stripHtml(text));
+  const normalized = normalize(plain);
+
+  const withYear = plain.match(
+    /dal\s+(\d{1,2})\s+al\s+(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i,
+  );
+  if (withYear) {
+    const year = Number(withYear[4]);
+    return {
+      start: italianDate(Number(withYear[1]), withYear[3], year),
+      end: italianDate(Number(withYear[2]), withYear[3], year),
+    };
+  }
+
+  const singleWithYear = plain.match(
+    /(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i,
+  );
+  if (singleWithYear) {
+    const start = italianDate(Number(singleWithYear[1]), singleWithYear[2], Number(singleWithYear[3]));
+    return { start, end: start };
+  }
+
+  const crossMonth = normalized.match(
+    /(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/,
+  );
+  if (crossMonth) {
+    const year = Number(crossMonth[5]);
+    return {
+      start: italianDate(Number(crossMonth[1]), crossMonth[2], year),
+      end: italianDate(Number(crossMonth[3]), crossMonth[4], year),
+    };
+  }
+
+  const rangeInSlug = normalized.match(
+    /(\d{1,2})-(\d{1,2})-(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)-(\d{4})/,
+  );
+  if (rangeInSlug) {
+    const year = Number(rangeInSlug[4]);
+    return {
+      start: italianDate(Number(rangeInSlug[1]), rangeInSlug[3], year),
+      end: italianDate(Number(rangeInSlug[2]), rangeInSlug[3], year),
+    };
+  }
+
+  const singleInSlug = normalized.match(
+    /(\d{1,2})-(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)-(\d{4})/,
+  );
+  if (singleInSlug) {
+    const start = italianDate(Number(singleInSlug[1]), singleInSlug[2], Number(singleInSlug[3]));
+    return { start, end: start };
+  }
+
+  return parseItalianDateRange(plain, fallbackYear);
+}

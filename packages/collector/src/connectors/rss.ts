@@ -2,6 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import type { CollectedEvent } from "../types.js";
 import {
   cleanTitle,
+  decodeHtmlEntities,
   inferCategory,
   parseItalianDateRange,
   parseTusciaEventiDescription,
@@ -121,13 +122,3 @@ function dedupeByExternalId(events: CollectedEvent[]): CollectedEvent[] {
   return [...map.values()];
 }
 
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}

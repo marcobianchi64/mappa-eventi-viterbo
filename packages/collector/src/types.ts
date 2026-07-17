@@ -20,7 +20,7 @@ export interface SourceConnectorConfig {
   name: string;
   reliability: "A" | "B" | "C";
   territory_id: string;
-  connector: "rss-tuscia-eventi" | "rss-eventi-tuscia" | "html-comune-viterbo";
+  connector: "rss-tuscia-eventi" | "rss-eventi-tuscia" | "html-comune-viterbo" | "html-viterbotoday" | "html-tusciaup";
   feed_url?: string;
   page_url?: string;
 }
@@ -63,5 +63,21 @@ export const AUTO_SOURCES: SourceConnectorConfig[] = [
     territory_id: "IT-VT-VITERBO",
     connector: "html-comune-viterbo",
     page_url: "https://comune.viterbo.it/vivere-il-comune/eventi/",
+  },
+  {
+    id: "src-viterbotoday",
+    name: "ViterboToday — Eventi",
+    reliability: "B",
+    territory_id: "IT-VT",
+    connector: "html-viterbotoday",
+    page_url: "https://www.viterbotoday.it/eventi/",
+  },
+  {
+    id: "src-tusciaup",
+    name: "TusciaUp — Eventi",
+    reliability: "B",
+    territory_id: "IT-VT",
+    connector: "html-tusciaup",
+    page_url: "https://www.tusciaup.it/eventi/",
   },
 ];
