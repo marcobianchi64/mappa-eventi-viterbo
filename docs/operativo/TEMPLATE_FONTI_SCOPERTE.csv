@@ -1,0 +1,4 @@
+stato;nome;fonte_url;tipo_fonte;comune;note;data_scoperta
+da_validare;Pro Loco di Bolsena;https://www.prolocobolsena.it/eventi;pro_loco;Bolsena;Calendario aggiornato mensilmente;17/07/2026
+ok;Teatro Caffeina;https://www.teatrocaffeina.it/programmazione;culturale;Viterbo;Programma stagionale;17/07/2026
+scartato;Pagina Facebook generica;https://facebook.com/groups/esempio;social;;Non utilizzabile per automazione;

@@ -1,0 +1,171 @@
+import type { AtlasEvent, DateRangeKey, DateRangeWindow } from "./types/event.js";
+import { CATEGORY_META } from "./constants.js";
+
+export function getCategoryMeta(category: string) {
+  return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? {
+    label: "Evento",
+    color: "#667085",
+    icon: "•",
+  };
+}
+
+export function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return escapeHtml(value);
+  return date.toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function startOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function endOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+function nextSaturday(now: Date): Date {
+  const d = startOfDay(now);
+  const day = d.getDay();
+  const diff = (6 - day + 7) % 7;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+export function getRangeWindow(range: DateRangeKey): DateRangeWindow {
+  const now = new Date();
+  let from = now;
+  let to = new Date(now);
+
+  if (range === "today") {
+    from = startOfDay(now);
+    to = endOfDay(now);
+  } else if (range === "tomorrow") {
+    from = startOfDay(now);
+    from.setDate(from.getDate() + 1);
+    to = endOfDay(from);
+  } else if (range === "weekend") {
+    from = nextSaturday(now);
+    to = endOfDay(from);
+    to.setDate(to.getDate() + 1);
+  } else {
+    const days = Number(range) || 15;
+    from = now;
+    to.setDate(to.getDate() + days);
+  }
+
+  return { from, to };
+}
+
+export function isEventVisibleInRange(event: AtlasEvent, range: DateRangeKey): boolean {
+  if (event.verified !== true) return false;
+  if (event.archived === true) return false;
+
+  const start = event.start_date ? new Date(event.start_date) : null;
+  const end = event.end_date ? new Date(event.end_date) : start;
+  if (!start || Number.isNaN(start.getTime())) return false;
+  if (end && end < new Date()) return false;
+
+  const { from, to } = getRangeWindow(range);
+  return start <= to && (end || start) >= from;
+}
+
+export function normalizeSearchText(value: unknown): string {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+export function searchableEventText(event: AtlasEvent): string {
+  const meta = getCategoryMeta(event.category);
+  return normalizeSearchText(
+    [
+      event.title,
+      event.venue,
+      event.description,
+      event.province,
+      event.city,
+      event.comune,
+      event.location,
+      meta.label,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+export function directionsUrl(lat: number, lng: number): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${lat},${lng}`)}`;
+}
+
+export function createEventShareUrl(event: AtlasEvent, baseUrl: string): string {
+  const id = encodeURIComponent(event.date_event ?? "");
+  const origin = baseUrl.replace(/\/?$/, "/");
+  return `${origin}event.html?id=${id}`;
+}
+
+export function reminderText(startDate: string | null | undefined): string {
+  if (!startDate) return "Ti ricorderemo questo evento.";
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return "Ti ricorderemo questo evento.";
+  const reminder = new Date(start);
+  reminder.setDate(reminder.getDate() - 1);
+  return `Promemoria consigliato: ${reminder.toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}`;
+}
+
+/** Confronto base per deduplicazione segnalazioni vs eventi esistenti */
+export function eventsLookSimilar(
+  a: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
+  b: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
+): boolean {
+  const titleA = normalizeSearchText(a.title);
+  const titleB = normalizeSearchText(b.title);
+  if (!titleA || !titleB) return false;
+
+  const sameDay =
+    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime();
+
+  const titleMatch = titleA === titleB || titleA.includes(titleB) || titleB.includes(titleA);
+  const venueMatch =
+    normalizeSearchText(a.venue) && normalizeSearchText(b.venue)
+      ? normalizeSearchText(a.venue) === normalizeSearchText(b.venue)
+      : false;
+
+  const distanceKm = haversineKm(a.lat, a.lng, b.lat, b.lng);
+  const near = distanceKm < 0.5;
+
+  return sameDay && titleMatch && (venueMatch || near);
+}
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+export function detectContactType(contact: string): "email" | "whatsapp" | "phone" | "other" {
+  const value = contact.trim().toLowerCase();
+  if (value.includes("@")) return "email";
+  if (value.includes("wa.me") || value.includes("whatsapp")) return "whatsapp";
+  if (/^\+?[\d\s\-().]{8,}$/.test(value)) return "phone";
+  return "other";
+}
