@@ -2,7 +2,7 @@ export type EventCategory = "music" | "food" | "culture" | "sport" | "families" 
 
 export type ReviewStatus = "pending" | "approved" | "rejected";
 
-export type DateRangeKey = "today" | "tomorrow" | "weekend" | "7" | "15" | "30";
+export type DateRangeKey = "today" | "tomorrow" | "weekend" | "7" | "15" | "30" | "60";
 
 export interface AtlasEvent {
   date_event?: string;

@@ -18,7 +18,7 @@ import {
   updateSubmissionStatus,
 } from "@atlas/supabase-client";
 
-type AdminTab = "dashboard" | "sources" | "events" | "submissions";
+type AdminTab = "dashboard" | "sources" | "events" | "submissions" | "discovery";
 
 export class AdminApp {
   private tab: AdminTab = "dashboard";
@@ -49,6 +49,7 @@ export class AdminApp {
             <button type="button" data-tab="sources" class="tab">Fonti</button>
             <button type="button" data-tab="events" class="tab">Eventi</button>
             <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
+            <button type="button" data-tab="discovery" class="tab">Scoperta</button>
           </nav>
           <div id="panel" class="card">Caricamento...</div>
         </section>
@@ -108,6 +109,7 @@ export class AdminApp {
       else if (this.tab === "sources") await this.renderSources(panel);
       else if (this.tab === "events") await this.renderEvents(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
+      else if (this.tab === "discovery") this.renderDiscovery(panel);
     } catch (error) {
       panel.innerHTML = `<p class="error">Errore: ${escapeHtml((error as Error).message)}</p>`;
     }
@@ -246,6 +248,21 @@ export class AdminApp {
       });
       list.appendChild(div);
     }
+  }
+
+  private renderDiscovery(panel: HTMLElement): void {
+    panel.innerHTML = `
+      <h2>Scoperta manuale eventi</h2>
+      <p>Workflow pilota: ricerca AI tematica → verifica in Excel → import CSV.</p>
+      <ol>
+        <li>Esegui i 4 prompt in <code>docs/operativo/PROMPT_RICERCA_EVENTI.md</code></li>
+        <li>Compila <code>TEMPLATE_EVENTI.csv</code> e imposta <code>stato=ok</code> sulle righe verificate</li>
+        <li>Importa dal terminale: <code>npm run import:events -- percorso/eventi.csv</code></li>
+        <li>Opzionale: <code>npm run report:gap</code> per il report copertura</li>
+      </ol>
+      <p class="small">Vedi <code>docs/operativo/WORKFLOW_SCOPERTA_MANUALE.md</code> e <code>IMPORT_EVENTI.md</code>.</p>
+      <p class="small">Esegui anche la migrazione <code>004_manual_discovery.sql</code> su Supabase prima del primo import.</p>
+    `;
   }
 
   private async renderSubmissions(panel: HTMLElement): Promise<void> {

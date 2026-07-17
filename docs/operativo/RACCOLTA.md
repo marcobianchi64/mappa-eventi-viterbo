@@ -42,3 +42,5 @@ ATLAS_SOURCES=src-tuscia-eventi npm run collect
 ## Migrazione DB
 
 Eseguire anche `supabase/migrations/002_collector.sql` per `external_id` e log sync.
+
+Per import manuale eventi: `004_manual_discovery.sql` + `npm run import:events` (vedi `IMPORT_EVENTI.md`).

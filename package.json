@@ -14,6 +14,8 @@
     "build:web": "npm run build -w @atlas/web",
     "build:admin": "npm run build -w @atlas/admin",
     "collect": "npm run build -w @atlas/collector && npm run collect -w @atlas/collector",
+    "import:events": "npm run build -w @atlas/collector && npm run import:events -w @atlas/collector",
+    "report:gap": "npm run build -w @atlas/collector && npm run report:gap -w @atlas/collector",
     "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin"
   },
   "engines": {

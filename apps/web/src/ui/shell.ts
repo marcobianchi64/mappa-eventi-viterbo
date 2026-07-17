@@ -97,7 +97,7 @@ export function renderShell(): string {
 }
 
 function filterButtons(active: DateRangeKey): string {
-  const options: DateRangeKey[] = ["today", "tomorrow", "weekend", "7", "15", "30"];
+  const options: DateRangeKey[] = ["today", "tomorrow", "weekend", "7", "15", "30", "60"];
   const labels: Record<DateRangeKey, string> = {
     today: "Oggi",
     tomorrow: "Domani",
@@ -105,6 +105,7 @@ function filterButtons(active: DateRangeKey): string {
     "7": "7 giorni",
     "15": "15 giorni",
     "30": "30 giorni",
+    "60": "60 giorni",
   };
 
   return options

@@ -83,5 +83,17 @@ INSERT INTO public.sources (
     'on_demand',
     'active',
     'Eventi proposti dagli utenti con contatto obbligatorio'
+  ),
+  (
+    'src-manual-discovery',
+    'Scoperta manuale (AI + verifica)',
+    'other',
+    'IT-VT',
+    NULL,
+    'assisted',
+    'B',
+    'on_demand',
+    'active',
+    'Eventi importati da CSV dopo ricerca AI e verifica umana'
   )
 ON CONFLICT (id) DO NOTHING;

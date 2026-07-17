@@ -89,3 +89,17 @@ Decisioni consolidate. Formato: data | decisione | motivazione | conseguenze.
 **Motivazione:** Scraping fragile e spesso non consentito.
 
 **Conseguenze:** Priorità a siti web strutturati.
+
+---
+
+## 2026-07-17 — Scoperta manuale assistita (pilota Viterbo)
+
+**Decisione:** Per massimizzare la copertura della mappa nel pilota, integrare gli eventi non raggiunti dalle 5 fonti automatiche tramite **ricerca AI manuale** ogni ~2 giorni (4 prompt tematici), verifica umana in Excel, import CSV. L'automazione schedulata della discovery AI è **rinviata** all'espansione multi-provincia.
+
+**Motivazione:** Le fonti automatiche coprono ~10–15 eventi; decine di eventi restano su Pro Loco, teatri e pagine comunali non ancora connesse. Facebook resta escluso (fragile). Il flusso manuale è rapido da avviare e tracciabile (`url_evento` + `url_fonte`).
+
+**Conseguenze:**
+- Template e prompt in `docs/operativo/`
+- CLI `npm run import:events` con fonte `src-manual-discovery`
+- Tabella `source_candidates` per siti da validare come futuri connettori
+- Filtro mappa esteso a 60 giorni per il pilota estivo

@@ -21,6 +21,7 @@ export const DATE_RANGE_LABELS: Record<string, string> = {
   "7": "7 giorni",
   "15": "15 giorni",
   "30": "30 giorni",
+  "60": "60 giorni",
 };
 
 export const DEFAULT_DATE_RANGE = "15" as const;
