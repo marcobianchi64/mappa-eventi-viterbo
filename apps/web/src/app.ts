@@ -5,6 +5,7 @@ import {
   escapeHtml,
   eventsLookSimilar,
   formatDate,
+  buildMapMarkerPlacements,
   hasValidEventCoords,
   isEventVisibleInRange,
   normalizeSearchText,
@@ -43,6 +44,7 @@ export class AtlasApp {
   private allEvents: AtlasEvent[] = [];
   private currentRange: DateRangeKey = DEFAULT_DATE_RANGE;
   private locationRequestRunning = false;
+  private initialMapFitDone = false;
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
@@ -162,6 +164,14 @@ export class AtlasApp {
     const pinCount = this.mapService.renderEvents(visible, deepLink);
     const withCoords = visible.filter(hasValidEventCoords).length;
     this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length);
+
+    if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
+      const coords = buildMapMarkerPlacements(visible).map(
+        (p) => [p.lat, p.lng] as [number, number],
+      );
+      this.mapService.fitToCoordinates(coords);
+      this.initialMapFitDone = true;
+    }
   }
 
   private updateMapEventCount(

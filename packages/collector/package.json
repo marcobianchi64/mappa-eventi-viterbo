@@ -19,7 +19,8 @@
     "import:events": "node dist/import-cli.js",
     "report:gap": "node dist/gap-cli.js",
     "report:compare": "node dist/compare-cli.js",
-    "fix:coords": "node dist/fix-coords-cli.js"
+    "fix:coords": "node dist/fix-coords-cli.js",
+    "report:locate": "node dist/locate-comuni-cli.js"
   },
   "dependencies": {
     "@atlas/core": "1.0.0",

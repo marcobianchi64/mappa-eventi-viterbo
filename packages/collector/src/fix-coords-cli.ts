@@ -20,6 +20,7 @@ config({ path: resolve(__dirname, "../.env") });
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const dryRun = process.argv.includes("--dry-run");
+const force = process.argv.includes("--force");
 
 if (!url || !serviceRoleKey) {
   console.error("Richiesti SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY in packages/collector/.env");
@@ -56,7 +57,10 @@ async function main(): Promise<void> {
     const coords = geocodeComuneViterbo(comuneKey);
     const dist = distanceKm(event.lat, event.lng, coords.lat, coords.lng);
     const needsComuneField = !(event.comune ?? event.city)?.trim();
-    const needsCoords = isDefaultViterboCoords(event.lat, event.lng) || isPinFarFromComune(event, 3);
+    const needsCoords =
+      force ||
+      isDefaultViterboCoords(event.lat, event.lng) ||
+      isPinFarFromComune(event, 3);
 
     if (!needsCoords && !needsComuneField) {
       skipped += 1;
