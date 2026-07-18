@@ -64,6 +64,14 @@ const COMUNE_COORDS: Record<string, { lat: number; lng: number }> = {
   vitorchiano: { lat: 42.4664074, lng: 12.1734444 },
 };
 
+const COMUNE_ALIASES: Record<string, string> = {
+  vitrochino: "vitorchiano",
+  vitrochiano: "vitorchiano",
+  "soriano": "soriano nel cimino",
+};
+
+const COMUNE_NAMES_BY_LENGTH = Object.keys(COMUNE_COORDS).sort((a, b) => b.length - a.length);
+
 export function normalizeComuneName(value: string): string {
   return value
     .normalize("NFD")
@@ -76,16 +84,80 @@ export function normalizeComuneName(value: string): string {
 
 /** Risolve coordinate da comune (provincia di Viterbo). */
 export function geocodeComuneViterbo(comune?: string | null): { lat: number; lng: number } {
-  const key = normalizeComuneName(comune ?? "");
+  const key = resolveComuneKey(comune ?? "");
   if (!key) return VITERBO_PROVINCE_CENTER;
+  return COMUNE_COORDS[key];
+}
 
-  if (COMUNE_COORDS[key]) return COMUNE_COORDS[key];
+function resolveComuneKey(raw: string): string | null {
+  let key = normalizeComuneName(raw);
+  if (!key) return null;
+  if (COMUNE_ALIASES[key]) key = COMUNE_ALIASES[key];
+  if (COMUNE_COORDS[key]) return key;
 
-  for (const [name, coords] of Object.entries(COMUNE_COORDS)) {
-    if (key.includes(name) || name.includes(key)) return coords;
+  for (const name of COMUNE_NAMES_BY_LENGTH) {
+    if (key.includes(name) || name.includes(key)) return name;
+  }
+  return null;
+}
+
+/** Cerca un comune VT in testo libero (titolo, luogo, venue…). */
+export function inferComuneFromText(...parts: Array<string | null | undefined>): string | null {
+  const haystack = normalizeComuneName(parts.filter(Boolean).join(" "));
+  if (!haystack) return null;
+
+  for (const aliasKey of Object.keys(COMUNE_ALIASES)) {
+    if (haystack.includes(aliasKey)) return COMUNE_ALIASES[aliasKey];
   }
 
-  return VITERBO_PROVINCE_CENTER;
+  for (const name of COMUNE_NAMES_BY_LENGTH) {
+    if (haystack.includes(name)) return name;
+  }
+  return null;
+}
+
+export function inferComuneForEvent(event: {
+  comune?: string | null;
+  city?: string | null;
+  venue?: string | null;
+  title?: string | null;
+  location?: string | null;
+}): string | null {
+  const direct = resolveComuneKey(event.comune ?? event.city ?? "");
+  if (direct) return direct;
+  return inferComuneFromText(event.venue, event.location, event.title, event.comune, event.city);
+}
+
+export function formatComuneLabel(comuneKey: string): string {
+  if (comuneKey === "castel sant'elia") return "Castel Sant'Elia";
+  if (comuneKey === "civitella d'agliano") return "Civitella d'Agliano";
+  if (comuneKey === "soriano nel cimino") return "Soriano nel Cimino";
+  if (comuneKey === "villa san giovanni in tuscia") return "Villa San Giovanni in Tuscia";
+  return comuneKey
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+export function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+/** Pin lontano dal comune dichiarato (soglia km). */
+export function isPinFarFromComune(
+  event: { lat: number; lng: number; comune?: string | null; city?: string | null; venue?: string | null; title?: string | null },
+  thresholdKm = 3,
+): boolean {
+  const key = inferComuneForEvent(event);
+  if (!key || key === "viterbo") return false;
+  const expected = COMUNE_COORDS[key];
+  return distanceKm(event.lat, event.lng, expected.lat, expected.lng) > thresholdKm;
 }
 
 export function listViterboComuni(): string[] {
@@ -100,11 +172,15 @@ export function isLegacyViterboCenter(lat: number, lng: number): boolean {
 export function resolveEventCoordinates(input: {
   comune?: string | null;
   city?: string | null;
+  venue?: string | null;
+  title?: string | null;
   lat?: number | null;
   lng?: number | null;
 }): { lat: number; lng: number } {
-  const comune = input.comune ?? input.city;
-  if (comune?.trim()) return geocodeComuneViterbo(comune);
+  const key =
+    resolveComuneKey(input.comune ?? input.city ?? "") ??
+    inferComuneFromText(input.venue, input.title, input.comune, input.city);
+  if (key) return COMUNE_COORDS[key];
 
   const lat = Number(input.lat);
   const lng = Number(input.lng);

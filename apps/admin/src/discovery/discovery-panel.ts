@@ -1,7 +1,9 @@
 import {
   escapeHtml,
   eventsLookSimilar,
+  formatComuneLabel,
   geocodeComuneViterbo,
+  inferComuneFromText,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
   parseDiscoveryText,
@@ -58,8 +60,11 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
     if (!start) continue;
     const end = row.data_fine ? parseDate(row.data_fine, row.orario) : null;
 
-    const comune = row.comune?.trim() || null;
-    const coords = geocodeComuneViterbo(comune);
+    const comuneKey =
+      inferComuneFromText(row.comune, row.luogo, row.titolo) ??
+      (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
+    const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
+    const coords = geocodeComuneViterbo(comuneKey ?? comune);
 
     await createEventAdmin({
       title: row.titolo.trim(),

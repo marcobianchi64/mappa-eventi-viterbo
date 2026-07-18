@@ -4,9 +4,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import {
+  distanceKm,
+  formatComuneLabel,
   geocodeComuneViterbo,
+  inferComuneForEvent,
   isLegacyViterboCenter,
-  normalizeComuneName,
+  isPinFarFromComune,
   VITERBO_PROVINCE_CENTER,
   type AtlasEvent,
 } from "@atlas/core";
@@ -41,29 +44,43 @@ async function main(): Promise<void> {
   let updated = 0;
   let skipped = 0;
 
+  console.log("=== Correzione coordinate eventi ===\n");
+
   for (const event of events) {
-    const comune = (event.comune ?? event.city ?? "").trim();
-    if (!comune) {
+    const comuneKey = inferComuneForEvent(event);
+    if (!comuneKey || comuneKey === "viterbo") {
       skipped += 1;
       continue;
     }
 
-    const comuneKey = normalizeComuneName(comune);
-    if (comuneKey === "viterbo" || !isDefaultViterboCoords(event.lat, event.lng)) {
+    const coords = geocodeComuneViterbo(comuneKey);
+    const dist = distanceKm(event.lat, event.lng, coords.lat, coords.lng);
+    const needsComuneField = !(event.comune ?? event.city)?.trim();
+    const needsCoords = isDefaultViterboCoords(event.lat, event.lng) || isPinFarFromComune(event, 3);
+
+    if (!needsCoords && !needsComuneField) {
       skipped += 1;
       continue;
     }
 
-    const coords = geocodeComuneViterbo(comune);
+    const label = formatComuneLabel(comuneKey);
     console.log(
       `${dryRun ? "[dry-run] " : ""}${event.title}`,
-      `| ${comune} → ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`,
+      `| ${label} (da: ${event.comune ?? event.city ?? "testo"})`,
+      `| ${event.lat.toFixed(4)},${event.lng.toFixed(4)} → ${coords.lat.toFixed(4)},${coords.lng.toFixed(4)}`,
+      `| dist ${dist.toFixed(1)} km`,
     );
 
     if (!dryRun) {
       const { error: updateError } = await client
         .from("events")
-        .update({ lat: coords.lat, lng: coords.lng, province: "Viterbo" })
+        .update({
+          lat: coords.lat,
+          lng: coords.lng,
+          comune: label,
+          city: label,
+          province: "Viterbo",
+        })
         .eq("date_event", event.date_event);
 
       if (updateError) throw new Error(updateError.message);
@@ -71,7 +88,7 @@ async function main(): Promise<void> {
     updated += 1;
   }
 
-  console.log(`\nCompletato: ${updated} aggiornati, ${skipped} già ok o senza comune.`);
+  console.log(`\nCompletato: ${updated} aggiornati, ${skipped} già ok o senza comune riconosciuto.`);
 }
 
 main().catch((error) => {
