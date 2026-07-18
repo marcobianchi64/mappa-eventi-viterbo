@@ -60,6 +60,7 @@ body {
 }
 
 .chip.primary { background: var(--atlas-dark); color: #fff; }
+.chip.muted { background: rgba(255, 255, 255, 0.92); color: #374151; border: 1px solid #e5e7eb; }
 .chip.blue { background: var(--atlas-blue); color: #fff; }
 .chip:disabled { opacity: 0.7; cursor: wait; }
 

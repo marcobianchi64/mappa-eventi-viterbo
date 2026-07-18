@@ -63,8 +63,10 @@ export function getRangeWindow(range: DateRangeKey): DateRangeWindow {
     to.setDate(to.getDate() + 1);
   } else {
     const days = Number(range) || 15;
-    from = now;
+    from = startOfDay(now);
+    to = startOfDay(now);
     to.setDate(to.getDate() + days);
+    to.setHours(23, 59, 59, 999);
   }
 
   return { from, to };

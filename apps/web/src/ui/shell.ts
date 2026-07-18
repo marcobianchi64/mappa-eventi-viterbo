@@ -14,6 +14,7 @@ export function renderShell(): string {
     <div class="topbar">
       <div class="brand-pill">Project Atlas</div>
       <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: ${rangeLabel}</button>
+      <span id="mapEventCount" class="chip muted" aria-live="polite"></span>
       <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
       <button id="nearMeButtonTop" class="chip blue" type="button">📍 Cerca vicino a me</button>
     </div>

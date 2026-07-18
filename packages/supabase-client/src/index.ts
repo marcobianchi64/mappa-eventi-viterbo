@@ -37,14 +37,26 @@ export function resetSupabaseClient(): void {
 
 export async function fetchVerifiedEvents(): Promise<AtlasEvent[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("verified", true)
-    .order("start_date", { ascending: true });
+  const pageSize = 1000;
+  const all: AtlasEvent[] = [];
+  let offset = 0;
 
-  if (error) throw new Error(error.message);
-  return ((data ?? []) as AtlasEvent[]).filter((e) => e.archived !== true);
+  while (true) {
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .eq("verified", true)
+      .order("start_date", { ascending: true })
+      .range(offset, offset + pageSize - 1);
+
+    if (error) throw new Error(error.message);
+    const batch = (data ?? []) as AtlasEvent[];
+    all.push(...batch.filter((e) => e.archived !== true));
+    if (batch.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return all;
 }
 
 export async function fetchEventById(id: string): Promise<AtlasEvent | null> {

@@ -8,6 +8,7 @@ import {
 export interface CompareMapRegistryOptions {
   supabaseUrl: string;
   serviceRoleKey: string;
+  anonKey?: string;
   rangeDays?: "60" | "30" | "15";
 }
 
@@ -34,6 +35,10 @@ export interface CompareMapRegistryReport {
   onlyMap: CompareEventRow[];
   registryOutsideRange: CompareEventRow[];
   registryInRangeButMissingOnMap: CompareEventRow[];
+  /** Eventi che la mappa carica davvero (chiave anon + RLS) */
+  publicApiFetched: number | null;
+  publicApiVisible60: number | null;
+  blockedByPublicApi: CompareEventRow[];
 }
 
 function eventKey(event: AtlasEvent): string {
@@ -114,7 +119,35 @@ export async function compareMapRegistry(
     .map((e) => toRow(e, "sulla mappa ma non «in pubblicazione» nel Registro"));
 
   const inBoth = registry.filter((e) => mapKeys.has(eventKey(e))).length;
-  const daysNum = Number(range);
+
+  let publicApiFetched: number | null = null;
+  let publicApiVisible60: number | null = null;
+  let blockedByPublicApi: CompareEventRow[] = [];
+
+  if (options.anonKey) {
+    const anon = createClient(options.supabaseUrl, options.anonKey);
+    const { data: pubData, error: pubError } = await anon
+      .from("events")
+      .select("*")
+      .eq("verified", true)
+      .order("start_date", { ascending: true });
+
+    if (pubError) throw new Error(`API pubblica (anon): ${pubError.message}`);
+
+    const pub = ((pubData ?? []) as AtlasEvent[]).filter((e) => e.archived !== true);
+    publicApiFetched = pub.length;
+    publicApiVisible60 = pub.filter((e) => isEventVisibleInRange(e, range)).length;
+
+    const pubKeys = new Set(pub.map(eventKey));
+    blockedByPublicApi = mapVisible
+      .filter((e) => !pubKeys.has(eventKey(e)))
+      .map((e) =>
+        toRow(
+          e,
+          "presente nel DB (service role) ma NON restituito dalla API pubblica — probabile blocco RLS",
+        ),
+      );
+  }
 
   return {
     generatedAt: new Date().toISOString(),
@@ -128,6 +161,9 @@ export async function compareMapRegistry(
     registryInRangeButMissingOnMap: onlyRegistry.filter((r) =>
       r.reason?.includes("escluso") || r.reason?.includes("coordinate"),
     ),
+    publicApiFetched,
+    publicApiVisible60,
+    blockedByPublicApi,
   };
 }
 
@@ -166,6 +202,19 @@ export function formatCompareReport(report: CompareMapRegistryReport): string {
     `  di cui nella finestra ma assenti dalla mappa: ${report.registryInRangeButMissingOnMap.length}`,
     `Solo Mappa:                    ${report.onlyMap.length}`,
     "",
+  ];
+
+  if (report.publicApiFetched !== null) {
+    lines.push(
+      "--- API pubblica (come la mappa utente con anon key) ---",
+      `Eventi scaricati dalla mappa:  ${report.publicApiFetched}`,
+      `Visibili con filtro ${report.rangeDays}g:     ${report.publicApiVisible60}`,
+      `Bloccati da RLS (stimati):     ${report.blockedByPublicApi.length}`,
+      "",
+    );
+  }
+
+  lines.push(
     ...formatRows(
       `EVENTI IN REGISTRO MA NON SULLA MAPPA (${report.onlyRegistry.length})`,
       report.onlyRegistry,
@@ -174,9 +223,14 @@ export function formatCompareReport(report: CompareMapRegistryReport): string {
     ...formatRows(`EVENTI SULLA MAPPA MA NON IN REGISTRO (${report.onlyMap.length})`, report.onlyMap),
     "",
     ...formatRows(
+      `BLOCCATI API PUBBLICA / RLS (${report.blockedByPublicApi.length})`,
+      report.blockedByPublicApi,
+    ),
+    "",
+    ...formatRows(
       `ANOMALIE: in pubblicazione, nella finestra ${report.rangeDays}g, ma assenti dalla mappa (${report.registryInRangeButMissingOnMap.length})`,
       report.registryInRangeButMissingOnMap,
     ),
-  ];
+  );
   return lines.join("\n");
 }

@@ -157,7 +157,15 @@ export class AtlasApp {
 
   private renderMapEvents(): void {
     const deepLink = new URLSearchParams(window.location.search).get("event");
-    this.mapService.renderEvents(this.getVisibleEvents(), deepLink);
+    const visible = this.getVisibleEvents();
+    this.mapService.renderEvents(visible, deepLink);
+    this.updateMapEventCount(visible.length, this.allEvents.length);
+  }
+
+  private updateMapEventCount(visible: number, loaded: number): void {
+    const el = document.getElementById("mapEventCount");
+    if (!el) return;
+    el.textContent = `📍 ${visible} eventi visibili (${loaded} caricati)`;
   }
 
   private updateWhenButtonLabel(): void {

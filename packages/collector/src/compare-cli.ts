@@ -7,9 +7,13 @@ import { compareMapRegistry, formatCompareReport } from "./compare-map-registry.
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../.env") });
+config({ path: resolve(__dirname, "../../../apps/web/.env") });
 
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const anonKey =
+  process.env.SUPABASE_ANON_KEY ??
+  process.env.VITE_SUPABASE_ANON_KEY;
 const daysArg = process.argv.find((a) => a.startsWith("--days="));
 const rangeDays = (daysArg?.split("=")[1] ?? "60") as "60" | "30" | "15";
 const outArg = process.argv.find((a) => a.startsWith("--out="));
@@ -22,7 +26,11 @@ if (!url || !serviceRoleKey) {
   process.exit(1);
 }
 
-compareMapRegistry({ supabaseUrl: url, serviceRoleKey, rangeDays })
+if (!anonKey) {
+  console.warn("Attenzione: anon key non trovata — aggiungi VITE_SUPABASE_ANON_KEY in apps/web/.env");
+}
+
+compareMapRegistry({ supabaseUrl: url, serviceRoleKey, anonKey, rangeDays })
   .then((report) => {
     const text = formatCompareReport(report);
     console.log(text);
