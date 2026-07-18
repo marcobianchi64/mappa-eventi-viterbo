@@ -3,6 +3,7 @@ import {
   escapeHtml,
   formatDate,
   getCategoryMeta,
+  getEventLifecycle,
   type AtlasEvent,
   type AtlasSource,
   type EventCategory,
@@ -68,17 +69,6 @@ function startOfDay(date: Date): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
   return d;
-}
-
-export function getEventLifecycle(event: AtlasEvent): EventLifecycle {
-  if (event.archived) return "archived";
-  if (event.review_status === "pending") return "pending";
-  if (event.review_status === "rejected") return "rejected";
-
-  const today = startOfDay(new Date());
-  const end = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
-  if (!Number.isNaN(end.getTime()) && end < today) return "past";
-  return "live";
 }
 
 function eventComune(event: AtlasEvent): string {

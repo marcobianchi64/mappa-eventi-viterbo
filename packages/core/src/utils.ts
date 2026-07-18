@@ -70,6 +70,25 @@ export function getRangeWindow(range: DateRangeKey): DateRangeWindow {
   return { from, to };
 }
 
+/** Stato ciclo di vita evento (allineato al Registro admin). */
+export function getEventLifecycle(
+  event: AtlasEvent,
+): "live" | "past" | "pending" | "rejected" | "archived" {
+  if (event.archived) return "archived";
+  if (event.review_status === "pending") return "pending";
+  if (event.review_status === "rejected") return "rejected";
+
+  const today = startOfDay(new Date());
+  const end = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
+  if (!Number.isNaN(end.getTime()) && end < today) return "past";
+  return "live";
+}
+
+/** Filtro Registro: visibilità «In pubblicazione». */
+export function isRegistryInPubblicazione(event: AtlasEvent): boolean {
+  return getEventLifecycle(event) === "live" && event.verified === true;
+}
+
 export function isEventVisibleInRange(event: AtlasEvent, range: DateRangeKey): boolean {
   if (event.verified !== true) return false;
   if (event.archived === true) return false;

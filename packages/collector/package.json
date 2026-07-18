@@ -8,14 +8,16 @@
   "bin": {
     "atlas-collect": "./dist/cli.js",
     "atlas-import": "./dist/import-cli.js",
-    "atlas-gap": "./dist/gap-cli.js"
+    "atlas-gap": "./dist/gap-cli.js",
+    "atlas-compare": "./dist/compare-cli.js"
   },
   "scripts": {
     "build": "npm run build -w @atlas/core && tsc",
     "typecheck": "npm run build -w @atlas/core && tsc --noEmit",
     "collect": "node dist/cli.js",
     "import:events": "node dist/import-cli.js",
-    "report:gap": "node dist/gap-cli.js"
+    "report:gap": "node dist/gap-cli.js",
+    "report:compare": "node dist/compare-cli.js"
   },
   "dependencies": {
     "@atlas/core": "1.0.0",

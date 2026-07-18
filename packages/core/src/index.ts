@@ -51,6 +51,8 @@ export {
   formatDate,
   getRangeWindow,
   isEventVisibleInRange,
+  getEventLifecycle,
+  isRegistryInPubblicazione,
   normalizeSearchText,
   searchableEventText,
   directionsUrl,
