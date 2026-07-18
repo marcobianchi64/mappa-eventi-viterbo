@@ -29,14 +29,22 @@ import {
 } from "./discovery/discovery-panel.js";
 import { EventEditor } from "./events/event-editor.js";
 import { AdminMapService } from "./map/admin-map.js";
+import {
+  bindRegistryPanel,
+  DEFAULT_REGISTRY_FILTERS,
+  renderRegistryPanelHtml,
+  type RegistryFilters,
+} from "./registry/event-registry.js";
 
-type AdminTab = "dashboard" | "map" | "discovery" | "submissions" | "sources" | "events";
+type AdminTab = "dashboard" | "map" | "discovery" | "registry" | "submissions" | "sources" | "events";
 
 export class AdminApp {
   private tab: AdminTab = "dashboard";
   private mapService: AdminMapService | null = null;
   private eventEditor: EventEditor | null = null;
   private mapEvents: AtlasEvent[] = [];
+  private registryFilters: RegistryFilters = { ...DEFAULT_REGISTRY_FILTERS };
+  private pendingMapEventId: string | null = null;
 
   start(): void {
     const root = document.getElementById("app");
@@ -70,6 +78,7 @@ export class AdminApp {
             <button type="button" data-tab="dashboard" class="tab active">Dashboard</button>
             <button type="button" data-tab="map" class="tab">Mappa</button>
             <button type="button" data-tab="discovery" class="tab">Scoperta</button>
+            <button type="button" data-tab="registry" class="tab">Registro</button>
             <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
             <button type="button" data-tab="events" class="tab">Revisione</button>
             <button type="button" data-tab="sources" class="tab">Fonti</button>
@@ -135,6 +144,7 @@ export class AdminApp {
       if (this.tab === "dashboard") await this.renderDashboard(panel);
       else if (this.tab === "map") await this.renderMap(panel);
       else if (this.tab === "discovery") await this.renderDiscovery(panel);
+      else if (this.tab === "registry") await this.renderRegistry(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
       else if (this.tab === "events") await this.renderEvents(panel);
       else if (this.tab === "sources") await this.renderSources(panel);
@@ -164,6 +174,7 @@ export class AdminApp {
       <div class="quick-actions">
         <button type="button" class="primary" data-goto="discovery">Vai a Scoperta</button>
         <button type="button" class="primary" data-goto="map">Apri mappa gestore</button>
+        <button type="button" class="primary" data-goto="registry">Registro eventi</button>
         <button type="button" class="primary" data-goto="submissions">Segnalazioni (${submissions.length})</button>
       </div>
       <p class="small">Operazioni quotidiane: cartella <code>ops/desktop/</code> sul Desktop.</p>
@@ -181,7 +192,12 @@ export class AdminApp {
   }
 
   private async renderMap(panel: HTMLElement): Promise<void> {
-    this.mapEvents = await fetchVerifiedEventsAdmin();
+    const pendingId = this.pendingMapEventId;
+    const [mapEvents, allEvents] = await Promise.all([
+      fetchVerifiedEventsAdmin(),
+      pendingId ? fetchAllEventsAdmin(2000) : Promise.resolve([] as AtlasEvent[]),
+    ]);
+    this.mapEvents = mapEvents;
     panel.innerHTML = `
       <h2>Mappa gestore</h2>
       <p class="small">Clicca un pin per modificare titolo, date e link. Conferma con «Salva modifiche».</p>
@@ -204,6 +220,46 @@ export class AdminApp {
     });
     this.mapService.render(this.mapEvents);
     setTimeout(() => this.mapService?.invalidateSize(), 200);
+
+    if (this.pendingMapEventId) {
+      const target =
+        this.mapEvents.find((e) => e.date_event === this.pendingMapEventId) ??
+        allEvents.find((e) => e.date_event === this.pendingMapEventId);
+      if (target) {
+        this.eventEditor?.open(target);
+        if (this.mapEvents.some((e) => e.date_event === target.date_event)) {
+          this.mapService?.focus(target);
+        }
+      }
+      this.pendingMapEventId = null;
+    }
+  }
+
+  private async renderRegistry(panel: HTMLElement): Promise<void> {
+    const [events, sources] = await Promise.all([fetchAllEventsAdmin(2000), fetchSources()]);
+    this.mountRegistryPanel(panel, events, sources);
+  }
+
+  private mountRegistryPanel(panel: HTMLElement, events: AtlasEvent[], sources: Awaited<ReturnType<typeof fetchSources>>): void {
+    panel.innerHTML = renderRegistryPanelHtml(events, sources, this.registryFilters);
+    bindRegistryPanel(panel, {
+      events,
+      sources,
+      filters: this.registryFilters,
+      onFiltersChange: (filters) => {
+        this.registryFilters = filters;
+        this.mountRegistryPanel(panel, events, sources);
+      },
+      onEditEvent: (eventId) => {
+        this.pendingMapEventId = eventId;
+        this.tab = "map";
+        document.querySelectorAll(".tab").forEach((b) => {
+          b.classList.toggle("active", (b as HTMLButtonElement).dataset.tab === "map");
+        });
+        void this.renderPanel();
+      },
+      onArchived: () => void this.renderPanel(),
+    });
   }
 
   private async renderDiscovery(panel: HTMLElement): Promise<void> {

@@ -147,3 +147,13 @@ Decisioni consolidate. Formato: data | decisione | motivazione | conseguenze.
 **Motivazione:** Sicurezza e audit trail senza login utente.
 
 **Conseguenze:** Migrazione `005_ops_submissions_audit.sql`; campo `reference_code` su `event_submissions`.
+
+---
+
+## 2026-07-18 — Registro eventi amministratore
+
+**Decisione:** Il Control Center include un tab **Registro** consultabile con tutti gli eventi (in pubblicazione, passati, archiviati, in revisione), filtrabili per stato, provincia, comune, territorio, intervallo date, categoria, fonte e ricerca testuale. Esportazione CSV e azioni rapide (modifica su mappa, archivia).
+
+**Motivazione:** L'amministratore deve avere uno storico completo e interrogabile senza passare dalla chat o da query manuali.
+
+**Conseguenze:** Tab Registro in admin; `fetchAllEventsAdmin` fino a 2000 record; filtri client-side con badge stato evento.

@@ -26,6 +26,10 @@ Cartella Desktop per il lavoro quotidiano. La chat di sviluppo serve solo per mo
 3. Barra in alto: data sessione e numero blocchi incollati
 4. Opzionale: **Aggiorna-Fonti.bat**
 
+## Consultare lo storico eventi
+
+**Control Center → Registro** — elenco completo con filtri per stato (in pubblicazione, storico, archiviati, in revisione), provincia, comune, date, categoria, fonte e ricerca testo. Da qui puoi **Modifica** (apre la mappa gestore sul pin), **Archivia** o **Esporta CSV** del risultato filtrato.
+
 ## Correggere un evento
 
 **Control Center → Mappa** → clic sul pin → modifica → **Salva modifiche** (conferma) → Annulla/Ripeti se sbagli.

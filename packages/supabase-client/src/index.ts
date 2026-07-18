@@ -78,7 +78,7 @@ export async function fetchPendingEvents(): Promise<AtlasEvent[]> {
   return (data ?? []) as AtlasEvent[];
 }
 
-export async function fetchAllEventsAdmin(limit = 200): Promise<AtlasEvent[]> {
+export async function fetchAllEventsAdmin(limit = 2000): Promise<AtlasEvent[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("events")

@@ -13,7 +13,7 @@ header {
 
 main {
   padding: 20px;
-  max-width: 1100px;
+  max-width: 1280px;
   margin: auto;
 }
 
@@ -234,3 +234,110 @@ textarea {
 }
 
 .success { color: #15803d; }
+
+.registry-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 16px;
+}
+
+.registry-summary button { width: auto; margin: 0; }
+
+.registry-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.registry-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.registry-filters input,
+.registry-filters select {
+  width: 100%;
+  margin: 0;
+  padding: 8px;
+}
+
+.registry-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.registry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.registry-table th,
+.registry-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.registry-table th {
+  background: #f3f4f6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #4b5563;
+}
+
+.registry-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.registry-title strong {
+  display: block;
+  max-width: 280px;
+}
+
+.registry-badge {
+  display: inline-block;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.registry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.registry-actions button,
+.registry-actions .link-btn {
+  width: auto;
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.registry-empty {
+  text-align: center;
+  color: #6b7280;
+  padding: 24px !important;
+}
+
+.registry-footnote {
+  margin-top: 12px;
+}
