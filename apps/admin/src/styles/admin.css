@@ -216,6 +216,18 @@ textarea {
   font-family: inherit;
 }
 
+.discovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.discovery-actions button {
+  width: auto;
+  margin: 0;
+}
+
 .discovery-list {
   margin: 12px 0;
   padding-left: 20px;

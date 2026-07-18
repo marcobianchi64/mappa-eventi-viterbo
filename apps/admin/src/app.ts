@@ -213,12 +213,28 @@ export class AdminApp {
 
     const results = panel.querySelector("#discoveryResults") as HTMLElement;
     const blockCount = panel.querySelector("#blockCount");
+    const textarea = panel.querySelector("#discoveryPaste") as HTMLTextAreaElement;
+
+    panel.querySelector("#clearDiscovery")?.addEventListener("click", () => {
+      textarea.value = "";
+      results.innerHTML = "";
+      textarea.focus();
+    });
+
+    panel.querySelector("#newDiscoveryBlock")?.addEventListener("click", () => {
+      textarea.value = "";
+      results.innerHTML = '<p class="small">Campo pronto: incolla il prossimo blocco da Google.</p>';
+      textarea.focus();
+    });
 
     panel.querySelector("#processDiscovery")?.addEventListener("click", () => {
-      const text = (panel.querySelector("#discoveryPaste") as HTMLTextAreaElement).value;
+      const text = textarea.value;
       const processed = processDiscoveryPaste(text, existing);
       if (blockCount) blockCount.textContent = String(processed.session.blockCount);
       results.innerHTML = renderDiscoveryResults(processed.rows);
+      if (processed.rows.length > 0) {
+        textarea.value = "";
+      }
       results.querySelector("#publishDiscovery")?.addEventListener("click", () => {
         void this.publishDiscovery(processed.rows, results, existing);
       });

@@ -20,10 +20,10 @@ export interface ProcessedDiscoveryRow {
 export function processDiscoveryPaste(
   text: string,
   existing: AtlasEvent[],
-): { rows: ProcessedDiscoveryRow[]; session: ReturnType<typeof registerDiscoveryBlock> } {
-  const session = registerDiscoveryBlock();
+): { rows: ProcessedDiscoveryRow[]; session: ReturnType<typeof loadDiscoverySession> } {
   const parsed = parseMarkdownTables(text);
   const rows = parsed.map((row) => classifyRow(row, existing));
+  const session = rows.length > 0 ? registerDiscoveryBlock() : loadDiscoverySession();
   return { rows, session };
 }
 
@@ -88,15 +88,23 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <span>Blocchi incollati: <strong id="blockCount">${session.blockCount}</strong></span>
     </div>
     <h2>Scoperta eventi</h2>
-    <p class="small">Incolla qui il risultato dei prompt AI (tabella markdown). Il sistema scarta automaticamente duplicati e date passate.</p>
-    <textarea id="discoveryPaste" rows="10" placeholder="Incolla tabella markdown da Google AI..."></textarea>
-    <button type="button" class="primary" id="processDiscovery">Elabora blocco</button>
+    <p class="small">Incolla <strong>un blocco alla volta</strong> (tabella markdown con barre <code>|</code>). Dopo «Elabora», il campo si svuota da solo.</p>
+    <textarea id="discoveryPaste" rows="10" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
+    <div class="discovery-actions">
+      <button type="button" class="primary" id="processDiscovery">Elabora blocco</button>
+      <button type="button" class="btn-secondary" id="clearDiscovery" type="button">Svuota campo</button>
+      <button type="button" class="btn-secondary" id="newDiscoveryBlock" type="button">Nuovo blocco</button>
+    </div>
     <div id="discoveryResults"></div>
   `;
 }
 
 export function renderDiscoveryResults(rows: ProcessedDiscoveryRow[]): string {
-  if (rows.length === 0) return "<p>Nessuna riga riconosciuta. Verifica il formato tabella.</p>";
+  if (rows.length === 0) {
+    return `<p class="error">Nessuna riga riconosciuta.</p>
+      <p class="small">Copia la <strong>tabella</strong> da Google (righe con <code>|</code>), non il testo descrittivo.
+      Clicca <strong>Svuota campo</strong>, incolla un solo blocco, poi <strong>Elabora</strong>.</p>`;
+  }
 
   const groups = {
     ready: rows.filter((r) => r.status === "ready"),
