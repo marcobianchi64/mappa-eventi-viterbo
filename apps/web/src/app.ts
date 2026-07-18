@@ -5,6 +5,7 @@ import {
   escapeHtml,
   eventsLookSimilar,
   formatDate,
+  hasValidEventCoords,
   isEventVisibleInRange,
   normalizeSearchText,
   reminderText,
@@ -158,14 +159,21 @@ export class AtlasApp {
   private renderMapEvents(): void {
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getVisibleEvents();
-    this.mapService.renderEvents(visible, deepLink);
-    this.updateMapEventCount(visible.length, this.allEvents.length);
+    const pinCount = this.mapService.renderEvents(visible, deepLink);
+    const withCoords = visible.filter(hasValidEventCoords).length;
+    this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length);
   }
 
-  private updateMapEventCount(visible: number, loaded: number): void {
+  private updateMapEventCount(
+    pins: number,
+    inRange: number,
+    withCoords: number,
+    loaded: number,
+  ): void {
     const el = document.getElementById("mapEventCount");
     if (!el) return;
-    el.textContent = `📍 ${visible} eventi visibili (${loaded} caricati)`;
+    const skipped = inRange - withCoords;
+    el.textContent = `📍 ${pins} pin · ${inRange} nel periodo · ${loaded} caricati${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
   }
 
   private updateWhenButtonLabel(): void {

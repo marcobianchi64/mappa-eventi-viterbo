@@ -2,6 +2,7 @@ import L from "leaflet";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
+  buildMapMarkerPlacements,
   escapeHtml,
   formatDisplayTitle,
   getCategoryMeta,
@@ -81,13 +82,13 @@ export class MapService {
     }
   }
 
-  renderEvents(events: AtlasEvent[], deepLinkEventId: string | null): void {
+  renderEvents(events: AtlasEvent[], deepLinkEventId: string | null): number {
     this.eventLayer.clearLayers();
+    const placements = buildMapMarkerPlacements(events);
 
-    for (const event of events) {
-      if (!Number.isFinite(Number(event.lat)) || !Number.isFinite(Number(event.lng))) continue;
-
-      const marker = L.marker([event.lat, event.lng], {
+    for (const placement of placements) {
+      const { event, lat, lng } = placement;
+      const marker = L.marker([lat, lng], {
         icon: this.createMarkerIcon(event.category),
       });
       marker.bindTooltip(this.createTooltip(event), {
@@ -100,10 +101,12 @@ export class MapService {
       marker.addTo(this.eventLayer);
 
       if (deepLinkEventId && event.date_event && deepLinkEventId === String(event.date_event)) {
-        this.map.setView([event.lat, event.lng], 14);
+        this.map.setView([lat, lng], 14);
         setTimeout(() => this.onOpenEvent(event), 500);
       }
     }
+
+    return placements.length;
   }
 
   fitToCoordinates(coordinates: [number, number][]): void {

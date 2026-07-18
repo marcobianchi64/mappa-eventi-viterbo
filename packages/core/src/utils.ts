@@ -91,6 +91,51 @@ export function isRegistryInPubblicazione(event: AtlasEvent): boolean {
   return getEventLifecycle(event) === "live" && event.verified === true;
 }
 
+export function hasValidEventCoords(event: AtlasEvent): boolean {
+  return Number.isFinite(Number(event.lat)) && Number.isFinite(Number(event.lng));
+}
+
+export interface MapMarkerPlacement {
+  event: AtlasEvent;
+  lat: number;
+  lng: number;
+}
+
+/** Separa pin sovrapposti (stesse coordinate) in cerchio attorno al punto reale. */
+export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlacement[] {
+  const valid = events.filter(hasValidEventCoords);
+  const buckets = new Map<string, AtlasEvent[]>();
+
+  for (const event of valid) {
+    const key = `${Number(event.lat).toFixed(4)},${Number(event.lng).toFixed(4)}`;
+    const group = buckets.get(key) ?? [];
+    group.push(event);
+    buckets.set(key, group);
+  }
+
+  const placements: MapMarkerPlacement[] = [];
+  const offsetDeg = 0.004;
+
+  for (const group of buckets.values()) {
+    if (group.length === 1) {
+      placements.push({ event: group[0], lat: group[0].lat, lng: group[0].lng });
+      continue;
+    }
+    const baseLat = group[0].lat;
+    const baseLng = group[0].lng;
+    group.forEach((event, index) => {
+      const angle = (2 * Math.PI * index) / group.length;
+      placements.push({
+        event,
+        lat: baseLat + Math.sin(angle) * offsetDeg,
+        lng: baseLng + Math.cos(angle) * offsetDeg,
+      });
+    });
+  }
+
+  return placements;
+}
+
 export function isEventVisibleInRange(event: AtlasEvent, range: DateRangeKey): boolean {
   if (event.verified !== true) return false;
   if (event.archived === true) return false;
