@@ -40,6 +40,7 @@ export {
 export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";
 export {
   parseMarkdownTables,
+  parseDiscoveryText,
   loadDiscoverySession,
   registerDiscoveryBlock,
 } from "./discovery-parse.js";

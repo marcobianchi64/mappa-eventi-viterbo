@@ -63,6 +63,108 @@ export function parseMarkdownTables(text: string): DiscoveryRow[] {
   return rows;
 }
 
+/** Prova markdown, TSV (Fogli), CSV ; e testo incollato da Google senza separatori */
+export function parseDiscoveryText(text: string): DiscoveryRow[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  const md = parseMarkdownTables(trimmed);
+  if (md.length) return md;
+
+  const tsv = parseDelimitedTable(trimmed, "\t");
+  if (tsv.length) return tsv;
+
+  const csv = parseDelimitedTable(trimmed, ";");
+  if (csv.length) return csv;
+
+  return parseGluedGoogleText(trimmed);
+}
+
+function parseDelimitedTable(text: string, delimiter: string): DiscoveryRow[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().includes(delimiter));
+  if (lines.length < 2) return [];
+
+  const headerCells = lines[0].split(delimiter).map((c) => c.trim());
+  const headers = headerCells.map(normalizeHeader).filter((h): h is keyof DiscoveryRow => h !== null);
+  if (headers.length < 3) return [];
+
+  const rows: DiscoveryRow[] = [];
+  for (const line of lines.slice(1)) {
+    const cells = line.split(delimiter).map((c) => c.trim());
+    const record: Partial<DiscoveryRow> = {};
+    headers.forEach((key, i) => {
+      if (cells[i]) record[key] = cells[i];
+    });
+    if (record.titolo?.trim()) rows.push(record as DiscoveryRow);
+  }
+  return rows;
+}
+
+const CATEGORY_WORDS = /\b(food|enogastronomia|music|musica|culture|cultura|sport|families|famiglie|other|altro)\b/i;
+
+/** Testo Google incollato senza | o ; — euristica su date e parole chiave */
+function parseGluedGoogleText(text: string): DiscoveryRow[] {
+  let body = text.replace(/^stato\s*organizzatore/i, "").replace(/^statoorganizzatore/i, "");
+  body = body.replace(/^titolo.*?note/i, "");
+
+  const chunks = body.split(/(?=(?:Associazione |Comitato |Pro Loco |Comune di ))/i).filter((c) => c.trim().length > 20);
+  const rows: DiscoveryRow[] = [];
+
+  for (const chunk of chunks) {
+    const dates = [...chunk.matchAll(/(\d{2}\/\d{2}\/\d{4})/g)].map((m) => m[1]);
+    if (dates.length < 1) continue;
+
+    const dateIdx = chunk.indexOf(dates[0]);
+    const before = chunk.slice(0, dateIdx).trim();
+    const after = chunk.slice(dateIdx);
+
+    const orarioMatch = after.match(/(Dalle \d{1,2}:\d{2}|Serale|Tutto il giorno)/i);
+    const catMatch = after.match(CATEGORY_WORDS);
+    const catIdx = catMatch?.index ?? -1;
+
+    let note = "";
+    if (catIdx >= 0 && catMatch) {
+      note = after.slice(catIdx + catMatch[0].length).trim();
+    }
+
+    const titoloMatch = before.match(
+      /(Sagra [^0-9]+|Festa [^0-9]+|Festeggiamenti [^0-9]+|Concerto [^0-9]+|^\d+[^0-9]*Festa [^0-9]+)/i,
+    );
+    const titolo = titoloMatch ? titoloMatch[0].trim() : before.slice(-40).trim();
+
+    let organizzatore = "";
+    let comune = "";
+    let luogo = "";
+    if (titoloMatch && titoloMatch.index !== undefined) {
+      organizzatore = before.slice(0, titoloMatch.index).trim();
+      const mid = before.slice(titoloMatch.index + titolo.length).trim();
+      const paren = mid.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+      if (paren) {
+        comune = paren[1].trim();
+        luogo = paren[2].trim();
+      } else {
+        const parts = mid.split(/\s+(?=[A-ZÀ-Ú])/);
+        comune = parts[0] ?? "";
+        luogo = parts.slice(1).join(" ") || mid;
+      }
+    }
+
+    rows.push({
+      titolo: titolo || "Evento",
+      organizzatore: organizzatore || undefined,
+      comune: comune || undefined,
+      luogo: luogo || undefined,
+      data_inizio: dates[0],
+      data_fine: dates[1],
+      orario: orarioMatch?.[1],
+      categoria: catMatch?.[1],
+      note: note || undefined,
+    });
+  }
+
+  return rows;
+}
+
 function normalizeHeader(value: string): keyof DiscoveryRow | null {
   const key = value
     .trim()

@@ -3,7 +3,7 @@ import {
   eventsLookSimilar,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
-  parseMarkdownTables,
+  parseDiscoveryText,
   registerDiscoveryBlock,
   type AtlasEvent,
   type DiscoveryRow,
@@ -21,7 +21,7 @@ export function processDiscoveryPaste(
   text: string,
   existing: AtlasEvent[],
 ): { rows: ProcessedDiscoveryRow[]; session: ReturnType<typeof loadDiscoverySession> } {
-  const parsed = parseMarkdownTables(text);
+  const parsed = parseDiscoveryText(text);
   const rows = parsed.map((row) => classifyRow(row, existing));
   const session = rows.length > 0 ? registerDiscoveryBlock() : loadDiscoverySession();
   return { rows, session };
