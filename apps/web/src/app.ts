@@ -9,6 +9,8 @@ import {
   normalizeSearchText,
   reminderText,
   searchableEventText,
+  generateSubmissionReference,
+  buildSubmissionWhatsAppUrl,
   type AtlasEvent,
   type DateRangeKey,
   type EventCategory,
@@ -254,8 +256,29 @@ export class AtlasApp {
     setStatus("");
 
     try {
-      await submitUserReport(payload);
+      const referenceCode = generateSubmissionReference();
+      const opsWhatsApp = import.meta.env.VITE_ATLAS_OPS_WHATSAPP?.replace(/\D/g, "") ?? "";
+
+      await submitUserReport({ ...payload, reference_code: referenceCode });
+
       setStatus("Segnalazione inviata: verrà pubblicata se non già presente tra le fonti.", "success");
+
+      if (opsWhatsApp) {
+        const waUrl = buildSubmissionWhatsAppUrl(opsWhatsApp, {
+          reference: referenceCode,
+          title: form.title,
+          startDate: new Date(form.startDate).toLocaleString("it-IT", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }),
+          venue: form.venue || null,
+        });
+        const confirm = window.confirm(
+          `Segnalazione registrata (rif. ${referenceCode}).\n\nVuoi inviare la conferma su WhatsApp per tracciabilità?`,
+        );
+        if (confirm) window.open(waUrl, "_blank", "noopener");
+      }
+
       this.clearForm(source);
       this.mapService.clearDraftMarker();
     } catch (error) {

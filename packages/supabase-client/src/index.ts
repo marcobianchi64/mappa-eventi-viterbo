@@ -135,14 +135,44 @@ export async function archiveEvent(id: string): Promise<void> {
 // Segnalazioni utenti
 // ---------------------------------------------------------------------------
 
-export async function submitUserReport(input: EventSubmissionInput): Promise<void> {
+export async function updateEventAdmin(id: string, patch: Partial<AtlasEvent>): Promise<void> {
   const supabase = getSupabaseClient();
+  const { error } = await supabase.from("events").update(patch).eq("date_event", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function fetchVerifiedEventsAdmin(): Promise<AtlasEvent[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("verified", true)
+    .eq("archived", false)
+    .order("start_date", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AtlasEvent[];
+}
+
+export async function submitUserReport(
+  input: EventSubmissionInput & { reference_code?: string },
+): Promise<{ reference_code: string }> {
+  const supabase = getSupabaseClient();
+  const reference_code = input.reference_code ?? generateRef();
   const { error } = await supabase.from("event_submissions").insert({
     ...input,
+    reference_code,
     status: "pending",
   });
 
   if (error) throw new Error(error.message);
+  return { reference_code };
+}
+
+function generateRef(): string {
+  const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `ATL-${ymd}-${rand}`;
 }
 
 export async function fetchPendingSubmissions(): Promise<EventSubmissionRecord[]> {

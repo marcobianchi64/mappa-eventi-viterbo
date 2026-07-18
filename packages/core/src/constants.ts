@@ -27,3 +27,9 @@ export const DATE_RANGE_LABELS: Record<string, string> = {
 export const DEFAULT_DATE_RANGE = "15" as const;
 
 export const INTERESTS_STORAGE_KEY = "atlas_interests";
+
+/** Fonte eventi da scoperta manuale (import CSV / tab Scoperta admin) */
+export const MANUAL_DISCOVERY_SOURCE_ID = "src-manual-discovery";
+
+/** Numero WhatsApp operazioni (solo cifre, es. 393331234567). Configurare in .env */
+export const DEFAULT_OPS_WHATSAPP = "";

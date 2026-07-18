@@ -162,6 +162,42 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
+/** Titolo breve per pin/tooltip mappa — nessun intervento manuale */
+export function formatDisplayTitle(title: string, maxLength = 48): string {
+  const cleaned = String(title ?? "").replace(/\s+/g, " ").trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  const slice = cleaned.slice(0, maxLength - 1);
+  const lastSpace = slice.lastIndexOf(" ");
+  const cut = lastSpace > maxLength * 0.6 ? slice.slice(0, lastSpace) : slice;
+  return `${cut}…`;
+}
+
+/** Codice tracciabilità segnalazione utente */
+export function generateSubmissionReference(): string {
+  const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `ATL-${ymd}-${rand}`;
+}
+
+export function buildSubmissionWhatsAppUrl(
+  opsPhoneDigits: string,
+  payload: { reference: string; title: string; startDate: string; venue?: string | null },
+): string {
+  const text = [
+    "Conferma richiesta inserimento evento — Project Atlas",
+    `Rif: ${payload.reference}`,
+    `Titolo: ${payload.title}`,
+    `Data: ${payload.startDate}`,
+    payload.venue ? `Luogo: ${payload.venue}` : "",
+    "",
+    "Invia questo messaggio per registrare la tua segnalazione.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `https://wa.me/${opsPhoneDigits}?text=${encodeURIComponent(text)}`;
+}
+
 export function detectContactType(contact: string): "email" | "whatsapp" | "phone" | "other" {
   const value = contact.trim().toLowerCase();
   if (value.includes("@")) return "email";

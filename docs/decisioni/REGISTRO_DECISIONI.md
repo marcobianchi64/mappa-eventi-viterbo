@@ -103,3 +103,47 @@ Decisioni consolidate. Formato: data | decisione | motivazione | conseguenze.
 - CLI `npm run import:events` con fonte `src-manual-discovery`
 - Tabella `source_candidates` per siti da validare come futuri connettori
 - Filtro mappa esteso a 60 giorni per il pilota estivo
+
+---
+
+## 2026-07-18 — Chat vs interfacce operative
+
+**Decisione:** La chat di sviluppo serve solo per **modifiche, integrazioni e decisioni di prodotto**. Le operazioni ricorrenti (scoperta, import, revisione, collect) vivono in **interfacce** e nella cartella Desktop `Atlas Operazioni`.
+
+**Motivazione:** L'operatore non deve ricordare comandi o tornare in chat per il lavoro quotidiano.
+
+**Conseguenze:** `ops/desktop/`, Control Center ampliato, documentazione in `ATLAS_OPERAZIONI.md`.
+
+---
+
+## 2026-07-18 — Automazione verifiche scoperta
+
+**Decisione:** Scarto automatico di **date passate** e **duplicati** (già in mappa). Il titolo sui pin è **accorciato dal codice** (`formatDisplayTitle`); nessun intervento manuale sui titoli. Verifica link HTTP in pipeline import (CLI); in admin, controllo manuale solo per link dubbi.
+
+**Conseguenze:** `cleanTitle()` in import; tooltip mappa con titolo breve automatico.
+
+---
+
+## 2026-07-18 — Mappa gestore con modifica eventi
+
+**Decisione:** Il Control Center include una **mappa amministratore** con click su pin → scheda modifica → conferma «Salvare modifiche?» e **Annulla/Ripeti** (undo/redo) sul form.
+
+**Conseguenze:** Tab Mappa in admin; `updateEventAdmin` via Supabase autenticato.
+
+---
+
+## 2026-07-18 — Scoperta con sessione e incolla
+
+**Decisione:** Tab **Scoperta** con barra sessione (data + conteggio blocchi incollati), textarea per output AI, elaborazione automatica e pubblicazione diretta.
+
+**Conseguenze:** `parseMarkdownTables`, `localStorage` sessione, migrazione policy admin insert.
+
+---
+
+## 2026-07-18 — Segnalazioni utenti: tracciabilità
+
+**Decisione:** Ogni segnalazione riceve un **codice riferimento** (`ATL-YYYYMMDD-XXXX`). Dopo l'invio, l'utente può aprire WhatsApp con messaggio precompilato verso il numero operazioni (`VITE_ATLAS_OPS_WHATSAPP`) per conferma e tracciabilità.
+
+**Motivazione:** Sicurezza e audit trail senza login utente.
+
+**Conseguenze:** Migrazione `005_ops_submissions_audit.sql`; campo `reference_code` su `event_submissions`.

@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css";
 import "./styles/admin.css";
 import { initSupabaseClient } from "@atlas/supabase-client";
 import { AdminApp } from "./app";

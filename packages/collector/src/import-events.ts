@@ -1,11 +1,15 @@
 import { createHash } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { eventsLookSimilar, type AtlasEvent, type EventCategory } from "@atlas/core";
+import {
+  eventsLookSimilar,
+  MANUAL_DISCOVERY_SOURCE_ID,
+  type AtlasEvent,
+  type EventCategory,
+} from "@atlas/core";
 import { geocodeEvent } from "./geocode.js";
-import { inferCategory, isPastEvent } from "./normalize.js";
+import { cleanTitle, inferCategory, isPastEvent } from "./normalize.js";
 import { parseCsvFile, validateHeaders, type CsvRow } from "./csv-parse.js";
 
-export const MANUAL_DISCOVERY_SOURCE_ID = "src-manual-discovery";
 const TERRITORY_ID = "IT-VT";
 
 export interface ImportOptions {
@@ -102,7 +106,7 @@ async function processRow(
   if (stato === "scartato") return { action: "skip" };
   if (!stato && !options.includePending) return { action: "skip" };
 
-  const title = v.titolo.trim();
+  const title = cleanTitle(v.titolo.trim());
   if (!title) return { action: "skip", error: "titolo mancante" };
 
   const startDate = parseCsvDate(v.data_inizio, v.orario);

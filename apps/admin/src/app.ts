@@ -2,26 +2,41 @@ import {
   escapeHtml,
   formatDate,
   getCategoryMeta,
+  loadDiscoverySession,
   type AtlasEvent,
   type SourceInput,
 } from "@atlas/core";
 import {
   approveSubmissionAsEvent,
   createSource,
+  fetchAllEventsAdmin,
   fetchPendingEvents,
   fetchPendingSubmissions,
   fetchSources,
+  fetchVerifiedEventsAdmin,
   getSession,
   signInWithOtp,
   updateEventReview,
   updateSource,
   updateSubmissionStatus,
 } from "@atlas/supabase-client";
+import {
+  processDiscoveryPaste,
+  publishDiscoveryRows,
+  renderDiscoveryPanelHtml,
+  renderDiscoveryResults,
+  type ProcessedDiscoveryRow,
+} from "./discovery/discovery-panel.js";
+import { EventEditor } from "./events/event-editor.js";
+import { AdminMapService } from "./map/admin-map.js";
 
-type AdminTab = "dashboard" | "sources" | "events" | "submissions" | "discovery";
+type AdminTab = "dashboard" | "map" | "discovery" | "submissions" | "sources" | "events";
 
 export class AdminApp {
   private tab: AdminTab = "dashboard";
+  private mapService: AdminMapService | null = null;
+  private eventEditor: EventEditor | null = null;
+  private mapEvents: AtlasEvent[] = [];
 
   start(): void {
     const root = document.getElementById("app");
@@ -29,6 +44,13 @@ export class AdminApp {
     this.renderShell(root);
     document.getElementById("loginBtn")?.addEventListener("click", () => void this.login());
     void this.checkSession();
+    this.applyDeepLinkTab();
+  }
+
+  private applyDeepLinkTab(): void {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab") as AdminTab | null;
+    if (tab) this.tab = tab;
   }
 
   private renderShell(root: HTMLElement): void {
@@ -46,10 +68,11 @@ export class AdminApp {
         <section id="dashboard" class="hidden">
           <nav class="tabs">
             <button type="button" data-tab="dashboard" class="tab active">Dashboard</button>
-            <button type="button" data-tab="sources" class="tab">Fonti</button>
-            <button type="button" data-tab="events" class="tab">Eventi</button>
-            <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
+            <button type="button" data-tab="map" class="tab">Mappa</button>
             <button type="button" data-tab="discovery" class="tab">Scoperta</button>
+            <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
+            <button type="button" data-tab="events" class="tab">Revisione</button>
+            <button type="button" data-tab="sources" class="tab">Fonti</button>
           </nav>
           <div id="panel" class="card">Caricamento...</div>
         </section>
@@ -91,6 +114,9 @@ export class AdminApp {
         document.getElementById("loginBox")?.classList.add("hidden");
         document.getElementById("dashboard")?.classList.remove("hidden");
         this.bindTabs();
+        document.querySelectorAll(".tab").forEach((b) => {
+          b.classList.toggle("active", (b as HTMLButtonElement).dataset.tab === this.tab);
+        });
         await this.renderPanel();
       }
     } catch (error) {
@@ -103,13 +129,15 @@ export class AdminApp {
     if (!panel) return;
 
     panel.innerHTML = "Caricamento...";
+    this.mapService = null;
 
     try {
       if (this.tab === "dashboard") await this.renderDashboard(panel);
-      else if (this.tab === "sources") await this.renderSources(panel);
-      else if (this.tab === "events") await this.renderEvents(panel);
+      else if (this.tab === "map") await this.renderMap(panel);
+      else if (this.tab === "discovery") await this.renderDiscovery(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
-      else if (this.tab === "discovery") this.renderDiscovery(panel);
+      else if (this.tab === "events") await this.renderEvents(panel);
+      else if (this.tab === "sources") await this.renderSources(panel);
     } catch (error) {
       panel.innerHTML = `<p class="error">Errore: ${escapeHtml((error as Error).message)}</p>`;
     }
@@ -133,8 +161,84 @@ export class AdminApp {
         <div class="stat"><strong>${submissions.length}</strong><span>Segnalazioni utenti</span></div>
         <div class="stat"><strong>${errorSources}</strong><span>Fonti in errore</span></div>
       </div>
-      <p class="small">Pilota: Provincia di Viterbo. Esegui le migrazioni SQL in <code>supabase/</code> se le tabelle non esistono ancora.</p>
+      <div class="quick-actions">
+        <button type="button" class="primary" data-goto="discovery">Vai a Scoperta</button>
+        <button type="button" class="primary" data-goto="map">Apri mappa gestore</button>
+        <button type="button" class="primary" data-goto="submissions">Segnalazioni (${submissions.length})</button>
+      </div>
+      <p class="small">Operazioni quotidiane: cartella <code>ops/desktop/</code> sul Desktop.</p>
     `;
+
+    panel.querySelectorAll("[data-goto]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.tab = (btn as HTMLButtonElement).dataset.goto as AdminTab;
+        document.querySelectorAll(".tab").forEach((b) => {
+          b.classList.toggle("active", (b as HTMLButtonElement).dataset.tab === this.tab);
+        });
+        void this.renderPanel();
+      });
+    });
+  }
+
+  private async renderMap(panel: HTMLElement): Promise<void> {
+    this.mapEvents = await fetchVerifiedEventsAdmin();
+    panel.innerHTML = `
+      <h2>Mappa gestore</h2>
+      <p class="small">Clicca un pin per modificare titolo, date e link. Conferma con «Salva modifiche».</p>
+      <div class="map-layout">
+        <div id="adminMap" class="admin-map"></div>
+        <div id="eventEditorHost" class="editor-host"></div>
+      </div>
+    `;
+
+    const editorHost = panel.querySelector("#eventEditorHost") as HTMLElement;
+    this.eventEditor = new EventEditor({
+      container: editorHost,
+      onSaved: () => void this.renderPanel(),
+      onClose: () => {},
+    });
+
+    this.mapService = new AdminMapService("adminMap", (event) => {
+      this.eventEditor?.open(event);
+      this.mapService?.focus(event);
+    });
+    this.mapService.render(this.mapEvents);
+    setTimeout(() => this.mapService?.invalidateSize(), 200);
+  }
+
+  private async renderDiscovery(panel: HTMLElement): Promise<void> {
+    const session = loadDiscoverySession();
+    const existing = await fetchAllEventsAdmin();
+    panel.innerHTML = renderDiscoveryPanelHtml(session);
+
+    const results = panel.querySelector("#discoveryResults") as HTMLElement;
+    const blockCount = panel.querySelector("#blockCount");
+
+    panel.querySelector("#processDiscovery")?.addEventListener("click", () => {
+      const text = (panel.querySelector("#discoveryPaste") as HTMLTextAreaElement).value;
+      const processed = processDiscoveryPaste(text, existing);
+      if (blockCount) blockCount.textContent = String(processed.session.blockCount);
+      results.innerHTML = renderDiscoveryResults(processed.rows);
+      results.querySelector("#publishDiscovery")?.addEventListener("click", () => {
+        void this.publishDiscovery(processed.rows, results, existing);
+      });
+    });
+  }
+
+  private async publishDiscovery(
+    rows: ProcessedDiscoveryRow[],
+    results: HTMLElement,
+    existing: AtlasEvent[],
+  ): Promise<void> {
+    const ok = window.confirm("Pubblicare gli eventi pronti sulla mappa?");
+    if (!ok) return;
+    try {
+      const count = await publishDiscoveryRows(rows);
+      results.innerHTML = `<p class="success">Pubblicati ${count} eventi.</p>`;
+      existing.push(...rows.filter((r) => r.status === "ready").map(() => ({} as AtlasEvent)));
+    } catch (error) {
+      results.innerHTML = `<p class="error">${escapeHtml((error as Error).message)}</p>`;
+    }
   }
 
   private async renderSources(panel: HTMLElement): Promise<void> {
@@ -163,7 +267,7 @@ export class AdminApp {
 
     const list = panel.querySelector("#sourcesList") as HTMLElement;
     if (sources.length === 0) {
-      list.innerHTML = "<p>Nessuna fonte. Esegui <code>supabase/seed_viterbo.sql</code> o aggiungine una.</p>";
+      list.innerHTML = "<p>Nessuna fonte.</p>";
       return;
     }
 
@@ -250,24 +354,9 @@ export class AdminApp {
     }
   }
 
-  private renderDiscovery(panel: HTMLElement): void {
-    panel.innerHTML = `
-      <h2>Scoperta manuale eventi</h2>
-      <p>Workflow pilota: ricerca AI tematica → verifica in Excel → import CSV.</p>
-      <ol>
-        <li>Esegui i 4 prompt in <code>docs/operativo/PROMPT_RICERCA_EVENTI.md</code></li>
-        <li>Compila <code>TEMPLATE_EVENTI.csv</code> e imposta <code>stato=ok</code> sulle righe verificate</li>
-        <li>Importa dal terminale: <code>npm run import:events -- percorso/eventi.csv</code></li>
-        <li>Opzionale: <code>npm run report:gap</code> per il report copertura</li>
-      </ol>
-      <p class="small">Vedi <code>docs/operativo/WORKFLOW_SCOPERTA_MANUALE.md</code> e <code>IMPORT_EVENTI.md</code>.</p>
-      <p class="small">Esegui anche la migrazione <code>004_manual_discovery.sql</code> su Supabase prima del primo import.</p>
-    `;
-  }
-
   private async renderSubmissions(panel: HTMLElement): Promise<void> {
     const submissions = await fetchPendingSubmissions();
-    panel.innerHTML = `<h2>Segnalazioni utenti</h2><div id="submissionsList"></div>`;
+    panel.innerHTML = `<h2>Segnalazioni utenti</h2><p class="small">Ogni segnalazione ha un codice riferimento per tracciabilità (WhatsApp).</p><div id="submissionsList"></div>`;
     const list = panel.querySelector("#submissionsList") as HTMLElement;
 
     if (submissions.length === 0) {
@@ -282,6 +371,7 @@ export class AdminApp {
       div.className = "event";
       div.innerHTML = `
         <strong>${escapeHtml(sub.title)}</strong>
+        <div class="small">Rif. <code>${escapeHtml(sub.reference_code ?? "—")}</code> · ${formatDate(sub.created_at ?? sub.start_date)}</div>
         <div class="small">${meta.label} · ${formatDate(sub.start_date)}</div>
         <div class="small">${escapeHtml(sub.venue ?? "")}</div>
         <div class="small">Contatto: ${escapeHtml(sub.contact)} (${escapeHtml(sub.contact_type ?? "other")})</div>

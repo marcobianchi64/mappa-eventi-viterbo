@@ -22,6 +22,7 @@ export interface EventSubmissionInput {
 export interface EventSubmissionRecord extends EventSubmissionInput {
   id: string;
   status: SubmissionStatus;
+  reference_code?: string | null;
   duplicate_of_event_id?: string | null;
   review_notes?: string | null;
   created_at?: string;

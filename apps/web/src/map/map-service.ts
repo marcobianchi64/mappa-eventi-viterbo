@@ -2,6 +2,8 @@ import L from "leaflet";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
+  escapeHtml,
+  formatDisplayTitle,
   getCategoryMeta,
   type AtlasEvent,
 } from "@atlas/core";
@@ -48,7 +50,7 @@ export class MapService {
   }
 
   private createTooltip(event: AtlasEvent): string {
-    const title = event.title;
+    const title = escapeHtml(formatDisplayTitle(event.title));
     const venue = event.venue ?? "";
     const image = event.image_url
       ? `<img src="${event.image_url}" alt="${title}" onerror="this.remove()">`

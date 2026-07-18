@@ -33,7 +33,16 @@ export {
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
   INTERESTS_STORAGE_KEY,
+  MANUAL_DISCOVERY_SOURCE_ID,
+  DEFAULT_OPS_WHATSAPP,
 } from "./constants.js";
+
+export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";
+export {
+  parseMarkdownTables,
+  loadDiscoverySession,
+  registerDiscoveryBlock,
+} from "./discovery-parse.js";
 
 export {
   getCategoryMeta,
@@ -48,4 +57,7 @@ export {
   reminderText,
   eventsLookSimilar,
   detectContactType,
+  formatDisplayTitle,
+  generateSubmissionReference,
+  buildSubmissionWhatsAppUrl,
 } from "./utils.js";
