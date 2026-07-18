@@ -1,6 +1,7 @@
 import {
   escapeHtml,
   eventsLookSimilar,
+  geocodeComuneViterbo,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
   parseDiscoveryText,
@@ -57,20 +58,24 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
     if (!start) continue;
     const end = row.data_fine ? parseDate(row.data_fine, row.orario) : null;
 
+    const comune = row.comune?.trim() || null;
+    const coords = geocodeComuneViterbo(comune);
+
     await createEventAdmin({
       title: row.titolo.trim(),
       category: mapCategory(row.categoria),
       start_date: start.toISOString(),
       end_date: end?.toISOString() ?? null,
       venue: row.luogo?.trim() || null,
-      city: row.comune?.trim() || null,
-      comune: row.comune?.trim() || null,
+      city: comune,
+      comune,
+      province: "Viterbo",
       event_url: row.url_evento?.trim() || null,
       description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
         .filter(Boolean)
         .join("\n"),
-      lat: 42.4207,
-      lng: 12.1042,
+      lat: coords.lat,
+      lng: coords.lng,
       source_id: MANUAL_DISCOVERY_SOURCE_ID,
       territory_id: "IT-VT",
       verified: true,

@@ -46,6 +46,15 @@ export {
 } from "./discovery-parse.js";
 
 export {
+  VITERBO_PROVINCE_CENTER,
+  geocodeComuneViterbo,
+  normalizeComuneName,
+  listViterboComuni,
+  isLegacyViterboCenter,
+  resolveEventCoordinates,
+} from "./viterbo-geocode.js";
+
+export {
   getCategoryMeta,
   escapeHtml,
   formatDate,
