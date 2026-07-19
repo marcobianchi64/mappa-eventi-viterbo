@@ -10,6 +10,7 @@ import {
   isEventVisibleInRange,
   type AtlasEvent,
 } from "@atlas/core";
+import { runCli } from "./cli-exit.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../.env") });
@@ -23,54 +24,53 @@ if (!url || !serviceRoleKey) {
   process.exit(1);
 }
 
-const client = createClient(url, serviceRoleKey);
+runCli(async () => {
+  const client = createClient(url, serviceRoleKey);
 
-const { data, error } = await client.from("events").select("*").eq("archived", false);
-if (error) {
-  console.error(error.message);
-  process.exit(1);
-}
+  const { data, error } = await client.from("events").select("*").eq("archived", false);
+  if (error) throw new Error(error.message);
 
-const events = (data ?? []) as AtlasEvent[];
-let updated = 0;
-let unchanged = 0;
+  const events = (data ?? []) as AtlasEvent[];
+  let updated = 0;
+  let unchanged = 0;
 
-for (const event of events) {
-  const stored = (event.category ?? "other").trim().toLowerCase();
-  const inferred = inferEventCategory(event.title, [event.description ?? "", event.venue ?? ""]);
-  const display = getDisplayCategory(event);
+  for (const event of events) {
+    const stored = (event.category ?? "other").trim().toLowerCase();
+    const inferred = inferEventCategory(event.title, [event.description ?? "", event.venue ?? ""]);
+    const display = getDisplayCategory(event);
 
-  if (stored !== "other" && stored !== "altro" && stored !== "") {
-    unchanged += 1;
-    continue;
+    if (stored !== "other" && stored !== "altro" && stored !== "") {
+      unchanged += 1;
+      continue;
+    }
+
+    if (inferred === "other") {
+      unchanged += 1;
+      continue;
+    }
+
+    const from = getCategoryMeta(event.category).label;
+    const to = getCategoryMeta(display).label;
+    console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${event.title}`);
+    console.log(`  ${from} → ${to} | ID ${event.date_event}`);
+
+    if (!dryRun) {
+      const { error: updateError } = await client
+        .from("events")
+        .update({ category: inferred })
+        .eq("date_event", event.date_event);
+      if (updateError) throw new Error(updateError.message);
+      updated += 1;
+    } else {
+      updated += 1;
+    }
   }
 
-  if (inferred === "other") {
-    unchanged += 1;
-    continue;
-  }
+  const visible = events.filter((e) => isEventVisibleInRange(e, "60"));
+  const otherOnMap = visible.filter((e) => getDisplayCategory(e) === "other").length;
 
-  const from = getCategoryMeta(event.category).label;
-  const to = getCategoryMeta(display).label;
-  console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${event.title}`);
-  console.log(`  ${from} → ${to} | ID ${event.date_event}`);
-
-  if (!dryRun) {
-    const { error: updateError } = await client
-      .from("events")
-      .update({ category: inferred })
-      .eq("date_event", event.date_event);
-    if (updateError) console.error(`  Errore: ${updateError.message}`);
-    else updated += 1;
-  } else {
-    updated += 1;
-  }
-}
-
-const visible = events.filter((e) => isEventVisibleInRange(e, "60"));
-const otherOnMap = visible.filter((e) => getDisplayCategory(e) === "other").length;
-
-console.log(
-  `\n${dryRun ? "Dry-run" : "Completato"}: ${updated} aggiornati, ${unchanged} invariati.`,
-);
-console.log(`Sulla mappa (60g): ${otherOnMap} eventi resterebbero ancora «Altri eventi» dopo il fix.`);
+  console.log(
+    `\n${dryRun ? "Dry-run" : "Completato"}: ${updated} aggiornati, ${unchanged} invariati.`,
+  );
+  console.log(`Sulla mappa (60g): ${otherOnMap} eventi resterebbero ancora «Altri eventi» dopo il fix.`);
+});

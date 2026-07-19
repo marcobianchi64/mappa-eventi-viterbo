@@ -71,8 +71,11 @@ export {
   eventDatesOverlap,
   eventsAreLikelyDuplicates,
   eventsAreMapDuplicates,
+  findAllDuplicateClusters,
+  findCoordTitleClusters,
   findDuplicateClusters,
   findMapPinClusters,
+  mergeEventClusters,
   titleFingerprint,
   titlesLookSimilar,
 } from "./event-duplicate.js";

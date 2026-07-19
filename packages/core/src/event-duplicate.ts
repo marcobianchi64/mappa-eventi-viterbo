@@ -82,6 +82,10 @@ export function titlesLookSimilar(a: string, b: string): boolean {
   return coreA === coreB || coreA.includes(coreB) || coreB.includes(coreA);
 }
 
+function coordBucket(lat: number, lng: number, decimals = 3): string {
+  return `${Number(lat).toFixed(decimals)},${Number(lng).toFixed(decimals)}`;
+}
+
 function sameComune(
   a: Pick<DuplicateComparableEvent, "comune" | "city">,
   b: Pick<DuplicateComparableEvent, "comune" | "city">,
@@ -93,7 +97,15 @@ function sameComune(
 
 function samePinArea(a: DuplicateComparableEvent, b: DuplicateComparableEvent): boolean {
   if (!Number.isFinite(a.lat) || !Number.isFinite(b.lat)) return false;
-  return haversineKm(a.lat, a.lng, b.lat, b.lng) < 0.5;
+  if (coordBucket(a.lat, a.lng) === coordBucket(b.lat, b.lng)) return true;
+  return haversineKm(a.lat, a.lng, b.lat, b.lng) < 2;
+}
+
+function sameTitleFingerprint(a: string, b: string): boolean {
+  const fpA = titleFingerprint(a);
+  const fpB = titleFingerprint(b);
+  if (!fpA || !fpB || fpA.length < 8) return false;
+  return fpA === fpB || fpA.includes(fpB) || fpB.includes(fpA);
 }
 
 function datesCloseEnough(a: DuplicateComparableEvent, b: DuplicateComparableEvent, maxDays = 30): boolean {
@@ -125,8 +137,9 @@ export function eventsAreMapDuplicates(
   b: DuplicateComparableEvent,
 ): boolean {
   if (a.event_url && b.event_url && a.event_url === b.event_url) return true;
-  if (!titlesLookSimilar(a.title, b.title)) return false;
-  return samePinArea(a, b);
+  if (!samePinArea(a, b)) return false;
+  if (sameTitleFingerprint(a.title, b.title)) return true;
+  return titlesLookSimilar(a.title, b.title);
 }
 
 /** Rimuove duplicati visivi prima di disegnare i pin (tiene il record più completo). */
@@ -207,4 +220,54 @@ export function findMapPinClusters(events: AtlasEvent[]): AtlasEvent[][] {
   }
 
   return clusters;
+}
+
+/** Raggruppa per coordinate (3 decimali) + impronta titolo — cattura copie identiche sullo stesso pin. */
+export function findCoordTitleClusters(events: AtlasEvent[]): AtlasEvent[][] {
+  const groups = new Map<string, AtlasEvent[]>();
+
+  for (const event of events) {
+    if (!event.date_event || !Number.isFinite(event.lat)) continue;
+    const fp = titleFingerprint(event.title);
+    if (fp.length < 8) continue;
+    const key = `${coordBucket(event.lat, event.lng)}|${fp}`;
+    const list = groups.get(key) ?? [];
+    list.push(event);
+    groups.set(key, list);
+  }
+
+  return [...groups.values()].filter((group) => group.length > 1);
+}
+
+/** Unisce cluster che condividono almeno un evento. */
+export function mergeEventClusters(clusters: AtlasEvent[][]): AtlasEvent[][] {
+  const merged: AtlasEvent[][] = [];
+
+  for (const cluster of clusters) {
+    const ids = new Set(cluster.map((e) => e.date_event).filter(Boolean) as string[]);
+    const existing = merged.findIndex((m) =>
+      m.some((e) => e.date_event && ids.has(e.date_event)),
+    );
+
+    if (existing === -1) {
+      merged.push([...cluster]);
+      continue;
+    }
+
+    const combined = new Map<string, AtlasEvent>();
+    for (const event of [...merged[existing], ...cluster]) {
+      if (event.date_event) combined.set(event.date_event, event);
+    }
+    merged[existing] = [...combined.values()];
+  }
+
+  return merged.filter((group) => group.length > 1);
+}
+
+export function findAllDuplicateClusters(events: AtlasEvent[]): AtlasEvent[][] {
+  return mergeEventClusters([
+    ...findDuplicateClusters(events),
+    ...findMapPinClusters(events),
+    ...findCoordTitleClusters(events),
+  ]);
 }
