@@ -1,5 +1,5 @@
 import { initSupabaseClient, fetchEventById } from "@atlas/supabase-client";
-import { escapeHtml, formatDate, getDisplayCategory, getCategoryMeta } from "@atlas/core";
+import { escapeHtml, formatDate, getDisplayCategory, getEventDisplayTitle, getCategoryMeta } from "@atlas/core";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -40,7 +40,7 @@ async function boot(): Promise<void> {
         <p><a href="./">← Torna alla mappa</a></p>
         ${event.image_url ? `<img class="event-page-cover" src="${escapeHtml(event.image_url)}" alt="" />` : ""}
         <span class="event-page-badge" style="color:${meta.color}">${meta.label}</span>
-        <h1>${escapeHtml(event.title)}</h1>
+        <h1>${escapeHtml(getEventDisplayTitle(event))}</h1>
         <p><strong>Quando:</strong> ${formatDate(event.start_date)}${event.end_date ? ` — ${formatDate(event.end_date)}` : ""}</p>
         ${event.venue ? `<p><strong>Dove:</strong> ${escapeHtml(event.venue)}</p>` : ""}
         ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ""}

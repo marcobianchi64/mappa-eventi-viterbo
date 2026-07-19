@@ -23,7 +23,8 @@
     "report:locate": "node dist/locate-comuni-cli.js",
     "report:duplicates": "node dist/report-duplicates-cli.js",
     "fix:duplicates": "node dist/fix-duplicates-cli.js",
-    "fix:categories": "node dist/fix-categories-cli.js"
+    "fix:categories": "node dist/fix-categories-cli.js",
+    "fix:titles": "node dist/fix-titles-cli.js"
   },
   "dependencies": {
     "@atlas/core": "1.0.0",

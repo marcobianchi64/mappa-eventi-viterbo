@@ -22,6 +22,7 @@
     "report:duplicates": "npm run build -w @atlas/collector && npm run report:duplicates -w @atlas/collector",
     "fix:duplicates": "npm run build -w @atlas/collector && npm run fix:duplicates -w @atlas/collector",
     "fix:categories": "npm run build -w @atlas/collector && npm run fix:categories -w @atlas/collector",
+    "fix:titles": "npm run build -w @atlas/collector && npm run fix:titles -w @atlas/collector",
     "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin"
   },
   "engines": {

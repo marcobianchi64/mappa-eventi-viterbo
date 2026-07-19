@@ -6,8 +6,9 @@ import { createClient } from "@supabase/supabase-js";
 import {
   getCategoryMeta,
   getDisplayCategory,
+  getEventDisplayTitle,
   inferEventCategory,
-  isEventVisibleInRange,
+  refineEventTitle,
   type AtlasEvent,
 } from "@atlas/core";
 import { runCli } from "./cli-exit.js";
@@ -18,6 +19,7 @@ config({ path: resolve(__dirname, "../.env") });
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const dryRun = process.argv.includes("--dry-run");
+const force = process.argv.includes("--force");
 
 if (!url || !serviceRoleKey) {
   console.error("Richiesti SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY in packages/collector/.env");
@@ -36,28 +38,29 @@ runCli(async () => {
 
   for (const event of events) {
     const stored = (event.category ?? "other").trim().toLowerCase();
-    const inferred = inferEventCategory(event.title, [event.description ?? "", event.venue ?? ""]);
+    const inferred = inferEventCategory(
+      [event.title, event.description, event.venue, event.comune, event.city].filter(Boolean).join(" "),
+      [],
+    );
     const display = getDisplayCategory(event);
 
-    if (stored !== "other" && stored !== "altro" && stored !== "") {
-      unchanged += 1;
-      continue;
-    }
+    const shouldUpdate =
+      force ? display !== event.category : stored === "other" || stored === "altro" || stored === "altri" || stored === "";
 
-    if (inferred === "other") {
+    if (!shouldUpdate || inferred === "other" || display === event.category) {
       unchanged += 1;
       continue;
     }
 
     const from = getCategoryMeta(event.category).label;
     const to = getCategoryMeta(display).label;
-    console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${event.title}`);
+    console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${getEventDisplayTitle(event)}`);
     console.log(`  ${from} → ${to} | ID ${event.date_event}`);
 
     if (!dryRun) {
       const { error: updateError } = await client
         .from("events")
-        .update({ category: inferred })
+        .update({ category: display })
         .eq("date_event", event.date_event);
       if (updateError) throw new Error(updateError.message);
       updated += 1;
@@ -66,11 +69,5 @@ runCli(async () => {
     }
   }
 
-  const visible = events.filter((e) => isEventVisibleInRange(e, "60"));
-  const otherOnMap = visible.filter((e) => getDisplayCategory(e) === "other").length;
-
-  console.log(
-    `\n${dryRun ? "Dry-run" : "Completato"}: ${updated} aggiornati, ${unchanged} invariati.`,
-  );
-  console.log(`Sulla mappa (60g): ${otherOnMap} eventi resterebbero ancora «Altri eventi» dopo il fix.`);
+  console.log(`\n${dryRun ? "Dry-run" : "Completato"}: ${updated} categorie aggiornate, ${unchanged} invariati.`);
 });

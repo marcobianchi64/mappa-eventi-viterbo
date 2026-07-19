@@ -1,33 +1,44 @@
 import type { EventCategory } from "./types/event.js";
+import { splitGluedWords } from "./title-format.js";
 
 function normalize(value: string): string {
-  return value
+  return splitGluedWords(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 }
 
-/** Inferisce la categoria da titolo, note e campo categoria grezzo. */
-export function inferEventCategory(text: string, hints: string[] = []): EventCategory {
-  const blob = normalize(`${text} ${hints.join(" ")}`);
-  if (/\b(sport|calcio|pallavolo|maratona|corsa|bike|torneo|pallone)\b/.test(blob)) return "sport";
+function inferFromBlob(blob: string): EventCategory {
+  if (/\b(sport|calcio|pallavolo|maratona|corsa|bike|torneo|pallone|podistic)\b/.test(blob)) {
+    return "sport";
+  }
   if (/\b(bambin|famigl|kids|ragazzi)\b/.test(blob)) return "families";
+
   if (
-    /\b(enogastronom|sagra|sagre|gusto|degustaz|food|vino|cantina|aglio|pecora|cavatell|porchett|festa del|festa della|mercato del)\b/.test(
+    /sagra|sagre|enogastronom|gusto|degustaz|food|vino|cantina|aglio|pecora|cavatell|porchett|tartuf|fungh|frittur|prodotti tipici|mercato del|mercato della/.test(
       blob,
     )
   ) {
     return "food";
   }
-  if (/\b(musica|concerto|dj|jazz|festival music|live music)\b/.test(blob)) return "music";
+
+  if (/\b(musica|concerto|dj|jazz|live music)\b/.test(blob)) return "music";
+
   if (
-    /\b(teatro|cultura|mostra|museo|libri|arte|spettacol|cinema|film|festival|rassegna|immagini|palco|spettacolo)\b/.test(
+    /manifestazion|tradizioni popolari|teatro|mostra|museo|libri|arte|spettacol|cinema|film|rassegna|immagini|palco|spettacolo|festival|estate a .+ tra/.test(
       blob,
     )
   ) {
     return "culture";
   }
+
   return "other";
+}
+
+/** Inferisce la categoria da titolo, note e campo categoria grezzo. */
+export function inferEventCategory(text: string, hints: string[] = []): EventCategory {
+  const blob = normalize(`${text} ${hints.join(" ")}`);
+  return inferFromBlob(blob);
 }
 
 function isGenericCategory(value: string): boolean {
@@ -39,11 +50,14 @@ const CATEGORY_ALIASES: Record<string, EventCategory> = {
   musica: "music",
   food: "food",
   enogastronomia: "food",
+  gusto: "food",
   sagra: "food",
   sagre: "food",
   culture: "culture",
   cultura: "culture",
   teatro: "culture",
+  manifestazioni: "culture",
+  manifestazione: "culture",
   sport: "sport",
   families: "families",
   famiglie: "families",
@@ -65,16 +79,27 @@ export function resolveEventCategory(
   return inferEventCategory(title, [...hints, raw ?? ""]);
 }
 
-/** Categoria effettiva per mappa/UI: se DB ha «other», inferisce dal titolo. */
-export function getDisplayCategory(event: {
-  category?: string | null;
+export interface CategoryInferInput {
   title: string;
   description?: string | null;
   venue?: string | null;
-}): EventCategory {
+  comune?: string | null;
+  city?: string | null;
+  location?: string | null;
+  category?: string | null;
+}
+
+/** Categoria effettiva per mappa/UI: inferisce da tutti i campi testuali. */
+export function getDisplayCategory(event: CategoryInferInput): EventCategory {
   const stored = (event.category ?? "").trim().toLowerCase();
   if (!isGenericCategory(stored) && CATEGORY_ALIASES[stored]) {
     return CATEGORY_ALIASES[stored];
   }
-  return inferEventCategory(event.title, [event.description ?? "", event.venue ?? ""]);
+
+  const blob = normalize(
+    [event.title, event.description, event.venue, event.comune, event.city, event.location, event.category]
+      .filter(Boolean)
+      .join(" "),
+  );
+  return inferFromBlob(blob);
 }

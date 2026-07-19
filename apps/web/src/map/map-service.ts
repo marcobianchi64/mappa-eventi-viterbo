@@ -6,6 +6,7 @@ import {
   escapeHtml,
   formatDisplayTitle,
   getDisplayCategory,
+  getEventDisplayTitle,
   getCategoryMeta,
   type AtlasEvent,
 } from "@atlas/core";
@@ -52,7 +53,7 @@ export class MapService {
   }
 
   private createTooltip(event: AtlasEvent): string {
-    const title = escapeHtml(formatDisplayTitle(event.title));
+    const title = escapeHtml(formatDisplayTitle(getEventDisplayTitle(event)));
     const venue = event.venue ?? "";
     const image = event.image_url
       ? `<img src="${event.image_url}" alt="${title}" onerror="this.remove()">`

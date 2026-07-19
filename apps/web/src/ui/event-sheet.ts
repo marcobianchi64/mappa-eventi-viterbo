@@ -4,6 +4,7 @@ import {
   escapeHtml,
   formatDate,
   getDisplayCategory,
+  getEventDisplayTitle,
   getCategoryMeta,
   type AtlasEvent,
 } from "@atlas/core";
@@ -26,7 +27,7 @@ export function openEventSheet(
 
   const category = getDisplayCategory(event);
   const meta = getCategoryMeta(category);
-  const title = escapeHtml(event.title);
+  const title = escapeHtml(getEventDisplayTitle(event));
   const venue = escapeHtml(event.venue);
   const description = escapeHtml(event.description);
   const imageUrl = event.image_url ? escapeHtml(event.image_url) : "";

@@ -100,7 +100,8 @@ function parseDelimitedTable(text: string, delimiter: string): DiscoveryRow[] {
   return rows;
 }
 
-const CATEGORY_WORDS = /\b(food|enogastronomia|music|musica|culture|cultura|sport|families|famiglie|other|altro)\b/i;
+const CATEGORY_WORDS =
+  /\b(food|enogastronomia|music|musica|culture|cultura|sport|families|famiglie|other|altro|manifestazioni|manifestazione|sagra|sagre)\b/i;
 
 /** Testo Google incollato senza | o ; — euristica su date e parole chiave */
 function parseGluedGoogleText(text: string): DiscoveryRow[] {
@@ -128,7 +129,7 @@ function parseGluedGoogleText(text: string): DiscoveryRow[] {
     }
 
     const titoloMatch = before.match(
-      /(Sagra [^0-9]+|Festa [^0-9]+|Festeggiamenti [^0-9]+|Concerto [^0-9]+|^\d+[^0-9]*Festa [^0-9]+)/i,
+      /(L['']estate a [^0-9]+|Sagra [^0-9]+|Festa [^0-9]+|Festeggiamenti [^0-9]+|Concerto [^0-9]+|^\d+[^0-9]*Festa [^0-9]+)/i,
     );
     const titolo = titoloMatch ? titoloMatch[0].trim() : before.slice(-40).trim();
 

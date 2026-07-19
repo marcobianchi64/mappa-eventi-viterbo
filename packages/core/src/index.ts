@@ -63,7 +63,15 @@ export {
   inferEventCategory,
   resolveEventCategory,
   getDisplayCategory,
+  type CategoryInferInput,
 } from "./category-infer.js";
+
+export {
+  cleanPublishedTitle,
+  getEventDisplayTitle,
+  refineEventTitle,
+  splitGluedWords,
+} from "./title-format.js";
 
 export type { DuplicateComparableEvent } from "./event-duplicate.js";
 export {
