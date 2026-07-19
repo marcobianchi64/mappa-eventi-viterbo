@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import {
+  buildMapMarkerPlacements,
   isEventVisibleInRange,
   isRegistryInPubblicazione,
   type AtlasEvent,
@@ -39,6 +40,10 @@ export interface CompareMapRegistryReport {
   publicApiFetched: number | null;
   publicApiVisible60: number | null;
   blockedByPublicApi: CompareEventRow[];
+  /** Registro in pubblicazione che rientra nei 60 giorni (confronto equo) */
+  registryInRange: number;
+  /** Pin unici che la mappa disegna (dopo separazione sovrapposizioni) */
+  mapPinCount: number;
 }
 
 function eventKey(event: AtlasEvent): string {
@@ -96,7 +101,9 @@ export async function compareMapRegistry(
 
   const all = (data ?? []) as AtlasEvent[];
   const registry = all.filter(isRegistryInPubblicazione);
+  const registryInRange = registry.filter((e) => isEventVisibleInRange(e, range));
   const mapVisible = all.filter((e) => isEventVisibleInRange(e, range));
+  const mapPinCount = buildMapMarkerPlacements(mapVisible).length;
 
   const registryKeys = new Set(registry.map(eventKey));
   const mapKeys = new Set(mapVisible.map(eventKey));
@@ -153,7 +160,9 @@ export async function compareMapRegistry(
     generatedAt: new Date().toISOString(),
     rangeDays: range,
     registryInPubblicazione: registry.length,
+    registryInRange: registryInRange.length,
     mapVisible: mapVisible.length,
+    mapPinCount,
     inBoth,
     onlyRegistry,
     onlyMap,
@@ -195,7 +204,9 @@ export function formatCompareReport(report: CompareMapRegistryReport): string {
     `Generato: ${report.generatedAt}`,
     "",
     `Registro in pubblicazione:     ${report.registryInPubblicazione}`,
+    `  di cui nei prossimi ${report.rangeDays}g:    ${report.registryInRange}`,
     `Mappa visibile (filtro ${report.rangeDays}g): ${report.mapVisible}`,
+    `Pin sulla mappa (unici):       ${report.mapPinCount}`,
     `Presenti in entrambi:          ${report.inBoth}`,
     `Solo Registro:                 ${report.onlyRegistry.length}`,
     `  di cui oltre finestra ${report.rangeDays}g: ${report.registryOutsideRange.length}`,
