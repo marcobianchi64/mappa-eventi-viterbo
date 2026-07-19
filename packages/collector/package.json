@@ -20,7 +20,10 @@
     "report:gap": "node dist/gap-cli.js",
     "report:compare": "node dist/compare-cli.js",
     "fix:coords": "node dist/fix-coords-cli.js",
-    "report:locate": "node dist/locate-comuni-cli.js"
+    "report:locate": "node dist/locate-comuni-cli.js",
+    "report:duplicates": "node dist/report-duplicates-cli.js",
+    "fix:duplicates": "node dist/fix-duplicates-cli.js",
+    "fix:categories": "node dist/fix-categories-cli.js"
   },
   "dependencies": {
     "@atlas/core": "1.0.0",

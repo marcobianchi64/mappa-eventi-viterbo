@@ -8,9 +8,10 @@ import {
   MANUAL_DISCOVERY_SOURCE_ID,
   parseDiscoveryText,
   registerDiscoveryBlock,
+  resolveEventCategory,
   type AtlasEvent,
   type DiscoveryRow,
-  type EventCategory,
+  type DuplicateComparableEvent,
 } from "@atlas/core";
 import { createEventAdmin } from "@atlas/supabase-client";
 
@@ -25,12 +26,47 @@ export function processDiscoveryPaste(
   existing: AtlasEvent[],
 ): { rows: ProcessedDiscoveryRow[]; session: ReturnType<typeof loadDiscoverySession> } {
   const parsed = parseDiscoveryText(text);
-  const rows = parsed.map((row) => classifyRow(row, existing));
+  const rows: ProcessedDiscoveryRow[] = [];
+  const acceptedInBatch: DuplicateComparableEvent[] = [];
+
+  for (const row of parsed) {
+    const classified = classifyRow(row, [...existing, ...acceptedInBatch]);
+    rows.push(classified);
+    if (classified.status === "ready") {
+      acceptedInBatch.push(toComparableEvent(row));
+    }
+  }
+
   const session = rows.length > 0 ? registerDiscoveryBlock() : loadDiscoverySession();
   return { rows, session };
 }
 
-function classifyRow(row: DiscoveryRow, existing: AtlasEvent[]): ProcessedDiscoveryRow {
+function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
+  const start = parseDate(row.data_inizio ?? "", row.orario)!;
+  const end = row.data_fine ? parseDate(row.data_fine, row.orario) : null;
+  const comuneKey =
+    inferComuneFromText(row.comune, row.luogo, row.titolo) ??
+    (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
+  const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
+  const coords = geocodeComuneViterbo(comuneKey ?? comune);
+
+  return {
+    title: row.titolo.trim(),
+    start_date: start.toISOString(),
+    end_date: end?.toISOString() ?? null,
+    venue: row.luogo?.trim() || null,
+    comune,
+    city: comune,
+    lat: coords.lat,
+    lng: coords.lng,
+    event_url: row.url_evento?.trim() || null,
+  };
+}
+
+function classifyRow(
+  row: DiscoveryRow,
+  existing: (AtlasEvent | DuplicateComparableEvent)[],
+): ProcessedDiscoveryRow {
   const title = row.titolo?.trim();
   if (!title) return { row, status: "invalid", reason: "Titolo mancante" };
 
@@ -38,13 +74,10 @@ function classifyRow(row: DiscoveryRow, existing: AtlasEvent[]): ProcessedDiscov
   if (!start) return { row, status: "invalid", reason: "Data non valida" };
   if (start.getTime() < Date.now() - 86400000) return { row, status: "past", reason: "Evento passato" };
 
-  const venue = row.luogo?.trim() || null;
+  const candidate = toComparableEvent(row);
   const duplicate = existing.find((e) => {
     if (row.url_evento && e.event_url === row.url_evento) return true;
-    return eventsLookSimilar(
-      { title, start_date: start.toISOString(), venue, lat: e.lat, lng: e.lng },
-      { title: e.title, start_date: e.start_date, venue: e.venue, lat: e.lat, lng: e.lng },
-    );
+    return eventsLookSimilar(candidate, e);
   });
   if (duplicate) return { row, status: "duplicate", reason: `Già presente: ${duplicate.title}` };
 
@@ -68,7 +101,7 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
 
     await createEventAdmin({
       title: row.titolo.trim(),
-      category: mapCategory(row.categoria),
+      category: resolveEventCategory(row.categoria, row.titolo, [row.note ?? "", row.luogo ?? ""]),
       start_date: start.toISOString(),
       end_date: end?.toISOString() ?? null,
       venue: row.luogo?.trim() || null,
@@ -153,21 +186,4 @@ function parseDate(value: string, orario?: string): Date | null {
   }
   const iso = Date.parse(trimmed);
   return Number.isNaN(iso) ? null : new Date(iso);
-}
-
-function mapCategory(raw?: string): EventCategory {
-  const v = (raw ?? "other").toLowerCase();
-  const map: Record<string, EventCategory> = {
-    music: "music",
-    musica: "music",
-    food: "food",
-    enogastronomia: "food",
-    culture: "culture",
-    cultura: "culture",
-    sport: "sport",
-    families: "families",
-    famiglie: "families",
-    other: "other",
-  };
-  return map[v] ?? "other";
 }

@@ -60,6 +60,19 @@ export {
 } from "./viterbo-geocode.js";
 
 export {
+  inferEventCategory,
+  resolveEventCategory,
+} from "./category-infer.js";
+
+export type { DuplicateComparableEvent } from "./event-duplicate.js";
+export {
+  eventDatesOverlap,
+  eventsAreLikelyDuplicates,
+  findDuplicateClusters,
+  titlesLookSimilar,
+} from "./event-duplicate.js";
+
+export {
   getCategoryMeta,
   escapeHtml,
   formatDate,

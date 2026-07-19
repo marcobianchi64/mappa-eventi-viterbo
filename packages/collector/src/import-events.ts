@@ -3,11 +3,11 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   eventsLookSimilar,
   MANUAL_DISCOVERY_SOURCE_ID,
+  resolveEventCategory,
   type AtlasEvent,
-  type EventCategory,
 } from "@atlas/core";
 import { geocodeEvent } from "./geocode.js";
-import { cleanTitle, inferCategory, isPastEvent } from "./normalize.js";
+import { cleanTitle, isPastEvent } from "./normalize.js";
 import { parseCsvFile, validateHeaders, type CsvRow } from "./csv-parse.js";
 
 const TERRITORY_ID = "IT-VT";
@@ -122,7 +122,7 @@ async function processRow(
     return { action: "skip", error: "url_evento mancante (obbligatorio per tracciabilità)" };
   }
 
-  const category = mapCategory(v.categoria, title, v.note);
+  const category = resolveEventCategory(v.categoria, title, [v.note, v.luogo]);
   const city = v.comune.trim() || null;
   const venue = v.luogo.trim() || null;
   const sourceUrl = normalizeUrl(v.url_fonte);
@@ -202,31 +202,6 @@ function buildDescription(v: Record<string, string>): string | null {
     v.url_fonte ? `Fonte: ${v.url_fonte}` : "",
   ].filter(Boolean);
   return parts.length ? parts.join("\n") : null;
-}
-
-function mapCategory(raw: string, title: string, note: string): EventCategory {
-  const value = raw.trim().toLowerCase();
-  const map: Record<string, EventCategory> = {
-    music: "music",
-    musica: "music",
-    food: "food",
-    enogastronomia: "food",
-    sagra: "food",
-    sagre: "food",
-    culture: "culture",
-    cultura: "culture",
-    teatro: "culture",
-    sport: "sport",
-    families: "families",
-    famiglie: "families",
-    famiglia: "families",
-    bambini: "families",
-    other: "other",
-    altri: "other",
-    altro: "other",
-  };
-  if (value && map[value]) return map[value];
-  return inferCategory(title, [note, raw]);
 }
 
 function parseCsvDate(value: string, orario: string): Date | null {

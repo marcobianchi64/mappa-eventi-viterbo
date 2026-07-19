@@ -1,4 +1,5 @@
 import type { EventCategory } from "@atlas/core";
+import { inferEventCategory } from "@atlas/core";
 
 const MONTHS: Record<string, number> = {
   gennaio: 0,
@@ -16,13 +17,7 @@ const MONTHS: Record<string, number> = {
 };
 
 export function inferCategory(text: string, hints: string[] = []): EventCategory {
-  const blob = normalize(`${text} ${hints.join(" ")}`);
-  if (/\b(sport|calcio|pallavolo|maratona|corsa|bike)\b/.test(blob)) return "sport";
-  if (/\b(bambin|famigl|kids|ragazzi)\b/.test(blob)) return "families";
-  if (/\b(enogastronom|sagra|gusto|degustaz|food|vino|cantina|aglio|pecora)\b/.test(blob)) return "food";
-  if (/\b(musica|concerto|dj|jazz|festival music)\b/.test(blob)) return "music";
-  if (/\b(teatro|cultura|mostra|museo|libri|arte|spettacol|cinema|film)\b/.test(blob)) return "culture";
-  return "other";
+  return inferEventCategory(text, hints);
 }
 
 export function cleanTitle(title: string): string {

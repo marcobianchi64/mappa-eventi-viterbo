@@ -1,5 +1,6 @@
 import type { AtlasEvent, DateRangeKey, DateRangeWindow } from "./types/event.js";
 import { CATEGORY_META } from "./constants.js";
+import { eventsAreLikelyDuplicates } from "./event-duplicate.js";
 
 export function getCategoryMeta(category: string) {
   return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? {
@@ -196,36 +197,30 @@ export function reminderText(startDate: string | null | undefined): string {
 
 /** Confronto base per deduplicazione segnalazioni vs eventi esistenti */
 export function eventsLookSimilar(
-  a: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
-  b: { title: string; start_date: string; venue?: string | null; lat: number; lng: number },
+  a: {
+    title: string;
+    start_date: string;
+    end_date?: string | null;
+    venue?: string | null;
+    comune?: string | null;
+    city?: string | null;
+    lat: number;
+    lng: number;
+    event_url?: string | null;
+  },
+  b: {
+    title: string;
+    start_date: string;
+    end_date?: string | null;
+    venue?: string | null;
+    comune?: string | null;
+    city?: string | null;
+    lat: number;
+    lng: number;
+    event_url?: string | null;
+  },
 ): boolean {
-  const titleA = normalizeSearchText(a.title);
-  const titleB = normalizeSearchText(b.title);
-  if (!titleA || !titleB) return false;
-
-  const sameDay =
-    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime();
-
-  const titleMatch = titleA === titleB || titleA.includes(titleB) || titleB.includes(titleA);
-  const venueMatch =
-    normalizeSearchText(a.venue) && normalizeSearchText(b.venue)
-      ? normalizeSearchText(a.venue) === normalizeSearchText(b.venue)
-      : false;
-
-  const distanceKm = haversineKm(a.lat, a.lng, b.lat, b.lng);
-  const near = distanceKm < 0.5;
-
-  return sameDay && titleMatch && (venueMatch || near);
-}
-
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+  return eventsAreLikelyDuplicates(a, b);
 }
 
 /** Titolo breve per pin/tooltip mappa — nessun intervento manuale */
