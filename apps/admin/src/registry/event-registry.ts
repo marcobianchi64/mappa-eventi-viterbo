@@ -1,11 +1,14 @@
 import {
   CATEGORY_META,
   escapeHtml,
+  formatCompareReport,
   formatDate,
   getCategoryMeta,
   getEventLifecycle,
+  renderCompareSummaryHtml,
   type AtlasEvent,
   type AtlasSource,
+  type CompareMapRegistryReport,
   type EventCategory,
 } from "@atlas/core";
 import { archiveEvent } from "@atlas/supabase-client";
@@ -196,6 +199,7 @@ export function renderRegistryPanelHtml(
   events: AtlasEvent[],
   sources: AtlasSource[],
   filters: RegistryFilters,
+  compareReport?: CompareMapRegistryReport,
 ): string {
   const filtered = filterRegistryEvents(events, filters);
   const comuni = uniqueSorted(events.map(eventComune));
@@ -241,6 +245,8 @@ export function renderRegistryPanelHtml(
   return `
     <h2>Registro eventi</h2>
     <p class="small">Consultazione completa: eventi in pubblicazione, passati, archiviati e in revisione. Usa i filtri per provincia, comune, date, categoria, fonte e stato.</p>
+
+    ${compareReport ? renderCompareSummaryHtml(compareReport) : ""}
 
     <div class="registry-summary">
       <span><strong>${filtered.length}</strong> mostrati su <strong>${events.length}</strong> totali</span>
@@ -408,6 +414,7 @@ export interface RegistryBindings {
   events: AtlasEvent[];
   sources: AtlasSource[];
   filters: RegistryFilters;
+  compareReport?: CompareMapRegistryReport;
   onFiltersChange: (filters: RegistryFilters) => void;
   onEditEvent: (eventId: string) => void;
   onArchived: () => void;
@@ -429,6 +436,16 @@ export function bindRegistryPanel(panel: HTMLElement, bindings: RegistryBindings
   panel.querySelector("#registryExportCsv")?.addEventListener("click", () => {
     const filtered = filterRegistryEvents(bindings.events, bindings.filters);
     exportRegistryCsv(filtered, bindings.sources);
+  });
+
+  panel.querySelector("#registryCopyCompare")?.addEventListener("click", async () => {
+    if (!bindings.compareReport) return;
+    const text = formatCompareReport(bindings.compareReport);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      window.prompt("Copia il report:", text);
+    }
   });
 
   panel.querySelectorAll(".registry-edit").forEach((btn) => {

@@ -341,3 +341,73 @@ textarea {
 .registry-footnote {
   margin-top: 12px;
 }
+
+.registry-compare {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+}
+
+.registry-compare-ok {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.registry-compare-warn {
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+.registry-compare-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.registry-compare-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid currentColor;
+}
+
+.registry-compare-ok .registry-compare-badge {
+  color: #15803d;
+}
+
+.registry-compare-warn .registry-compare-badge {
+  color: #b45309;
+}
+
+.registry-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.registry-compare-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.registry-compare-details {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.registry-compare-details ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+
+.registry-compare #registryCopyCompare {
+  margin-top: 8px;
+}

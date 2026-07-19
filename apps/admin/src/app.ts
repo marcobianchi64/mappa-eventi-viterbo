@@ -1,4 +1,5 @@
 import {
+  compareMapRegistryFromEvents,
   escapeHtml,
   formatDate,
   getCategoryMeta,
@@ -13,6 +14,7 @@ import {
   fetchPendingEvents,
   fetchPendingSubmissions,
   fetchSources,
+  fetchVerifiedEvents,
   fetchVerifiedEventsAdmin,
   getSession,
   signInWithOtp,
@@ -236,19 +238,33 @@ export class AdminApp {
   }
 
   private async renderRegistry(panel: HTMLElement): Promise<void> {
-    const [events, sources] = await Promise.all([fetchAllEventsAdmin(2000), fetchSources()]);
-    this.mountRegistryPanel(panel, events, sources);
+    const [events, sources, publicEvents] = await Promise.all([
+      fetchAllEventsAdmin(2000),
+      fetchSources(),
+      fetchVerifiedEvents(),
+    ]);
+    const compareReport = compareMapRegistryFromEvents(events, {
+      rangeDays: "60",
+      publicEvents,
+    });
+    this.mountRegistryPanel(panel, events, sources, compareReport);
   }
 
-  private mountRegistryPanel(panel: HTMLElement, events: AtlasEvent[], sources: Awaited<ReturnType<typeof fetchSources>>): void {
-    panel.innerHTML = renderRegistryPanelHtml(events, sources, this.registryFilters);
+  private mountRegistryPanel(
+    panel: HTMLElement,
+    events: AtlasEvent[],
+    sources: Awaited<ReturnType<typeof fetchSources>>,
+    compareReport: ReturnType<typeof compareMapRegistryFromEvents>,
+  ): void {
+    panel.innerHTML = renderRegistryPanelHtml(events, sources, this.registryFilters, compareReport);
     bindRegistryPanel(panel, {
       events,
       sources,
       filters: this.registryFilters,
+      compareReport,
       onFiltersChange: (filters) => {
         this.registryFilters = filters;
-        this.mountRegistryPanel(panel, events, sources);
+        this.mountRegistryPanel(panel, events, sources, compareReport);
       },
       onEditEvent: (eventId) => {
         this.pendingMapEventId = eventId;

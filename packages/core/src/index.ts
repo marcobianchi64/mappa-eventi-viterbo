@@ -81,3 +81,10 @@ export {
   generateSubmissionReference,
   buildSubmissionWhatsAppUrl,
 } from "./utils.js";
+
+export type { CompareEventRow, CompareMapRegistryReport } from "./compare-map-registry.js";
+export {
+  compareMapRegistryFromEvents,
+  formatCompareReport,
+  renderCompareSummaryHtml,
+} from "./compare-map-registry.js";
