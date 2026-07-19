@@ -1,5 +1,5 @@
 import { initSupabaseClient, fetchEventById } from "@atlas/supabase-client";
-import { escapeHtml, formatDate, getCategoryMeta } from "@atlas/core";
+import { escapeHtml, formatDate, getDisplayCategory, getCategoryMeta } from "@atlas/core";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -32,7 +32,7 @@ async function boot(): Promise<void> {
       return;
     }
 
-    const meta = getCategoryMeta(event.category);
+    const meta = getCategoryMeta(getDisplayCategory(event));
     const mapUrl = `./?event=${encodeURIComponent(id)}`;
 
     root.innerHTML = `

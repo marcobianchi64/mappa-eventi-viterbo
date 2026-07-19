@@ -1,6 +1,6 @@
 import type { AtlasEvent, DateRangeKey, DateRangeWindow } from "./types/event.js";
 import { CATEGORY_META } from "./constants.js";
-import { eventsAreLikelyDuplicates } from "./event-duplicate.js";
+import { dedupeEventsForMap, eventsAreLikelyDuplicates } from "./event-duplicate.js";
 
 export function getCategoryMeta(category: string) {
   return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? {
@@ -104,7 +104,8 @@ export interface MapMarkerPlacement {
 
 /** Separa pin sovrapposti (stesse coordinate) in cerchio attorno al punto reale. */
 export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlacement[] {
-  const valid = events.filter(hasValidEventCoords);
+  const unique = dedupeEventsForMap(events);
+  const valid = unique.filter(hasValidEventCoords);
   const buckets = new Map<string, AtlasEvent[]>();
 
   for (const event of valid) {

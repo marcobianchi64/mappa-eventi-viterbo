@@ -2,8 +2,10 @@ import L from "leaflet";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
+  dedupeEventsForMap,
   formatDisplayTitle,
   getCategoryMeta,
+  getDisplayCategory,
   type AtlasEvent,
 } from "@atlas/core";
 
@@ -27,9 +29,9 @@ export class AdminMapService {
     this.layer.clearLayers();
     this.markers.clear();
 
-    for (const event of events) {
+    for (const event of dedupeEventsForMap(events)) {
       if (!Number.isFinite(event.lat) || !Number.isFinite(event.lng)) continue;
-      const meta = getCategoryMeta(event.category);
+      const meta = getCategoryMeta(getDisplayCategory(event));
       const marker = L.marker([event.lat, event.lng], {
         icon: L.divIcon({
           className: "",

@@ -51,6 +51,18 @@ export function eventDatesOverlap(
   return ra.start <= rb.end && rb.start <= ra.end;
 }
 
+/** Impronta titolo per confronto (senza date/edizione). */
+export function titleFingerprint(title: string): string {
+  return normalizeSearchText(title)
+    .replace(/\b\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}\b/g, " ")
+    .replace(/\b\d{1,2}\s+(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)[a-z]*\b/g, " ")
+    .replace(/\b(xxx+|xxix|xxviii|xxvii|xxvi|xxv|xxiv|xxiii|xxii|xxi|xx|edizione)\b/g, " ")
+    .replace(/\b(dal|al|il|la|lo|del|della|dei|degli|delle|e|di|in|a)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 64);
+}
+
 export function titlesLookSimilar(a: string, b: string): boolean {
   const titleA = normalizeSearchText(a);
   const titleB = normalizeSearchText(b);
@@ -58,9 +70,13 @@ export function titlesLookSimilar(a: string, b: string): boolean {
   if (titleA === titleB) return true;
   if (titleA.includes(titleB) || titleB.includes(titleA)) return true;
 
+  const fpA = titleFingerprint(a);
+  const fpB = titleFingerprint(b);
+  if (fpA && fpB && (fpA === fpB || fpA.includes(fpB) || fpB.includes(fpA))) return true;
+
   const minLen = Math.min(titleA.length, titleB.length);
-  if (minLen < 16) return false;
-  const coreLen = Math.min(48, minLen);
+  if (minLen < 12) return false;
+  const coreLen = Math.min(40, minLen);
   const coreA = titleA.slice(0, coreLen);
   const coreB = titleB.slice(0, coreLen);
   return coreA === coreB || coreA.includes(coreB) || coreB.includes(coreA);
@@ -75,27 +91,69 @@ function sameComune(
   return Boolean(comuneA && comuneB && comuneA === comuneB);
 }
 
-/** Confronto per deduplicazione: titolo simile + date sovrapposte + stesso luogo/comune. */
+function samePinArea(a: DuplicateComparableEvent, b: DuplicateComparableEvent): boolean {
+  if (!Number.isFinite(a.lat) || !Number.isFinite(b.lat)) return false;
+  return haversineKm(a.lat, a.lng, b.lat, b.lng) < 0.5;
+}
+
+function datesCloseEnough(a: DuplicateComparableEvent, b: DuplicateComparableEvent, maxDays = 30): boolean {
+  const sameDay =
+    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime();
+  if (sameDay || eventDatesOverlap(a, b)) return true;
+
+  const startA = startOfDay(new Date(a.start_date)).getTime();
+  const startB = startOfDay(new Date(b.start_date)).getTime();
+  if (Number.isNaN(startA) || Number.isNaN(startB)) return false;
+  const daysApart = Math.abs(startA - startB) / (24 * 60 * 60 * 1000);
+  return daysApart <= maxDays;
+}
+
+/** Confronto per deduplicazione DB: titolo simile + stesso luogo + date vicine/sovrapposte. */
 export function eventsAreLikelyDuplicates(
   a: DuplicateComparableEvent,
   b: DuplicateComparableEvent,
 ): boolean {
   if (a.event_url && b.event_url && a.event_url === b.event_url) return true;
   if (!titlesLookSimilar(a.title, b.title)) return false;
+  if (!datesCloseEnough(a, b)) return false;
+  return samePinArea(a, b) || sameComune(a, b);
+}
 
-  const sameDay =
-    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime();
-  if (!sameDay && !eventDatesOverlap(a, b)) return false;
+/** Confronto più permissivo per la mappa: stesso pin + titolo simile. */
+export function eventsAreMapDuplicates(
+  a: DuplicateComparableEvent,
+  b: DuplicateComparableEvent,
+): boolean {
+  if (a.event_url && b.event_url && a.event_url === b.event_url) return true;
+  if (!titlesLookSimilar(a.title, b.title)) return false;
+  return samePinArea(a, b);
+}
 
-  const venueMatch =
-    normalizeSearchText(a.venue) && normalizeSearchText(b.venue)
-      ? normalizeSearchText(a.venue) === normalizeSearchText(b.venue)
-      : false;
+/** Rimuove duplicati visivi prima di disegnare i pin (tiene il record più completo). */
+export function dedupeEventsForMap(events: AtlasEvent[]): AtlasEvent[] {
+  const kept: AtlasEvent[] = [];
 
-  const distanceKm = haversineKm(a.lat, a.lng, b.lat, b.lng);
-  const near = distanceKm < 2;
+  for (const event of events) {
+    const existingIndex = kept.findIndex((candidate) => eventsAreMapDuplicates(event, candidate));
+    if (existingIndex === -1) {
+      kept.push(event);
+      continue;
+    }
 
-  return venueMatch || near || sameComune(a, b);
+    const current = kept[existingIndex];
+    const score = (e: AtlasEvent) =>
+      (e.end_date ? 2 : 0) +
+      (e.event_url ? 2 : 0) +
+      (e.venue ? 1 : 0) +
+      (e.description ? 1 : 0) +
+      (e.comune || e.city ? 1 : 0);
+
+    if (score(event) > score(current)) {
+      kept[existingIndex] = event;
+    }
+  }
+
+  return kept;
 }
 
 export function findDuplicateClusters(events: AtlasEvent[]): AtlasEvent[][] {
@@ -113,6 +171,33 @@ export function findDuplicateClusters(events: AtlasEvent[]): AtlasEvent[][] {
       const otherId = other.date_event;
       if (!otherId || assigned.has(otherId)) continue;
       if (eventsAreLikelyDuplicates(event, other)) {
+        cluster.push(other);
+        assigned.add(otherId);
+      }
+    }
+
+    if (cluster.length > 1) clusters.push(cluster);
+  }
+
+  return clusters;
+}
+
+/** Raggruppa eventi sullo stesso pin (per diagnostica). */
+export function findMapPinClusters(events: AtlasEvent[]): AtlasEvent[][] {
+  const clusters: AtlasEvent[][] = [];
+  const assigned = new Set<string>();
+
+  for (const event of events) {
+    const id = event.date_event;
+    if (!id || assigned.has(id)) continue;
+
+    const cluster = [event];
+    assigned.add(id);
+
+    for (const other of events) {
+      const otherId = other.date_event;
+      if (!otherId || assigned.has(otherId)) continue;
+      if (eventsAreMapDuplicates(event, other)) {
         cluster.push(other);
         assigned.add(otherId);
       }

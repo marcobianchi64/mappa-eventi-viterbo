@@ -62,13 +62,18 @@ export {
 export {
   inferEventCategory,
   resolveEventCategory,
+  getDisplayCategory,
 } from "./category-infer.js";
 
 export type { DuplicateComparableEvent } from "./event-duplicate.js";
 export {
+  dedupeEventsForMap,
   eventDatesOverlap,
   eventsAreLikelyDuplicates,
+  eventsAreMapDuplicates,
   findDuplicateClusters,
+  findMapPinClusters,
+  titleFingerprint,
   titlesLookSimilar,
 } from "./event-duplicate.js";
 

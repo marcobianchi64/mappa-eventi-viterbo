@@ -3,6 +3,7 @@ import {
   directionsUrl,
   escapeHtml,
   formatDate,
+  getDisplayCategory,
   getCategoryMeta,
   type AtlasEvent,
 } from "@atlas/core";
@@ -23,7 +24,8 @@ export function openEventSheet(
   const sheet = document.getElementById("stableEventSheet");
   if (!content || !overlay || !sheet) return;
 
-  const meta = getCategoryMeta(event.category);
+  const category = getDisplayCategory(event);
+  const meta = getCategoryMeta(category);
   const title = escapeHtml(event.title);
   const venue = escapeHtml(event.venue);
   const description = escapeHtml(event.description);
@@ -32,7 +34,7 @@ export function openEventSheet(
   const coverStyle = imageUrl
     ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
     : "";
-  const coverClass = imageUrl ? "" : `${event.category || "other"}-cover`;
+  const coverClass = imageUrl ? "" : `${category}-cover`;
 
   const shareUrl = createEventShareUrl(event, window.location.origin + window.location.pathname);
   const officialAction = event.event_url

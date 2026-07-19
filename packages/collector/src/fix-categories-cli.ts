@@ -3,7 +3,13 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { getCategoryMeta, resolveEventCategory, type AtlasEvent } from "@atlas/core";
+import {
+  getCategoryMeta,
+  getDisplayCategory,
+  inferEventCategory,
+  isEventVisibleInRange,
+  type AtlasEvent,
+} from "@atlas/core";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../.env") });
@@ -11,7 +17,6 @@ config({ path: resolve(__dirname, "../.env") });
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const dryRun = process.argv.includes("--dry-run");
-const allCategories = process.argv.includes("--all");
 
 if (!url || !serviceRoleKey) {
   console.error("Richiesti SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY in packages/collector/.env");
@@ -27,23 +32,26 @@ if (error) {
 }
 
 const events = (data ?? []) as AtlasEvent[];
-const candidates = events.filter((event) => allCategories || event.category === "other");
-
 let updated = 0;
 let unchanged = 0;
 
-for (const event of candidates) {
-  const inferred = resolveEventCategory(event.category, event.title, [
-    event.description ?? "",
-    event.venue ?? "",
-  ]);
-  if (inferred === event.category) {
+for (const event of events) {
+  const stored = (event.category ?? "other").trim().toLowerCase();
+  const inferred = inferEventCategory(event.title, [event.description ?? "", event.venue ?? ""]);
+  const display = getDisplayCategory(event);
+
+  if (stored !== "other" && stored !== "altro" && stored !== "") {
+    unchanged += 1;
+    continue;
+  }
+
+  if (inferred === "other") {
     unchanged += 1;
     continue;
   }
 
   const from = getCategoryMeta(event.category).label;
-  const to = getCategoryMeta(inferred).label;
+  const to = getCategoryMeta(display).label;
   console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${event.title}`);
   console.log(`  ${from} → ${to} | ID ${event.date_event}`);
 
@@ -59,6 +67,10 @@ for (const event of candidates) {
   }
 }
 
+const visible = events.filter((e) => isEventVisibleInRange(e, "60"));
+const otherOnMap = visible.filter((e) => getDisplayCategory(e) === "other").length;
+
 console.log(
-  `\n${dryRun ? "Dry-run" : "Completato"}: ${updated} aggiornati, ${unchanged} invariati su ${candidates.length} analizzati.`,
+  `\n${dryRun ? "Dry-run" : "Completato"}: ${updated} aggiornati, ${unchanged} invariati.`,
 );
+console.log(`Sulla mappa (60g): ${otherOnMap} eventi resterebbero ancora «Altri eventi» dopo il fix.`);

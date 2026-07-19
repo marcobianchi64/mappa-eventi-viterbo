@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { findDuplicateClusters, isRegistryInPubblicazione, type AtlasEvent } from "@atlas/core";
+import { findMapPinClusters, isRegistryInPubblicazione, type AtlasEvent } from "@atlas/core";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../.env") });
@@ -27,7 +27,7 @@ if (error) {
 
 const all = (data ?? []) as AtlasEvent[];
 const active = all.filter(isRegistryInPubblicazione);
-const clusters = findDuplicateClusters(active);
+const clusters = findMapPinClusters(active);
 
 if (clusters.length === 0) {
   console.log("Nessun duplicato da archiviare.");
@@ -38,6 +38,13 @@ let archived = 0;
 
 for (const cluster of clusters) {
   const sorted = [...cluster].sort((a, b) => {
+    const score = (e: AtlasEvent) =>
+      (e.end_date ? 4 : 0) +
+      (e.event_url ? 2 : 0) +
+      (e.venue ? 1 : 0) +
+      (e.description ? 1 : 0);
+    const scoreDiff = score(b) - score(a);
+    if (scoreDiff !== 0) return scoreDiff;
     const ca = new Date(a.created_at ?? 0).getTime();
     const cb = new Date(b.created_at ?? 0).getTime();
     return ca - cb;
@@ -68,5 +75,5 @@ if (dryRun) {
   console.log(`\nDry-run: ${archived} eventi verrebbero archiviati. Esegui senza --dry-run per applicare.`);
 } else {
   console.log(`\nCompletato: ${archived} duplicati archiviati.`);
-  console.log("Suggerimento: ricarica la mappa e riesegui npm run report:compare");
+  console.log("Ricarica la mappa (Ctrl+F5) e riesegui npm run report:duplicates");
 }

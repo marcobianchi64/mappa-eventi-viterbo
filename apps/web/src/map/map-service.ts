@@ -5,6 +5,7 @@ import {
   buildMapMarkerPlacements,
   escapeHtml,
   formatDisplayTitle,
+  getDisplayCategory,
   getCategoryMeta,
   type AtlasEvent,
 } from "@atlas/core";
@@ -89,7 +90,7 @@ export class MapService {
     for (const placement of placements) {
       const { event, lat, lng } = placement;
       const marker = L.marker([lat, lng], {
-        icon: this.createMarkerIcon(event.category),
+        icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
       marker.bindTooltip(this.createTooltip(event), {
         direction: "top",
