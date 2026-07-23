@@ -61,8 +61,10 @@ export {
 
 export {
   inferEventCategory,
+  inferCategoryFromTitle,
   resolveEventCategory,
   getDisplayCategory,
+  FOOD_TITLE_KEYWORDS,
   type CategoryInferInput,
 } from "./category-infer.js";
 

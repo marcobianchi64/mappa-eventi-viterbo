@@ -8,35 +8,115 @@ function normalize(value: string): string {
     .toLowerCase();
 }
 
+/** Parole nel titolo che indicano enogastronomia (controllo prioritario). */
+export const FOOD_TITLE_KEYWORDS = [
+  "sagra",
+  "sagre",
+  "vino",
+  "vini",
+  "bistecca",
+  "bistecche",
+  "gnocchi",
+  "gnocco",
+  "porchetta",
+  "porchett",
+  "tartufo",
+  "tartufi",
+  "fungo",
+  "funghi",
+  "aglio",
+  "pecora",
+  "cavatello",
+  "cavatelli",
+  "enogastronom",
+  "gusto",
+  "degustaz",
+  "cantina",
+  "birra",
+  "birre",
+  "formaggio",
+  "formaggi",
+  "salumi",
+  "prosciutto",
+  "olive",
+  "olio",
+  "miele",
+  "pasta",
+  "pizza",
+  "fritta",
+  "frittura",
+  "gastronom",
+  "cucina",
+  "piatti",
+  "piatto",
+  "convivio",
+  "mercato del",
+  "mercato della",
+  "prodotti tipici",
+  "food",
+  "wine",
+  "festa del",
+  "festa della",
+  "festa degli",
+  "festa di",
+  "feste del",
+  "feste degli",
+] as const;
+
+const CULTURE_TITLE_KEYWORDS = [
+  "manifestazion",
+  "tradizioni popolari",
+  "teatro",
+  "mostra",
+  "museo",
+  "spettacol",
+  "cinema",
+  "rassegna",
+  "festival",
+  "concerto",
+  "musica",
+  "estate a",
+] as const;
+
+const SPORT_TITLE_KEYWORDS = ["maratona", "corsa", "calcio", "torneo", "podistic", "ciclismo"] as const;
+
+const FAMILIES_TITLE_KEYWORDS = ["bambin", "famigl", "kids", "ragazzi"] as const;
+
+function matchesKeyword(blob: string, keywords: readonly string[]): boolean {
+  return keywords.some((word) => blob.includes(word));
+}
+
+/** Inferenza rapida dal solo titolo (criterio principale richiesto). */
+export function inferCategoryFromTitle(title: string): EventCategory | null {
+  const blob = normalize(title);
+  if (!blob) return null;
+  if (matchesKeyword(blob, FAMILIES_TITLE_KEYWORDS)) return "families";
+  if (matchesKeyword(blob, SPORT_TITLE_KEYWORDS)) return "sport";
+  if (matchesKeyword(blob, FOOD_TITLE_KEYWORDS)) return "food";
+  if (matchesKeyword(blob, CULTURE_TITLE_KEYWORDS)) return "culture";
+  if (/\b(dj|jazz|live music)\b/.test(blob)) return "music";
+  return null;
+}
+
 function inferFromBlob(blob: string): EventCategory {
   if (/\b(sport|calcio|pallavolo|maratona|corsa|bike|torneo|pallone|podistic)\b/.test(blob)) {
     return "sport";
   }
   if (/\b(bambin|famigl|kids|ragazzi)\b/.test(blob)) return "families";
 
-  if (
-    /sagra|sagre|enogastronom|gusto|degustaz|food|vino|cantina|aglio|pecora|cavatell|porchett|tartuf|fungh|frittur|prodotti tipici|mercato del|mercato della/.test(
-      blob,
-    )
-  ) {
-    return "food";
-  }
+  if (matchesKeyword(blob, FOOD_TITLE_KEYWORDS)) return "food";
 
   if (/\b(musica|concerto|dj|jazz|live music)\b/.test(blob)) return "music";
 
-  if (
-    /manifestazion|tradizioni popolari|teatro|mostra|museo|libri|arte|spettacol|cinema|film|rassegna|immagini|palco|spettacolo|festival|estate a .+ tra/.test(
-      blob,
-    )
-  ) {
-    return "culture";
-  }
+  if (matchesKeyword(blob, CULTURE_TITLE_KEYWORDS)) return "culture";
 
   return "other";
 }
 
 /** Inferisce la categoria da titolo, note e campo categoria grezzo. */
 export function inferEventCategory(text: string, hints: string[] = []): EventCategory {
+  const fromTitle = inferCategoryFromTitle(text);
+  if (fromTitle) return fromTitle;
   const blob = normalize(`${text} ${hints.join(" ")}`);
   return inferFromBlob(blob);
 }
@@ -89,12 +169,15 @@ export interface CategoryInferInput {
   category?: string | null;
 }
 
-/** Categoria effettiva per mappa/UI: inferisce da tutti i campi testuali. */
+/** Categoria effettiva per mappa/UI: prima il titolo, poi gli altri campi. */
 export function getDisplayCategory(event: CategoryInferInput): EventCategory {
   const stored = (event.category ?? "").trim().toLowerCase();
   if (!isGenericCategory(stored) && CATEGORY_ALIASES[stored]) {
     return CATEGORY_ALIASES[stored];
   }
+
+  const fromTitle = inferCategoryFromTitle(event.title);
+  if (fromTitle) return fromTitle;
 
   const blob = normalize(
     [event.title, event.description, event.venue, event.comune, event.city, event.location, event.category]

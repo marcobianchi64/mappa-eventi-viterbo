@@ -4,7 +4,6 @@ import {
   DEFAULT_MAP_ZOOM,
   buildMapMarkerPlacements,
   escapeHtml,
-  formatDisplayTitle,
   getDisplayCategory,
   getEventDisplayTitle,
   getCategoryMeta,
@@ -53,7 +52,7 @@ export class MapService {
   }
 
   private createTooltip(event: AtlasEvent): string {
-    const title = escapeHtml(formatDisplayTitle(getEventDisplayTitle(event)));
+    const title = escapeHtml(getEventDisplayTitle(event));
     const venue = event.venue ?? "";
     const image = event.image_url
       ? `<img src="${event.image_url}" alt="${title}" onerror="this.remove()">`

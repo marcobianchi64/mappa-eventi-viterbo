@@ -7,8 +7,7 @@ import {
   getCategoryMeta,
   getDisplayCategory,
   getEventDisplayTitle,
-  inferEventCategory,
-  refineEventTitle,
+  inferCategoryFromTitle,
   type AtlasEvent,
 } from "@atlas/core";
 import { runCli } from "./cli-exit.js";
@@ -37,25 +36,22 @@ runCli(async () => {
   let unchanged = 0;
 
   for (const event of events) {
-    const stored = (event.category ?? "other").trim().toLowerCase();
-    const inferred = inferEventCategory(
-      [event.title, event.description, event.venue, event.comune, event.city].filter(Boolean).join(" "),
-      [],
-    );
     const display = getDisplayCategory(event);
+    const fromTitle = inferCategoryFromTitle(event.title);
 
     const shouldUpdate =
-      force ? display !== event.category : stored === "other" || stored === "altro" || stored === "altri" || stored === "";
+      force ? display !== event.category : display !== event.category && display !== "other";
 
-    if (!shouldUpdate || inferred === "other" || display === event.category) {
+    if (!shouldUpdate) {
       unchanged += 1;
       continue;
     }
 
     const from = getCategoryMeta(event.category).label;
     const to = getCategoryMeta(display).label;
+    const via = fromTitle ? "titolo" : "testo completo";
     console.log(`${dryRun ? "Aggiornerei" : "Aggiorno"}: ${getEventDisplayTitle(event)}`);
-    console.log(`  ${from} → ${to} | ID ${event.date_event}`);
+    console.log(`  ${from} → ${to} (${via}) | ID ${event.date_event}`);
 
     if (!dryRun) {
       const { error: updateError } = await client
