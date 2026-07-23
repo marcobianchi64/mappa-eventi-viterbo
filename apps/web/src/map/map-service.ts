@@ -93,6 +93,7 @@ export class MapService {
         icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
       marker.bindTooltip(this.createTooltip(event), {
+        className: "atlas-event-tooltip",
         direction: "top",
         offset: [0, -8],
         opacity: 0.98,

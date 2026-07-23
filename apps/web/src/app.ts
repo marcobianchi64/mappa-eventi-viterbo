@@ -1,4 +1,5 @@
 import {
+  ATLAS_VERSION,
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
   detectContactType,
@@ -183,7 +184,7 @@ export class AtlasApp {
     const el = document.getElementById("mapEventCount");
     if (!el) return;
     const skipped = inRange - withCoords;
-    el.textContent = `📍 ${pins} pin · ${inRange} nel periodo · ${loaded} caricati${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
+    el.textContent = `📍 ${pins} pin · ${inRange} nel periodo · ${loaded} caricati · v${ATLAS_VERSION}${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
   }
 
   private updateWhenButtonLabel(): void {

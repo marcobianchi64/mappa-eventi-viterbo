@@ -238,10 +238,17 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* Tooltip mappa: testo a capo dentro la finestra bianca */
+.leaflet-tooltip.atlas-event-tooltip {
+  white-space: normal !important;
+  max-width: min(240px, calc(100vw - 32px)) !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  line-height: 1.35;
+}
+
 .leaflet-tooltip-pane .leaflet-tooltip {
   white-space: normal;
-  max-width: min(240px, calc(100vw - 32px));
-  overflow: hidden;
 }
 
 .legend {

@@ -1,5 +1,5 @@
 import type { EventCategory } from "./types/event.js";
-import { splitGluedWords } from "./title-format.js";
+import { refineEventTitle, splitGluedWords } from "./title-format.js";
 
 function normalize(value: string): string {
   return splitGluedWords(value)
@@ -169,18 +169,28 @@ export interface CategoryInferInput {
   category?: string | null;
 }
 
-/** Categoria effettiva per mappa/UI: prima il titolo, poi gli altri campi. */
+/** Categoria effettiva per mappa/UI: titolo raffinato + campi testuali. */
 export function getDisplayCategory(event: CategoryInferInput): EventCategory {
   const stored = (event.category ?? "").trim().toLowerCase();
   if (!isGenericCategory(stored) && CATEGORY_ALIASES[stored]) {
     return CATEGORY_ALIASES[stored];
   }
 
-  const fromTitle = inferCategoryFromTitle(event.title);
-  if (fromTitle) return fromTitle;
+  const refinedTitle = refineEventTitle({
+    title: event.title,
+    description: event.description ?? null,
+    venue: event.venue ?? null,
+    comune: event.comune ?? null,
+    city: event.city ?? null,
+  });
+
+  for (const text of [refinedTitle, event.title]) {
+    const fromTitle = inferCategoryFromTitle(text);
+    if (fromTitle) return fromTitle;
+  }
 
   const blob = normalize(
-    [event.title, event.description, event.venue, event.comune, event.city, event.location, event.category]
+    [refinedTitle, event.title, event.description, event.venue, event.comune, event.city, event.location, event.category]
       .filter(Boolean)
       .join(" "),
   );
