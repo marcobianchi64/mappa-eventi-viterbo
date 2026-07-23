@@ -34,10 +34,10 @@ export class MapService {
     return L.divIcon({
       className: "",
       html: `<div class="atlas-marker" style="background:${meta.color}"><span>${meta.icon}</span></div>`,
-      iconSize: [34, 34],
-      iconAnchor: [17, 34],
-      popupAnchor: [0, -30],
-      tooltipAnchor: [0, -30],
+      iconSize: [42, 42],
+      iconAnchor: [21, 42],
+      popupAnchor: [0, -36],
+      tooltipAnchor: [0, -36],
     });
   }
 
@@ -45,9 +45,9 @@ export class MapService {
     return L.divIcon({
       className: "",
       html: `<div class="draft-marker"></div>`,
-      iconSize: [34, 34],
-      iconAnchor: [17, 34],
-      popupAnchor: [0, -30],
+      iconSize: [42, 42],
+      iconAnchor: [21, 42],
+      popupAnchor: [0, -36],
     });
   }
 

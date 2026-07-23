@@ -4,7 +4,9 @@
   --atlas-text: #1f2937;
   --atlas-border: #e5e7eb;
   --shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
-  --panel-width: 330px;
+  --panel-width: 380px;
+  --marker-size: 42px;
+  --tooltip-width: 280px;
 }
 
 * { box-sizing: border-box; }
@@ -79,8 +81,8 @@ body {
   border: 1px solid rgba(229, 231, 235, 0.9);
 }
 
-.desktop-panel h1 { margin: 0 0 4px; font-size: 20px; }
-.desktop-panel p { margin: 0 0 12px; font-size: 13px; color: #555; line-height: 1.35; }
+.desktop-panel h1 { margin: 0 0 4px; font-size: 22px; }
+.desktop-panel p { margin: 0 0 12px; font-size: 14px; color: #555; line-height: 1.4; }
 .panel-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
 
 .search-box {
@@ -112,7 +114,7 @@ body {
 .bottom-sheet label {
   display: block;
   margin: 10px 0 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -174,8 +176,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .atlas-marker {
-  width: 34px;
-  height: 34px;
+  width: var(--marker-size);
+  height: var(--marker-size);
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
   display: flex;
@@ -187,15 +189,15 @@ button { font: inherit; cursor: pointer; }
 
 .atlas-marker span {
   transform: rotate(45deg);
-  font-size: 16px;
+  font-size: 18px;
   color: #fff;
   font-weight: bold;
 }
 
 .draft-marker {
   background: var(--atlas-blue);
-  width: 34px;
-  height: 34px;
+  width: var(--marker-size);
+  height: var(--marker-size);
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
   border: 2px solid #fff;
@@ -220,28 +222,29 @@ button { font: inherit; cursor: pointer; }
 .event-preview strong {
   display: block;
   margin-bottom: 4px;
-  font-size: 14px;
-  line-height: 1.35;
+  font-size: 15px;
+  line-height: 1.4;
   overflow-wrap: break-word;
 }
 
 .event-preview span {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: #555;
-  line-height: 1.35;
+  line-height: 1.4;
   overflow-wrap: break-word;
 }
 
 /* Tooltip mappa: larghezza fissa, testo leggibile */
 .leaflet-tooltip.atlas-event-tooltip {
   white-space: normal !important;
-  width: 220px !important;
-  min-width: 200px !important;
-  max-width: min(260px, calc(100vw - 32px)) !important;
+  width: var(--tooltip-width) !important;
+  min-width: 240px !important;
+  max-width: min(300px, calc(100vw - 32px)) !important;
   box-sizing: border-box;
-  padding: 10px 12px;
-  line-height: 1.35;
+  padding: 12px 14px;
+  line-height: 1.4;
+  font-size: 14px;
 }
 
 .legend {
