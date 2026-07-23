@@ -1,4 +1,5 @@
 import "leaflet/dist/leaflet.css";
+import "../../../packages/core/styles/atlas-map-ui.css";
 import "./styles/main.css";
 
 import { applyMapUiScale } from "@atlas/core";

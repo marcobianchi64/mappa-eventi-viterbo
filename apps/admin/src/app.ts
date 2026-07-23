@@ -1,4 +1,5 @@
 import {
+  applyMapUiScale,
   compareMapRegistryFromEvents,
   escapeHtml,
   formatDate,
@@ -55,6 +56,15 @@ export class AdminApp {
     document.getElementById("loginBtn")?.addEventListener("click", () => void this.login());
     void this.checkSession();
     this.applyDeepLinkTab();
+
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    window.addEventListener("resize", () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        applyMapUiScale();
+        this.mapService?.refreshScale();
+      }, 150);
+    });
   }
 
   private applyDeepLinkTab(): void {

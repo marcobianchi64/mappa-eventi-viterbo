@@ -3,9 +3,11 @@ import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
   dedupeEventsForMap,
+  escapeHtml,
   formatDisplayTitle,
-  getCategoryMeta,
   getDisplayCategory,
+  ATLAS_MAP_TOOLTIP_CLASS,
+  createAtlasMapMarkerIcon,
   type AtlasEvent,
 } from "@atlas/core";
 
@@ -13,6 +15,7 @@ export class AdminMapService {
   private map: L.Map;
   private layer = L.layerGroup();
   private markers = new Map<string, L.Marker>();
+  private lastEvents: AtlasEvent[] = [];
 
   constructor(
     containerId: string,
@@ -26,28 +29,32 @@ export class AdminMapService {
   }
 
   render(events: AtlasEvent[]): void {
+    this.lastEvents = events;
     this.layer.clearLayers();
     this.markers.clear();
 
     for (const event of dedupeEventsForMap(events)) {
       if (!Number.isFinite(event.lat) || !Number.isFinite(event.lng)) continue;
-      const meta = getCategoryMeta(getDisplayCategory(event));
       const marker = L.marker([event.lat, event.lng], {
         icon: L.divIcon({
           className: "",
-          html: `<div style="background:${meta.color};color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${meta.icon}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
+          ...createAtlasMapMarkerIcon(getDisplayCategory(event)),
         }),
       });
-      marker.bindTooltip(
-        `<strong>${formatDisplayTitle(event.title)}</strong><br>${event.venue ?? ""}`,
-        { direction: "top" },
-      );
+      const title = escapeHtml(formatDisplayTitle(event.title));
+      const venue = event.venue ? escapeHtml(event.venue) : "";
+      marker.bindTooltip(`<strong>${title}</strong>${venue ? `<br><span>${venue}</span>` : ""}`, {
+        className: ATLAS_MAP_TOOLTIP_CLASS,
+        direction: "top",
+      });
       marker.on("click", () => this.onSelect(event));
       marker.addTo(this.layer);
       if (event.date_event) this.markers.set(event.date_event, marker);
     }
+  }
+
+  refreshScale(): void {
+    if (this.lastEvents.length > 0) this.render(this.lastEvents);
   }
 
   focus(event: AtlasEvent): void {

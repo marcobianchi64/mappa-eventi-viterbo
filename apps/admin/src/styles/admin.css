@@ -1,6 +1,7 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: var(--font-base, 18px);
   background: #f4f6f8;
   color: #222;
 }

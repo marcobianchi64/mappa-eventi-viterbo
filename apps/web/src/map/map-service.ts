@@ -6,8 +6,9 @@ import {
   escapeHtml,
   getDisplayCategory,
   getEventDisplayTitle,
-  getCategoryMeta,
-  getMapMarkerIconLayout,
+  ATLAS_MAP_TOOLTIP_CLASS,
+  createAtlasDraftMarkerIcon,
+  createAtlasMapMarkerIcon,
   getMapUiScale,
   type AtlasEvent,
 } from "@atlas/core";
@@ -32,21 +33,16 @@ export class MapService {
   }
 
   private createMarkerIcon(category: string): L.DivIcon {
-    const meta = getCategoryMeta(category);
-    const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
     return L.divIcon({
       className: "",
-      html: `<div class="atlas-marker" style="background:${meta.color}"><span>${meta.icon}</span></div>`,
-      ...layout,
+      ...createAtlasMapMarkerIcon(category),
     });
   }
 
   private createDraftIcon(): L.DivIcon {
-    const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
     return L.divIcon({
       className: "",
-      html: `<div class="draft-marker"></div>`,
-      ...layout,
+      ...createAtlasDraftMarkerIcon(),
     });
   }
 
@@ -92,7 +88,7 @@ export class MapService {
         icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
       marker.bindTooltip(this.createTooltip(event), {
-        className: "atlas-event-tooltip",
+        className: ATLAS_MAP_TOOLTIP_CLASS,
         direction: "top",
         offset: [0, -8],
         opacity: 0.98,

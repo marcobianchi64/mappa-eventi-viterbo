@@ -1,0 +1,54 @@
+/* Condiviso tra apps/web e apps/admin — NON modificare qui a mano.
+ * Token in packages/core/src/map-ui-scale.ts · verifica: npm run verify:ui-scale */
+
+.atlas-marker {
+  width: var(--marker-size);
+  height: var(--marker-size);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.atlas-marker span {
+  transform: rotate(45deg);
+  font-size: var(--marker-icon-font);
+  color: #fff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.draft-marker {
+  background: #2563eb;
+  width: var(--marker-size);
+  height: var(--marker-size);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.leaflet-tooltip.atlas-event-tooltip {
+  white-space: normal !important;
+  width: var(--tooltip-width) !important;
+  min-width: var(--tooltip-min-width) !important;
+  max-width: min(var(--tooltip-width), calc(100vw - 32px)) !important;
+  box-sizing: border-box;
+  padding: var(--tooltip-padding) !important;
+  line-height: 1.45 !important;
+  font-size: var(--tooltip-font) !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip strong,
+.leaflet-tooltip.atlas-event-tooltip .event-preview strong {
+  font-size: var(--tooltip-title-font) !important;
+  font-weight: 800 !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip span,
+.leaflet-tooltip.atlas-event-tooltip .event-preview span {
+  font-size: var(--tooltip-font) !important;
+}

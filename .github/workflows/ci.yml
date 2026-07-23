@@ -22,6 +22,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Verify UI scale contract
+        run: npm run verify:ui-scale
+
       - name: Build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}

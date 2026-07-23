@@ -1,11 +1,9 @@
-/**
- * Scala UI mappa — token responsive desktop/mobile.
- *
- * Riferimenti accessibilità:
- * - Touch target minimo: 48px (Material / WCAG 2.5.5)
- * - Testo corpo minimo leggibile: 16px (18px qui)
- * - Pin mappa: sopra il minimo touch, visibili a zoom provinciale
- */
+/** Versione contratto UI — incrementare solo con revisione esplicita delle dimensioni. */
+export const ATLAS_UI_SCALE_CONTRACT_VERSION = 1;
+
+/** Minimi accessibilità (Material / WCAG 2.5.5). Non scendere sotto questi valori. */
+export const ATLAS_UI_MIN_TOUCH_PX = 48;
+export const ATLAS_UI_MIN_BODY_FONT_PX = 16;
 export const MAP_UI_BREAKPOINT_PX = 760;
 
 export type MapUiScaleTokens = {
