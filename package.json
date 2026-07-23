@@ -24,7 +24,8 @@
     "fix:categories": "npm run build -w @atlas/collector && npm run fix:categories -w @atlas/collector",
     "fix:titles": "npm run build -w @atlas/collector && npm run fix:titles -w @atlas/collector",
     "report:categories": "npm run build -w @atlas/collector && npm run report:categories -w @atlas/collector",
-    "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin"
+    "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin",
+    "verify:ui-scale": "npm run build -w @atlas/core && node scripts/verify-ui-scale.mjs"
   },
   "engines": {
     "node": ">=20"

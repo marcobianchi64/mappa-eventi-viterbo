@@ -4,16 +4,30 @@
   --atlas-text: #1f2937;
   --atlas-border: #e5e7eb;
   --shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
-  --panel-width: 380px;
-  --marker-size: 42px;
-  --tooltip-width: 280px;
+  /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
+  --font-base: 16px;
+  --panel-width: 440px;
+  --filter-panel-width: 360px;
+  --programs-panel-width: 400px;
+  --marker-size: 56px;
+  --marker-border: 3px;
+  --marker-icon-font: 24px;
+  --tooltip-width: 360px;
+  --tooltip-min-width: 300px;
+  --tooltip-padding: 16px;
+  --tooltip-font: 16px;
+  --tooltip-title-font: 18px;
 }
+
+html { font-size: var(--font-base); }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.45;
   color: var(--atlas-text);
 }
 
@@ -47,15 +61,16 @@ body {
 }
 
 .brand-pill {
-  padding: 9px 13px;
+  padding: 11px 16px;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--atlas-dark);
   white-space: nowrap;
 }
 
 .chip {
-  padding: 8px 11px;
-  font-size: 13px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--atlas-text);
   cursor: pointer;
@@ -81,8 +96,8 @@ body {
   border: 1px solid rgba(229, 231, 235, 0.9);
 }
 
-.desktop-panel h1 { margin: 0 0 4px; font-size: 22px; }
-.desktop-panel p { margin: 0 0 12px; font-size: 14px; color: #555; line-height: 1.4; }
+.desktop-panel h1 { margin: 0 0 6px; font-size: 1.45rem; }
+.desktop-panel p { margin: 0 0 14px; font-size: 1rem; color: #555; line-height: 1.45; }
 .panel-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
 
 .search-box {
@@ -113,8 +128,8 @@ body {
 .desktop-panel label,
 .bottom-sheet label {
   display: block;
-  margin: 10px 0 4px;
-  font-size: 14px;
+  margin: 10px 0 5px;
+  font-size: 1rem;
   font-weight: 800;
 }
 
@@ -150,13 +165,13 @@ button { font: inherit; cursor: pointer; }
   display: none;
 }
 
-.filter-panel { right: 12px; width: 280px; }
-.programs-panel { left: 12px; width: 320px; max-height: calc(100vh - 84px); overflow-y: auto; }
+.filter-panel { right: 12px; width: var(--filter-panel-width); }
+.programs-panel { left: 12px; width: var(--programs-panel-width); max-height: calc(100vh - 84px); overflow-y: auto; }
 .filter-panel.open,
 .programs-panel.open { display: block; }
 
 .filter-panel h3,
-.programs-panel h3 { margin: 0 0 10px; font-size: 16px; }
+.programs-panel h3 { margin: 0 0 10px; font-size: 1.1rem; }
 
 .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
@@ -183,15 +198,16 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
 }
 
 .atlas-marker span {
   transform: rotate(45deg);
-  font-size: 18px;
+  font-size: var(--marker-icon-font);
   color: #fff;
   font-weight: bold;
+  line-height: 1;
 }
 
 .draft-marker {
@@ -200,8 +216,8 @@ button { font: inherit; cursor: pointer; }
   height: var(--marker-size);
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
 }
 
 .event-preview {
@@ -212,39 +228,39 @@ button { font: inherit; cursor: pointer; }
 
 .event-preview img {
   width: 100%;
-  height: 90px;
+  height: 110px;
   object-fit: cover;
-  border-radius: 9px;
-  margin-bottom: 6px;
+  border-radius: 10px;
+  margin-bottom: 8px;
   background: #f2f4f7;
 }
 
 .event-preview strong {
   display: block;
-  margin-bottom: 4px;
-  font-size: 15px;
-  line-height: 1.4;
+  margin-bottom: 6px;
+  font-size: var(--tooltip-title-font);
+  line-height: 1.35;
   overflow-wrap: break-word;
 }
 
 .event-preview span {
   display: block;
-  font-size: 13px;
-  color: #555;
+  font-size: var(--tooltip-font);
+  color: #444;
   line-height: 1.4;
   overflow-wrap: break-word;
 }
 
-/* Tooltip mappa: larghezza fissa, testo leggibile */
+/* Tooltip mappa: larghezza da token, mai più stretta di 300px */
 .leaflet-tooltip.atlas-event-tooltip {
   white-space: normal !important;
   width: var(--tooltip-width) !important;
-  min-width: 240px !important;
-  max-width: min(300px, calc(100vw - 32px)) !important;
+  min-width: var(--tooltip-min-width) !important;
+  max-width: min(var(--tooltip-width), calc(100vw - 32px)) !important;
   box-sizing: border-box;
-  padding: 12px 14px;
+  padding: var(--tooltip-padding);
   line-height: 1.4;
-  font-size: 14px;
+  font-size: var(--tooltip-font);
 }
 
 .legend {
@@ -426,11 +442,11 @@ button { font: inherit; cursor: pointer; }
 }
 
 .stable-event-body { padding: 12px 14px; }
-.stable-event-title { margin: 0 0 8px; font-size: 21px; line-height: 1.12; color: #111827; letter-spacing: -0.03em; }
-.stable-event-facts { display: grid; gap: 6px; margin-bottom: 8px; color: #475467; font-size: 13px; }
+.stable-event-title { margin: 0 0 10px; font-size: 1.45rem; line-height: 1.15; color: #111827; letter-spacing: -0.03em; }
+.stable-event-facts { display: grid; gap: 7px; margin-bottom: 10px; color: #475467; font-size: 1rem; }
 .stable-event-section { border-top: 1px solid #e5e7eb; padding-top: 10px; margin-top: 10px; }
-.stable-event-section h3 { margin: 0 0 5px; font-size: 14px; color: #111827; }
-.stable-event-section p { margin: 0; color: #475467; font-size: 13px; line-height: 1.38; }
+.stable-event-section h3 { margin: 0 0 6px; font-size: 1.05rem; color: #111827; }
+.stable-event-section p { margin: 0; color: #475467; font-size: 1rem; line-height: 1.4; }
 
 .stable-event-actions {
   display: grid;

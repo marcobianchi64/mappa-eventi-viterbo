@@ -7,6 +7,7 @@ import {
   getDisplayCategory,
   getEventDisplayTitle,
   getCategoryMeta,
+  getMapMarkerIconLayout,
   type AtlasEvent,
 } from "@atlas/core";
 
@@ -31,23 +32,20 @@ export class MapService {
 
   private createMarkerIcon(category: string): L.DivIcon {
     const meta = getCategoryMeta(category);
+    const layout = getMapMarkerIconLayout();
     return L.divIcon({
       className: "",
       html: `<div class="atlas-marker" style="background:${meta.color}"><span>${meta.icon}</span></div>`,
-      iconSize: [42, 42],
-      iconAnchor: [21, 42],
-      popupAnchor: [0, -36],
-      tooltipAnchor: [0, -36],
+      ...layout,
     });
   }
 
   private createDraftIcon(): L.DivIcon {
+    const layout = getMapMarkerIconLayout();
     return L.divIcon({
       className: "",
       html: `<div class="draft-marker"></div>`,
-      iconSize: [42, 42],
-      iconAnchor: [21, 42],
-      popupAnchor: [0, -36],
+      ...layout,
     });
   }
 

@@ -1,6 +1,6 @@
 import type { EventCategory, CategoryMeta } from "./types/event.js";
 
-export const ATLAS_VERSION = "1.0.3";
+export const ATLAS_VERSION = "1.0.4";
 
 export const DEFAULT_MAP_CENTER: [number, number] = [42.42, 12.104];
 export const DEFAULT_MAP_ZOOM = 10;

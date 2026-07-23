@@ -37,6 +37,13 @@ export {
   DEFAULT_OPS_WHATSAPP,
 } from "./constants.js";
 
+export {
+  MAP_UI_SCALE,
+  applyMapUiScale,
+  getMapMarkerIconLayout,
+  type MapMarkerIconLayout,
+} from "./map-ui-scale.js";
+
 export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";
 export {
   parseMarkdownTables,
