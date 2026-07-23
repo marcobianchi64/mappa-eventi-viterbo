@@ -80,14 +80,29 @@ export class AtlasApp {
 
   private bindEvents(): void {
     document.getElementById("whenButton")?.addEventListener("click", () => {
+      this.closeDockFlyouts();
       document.getElementById("filterPanel")?.classList.toggle("open");
       document.getElementById("programsPanel")?.classList.remove("open");
     });
 
     document.getElementById("programsButton")?.addEventListener("click", () => {
+      this.closeDockFlyouts();
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
       document.getElementById("filterPanel")?.classList.remove("open");
+    });
+
+    document.getElementById("dockNearBtn")?.addEventListener("click", () => {
+      this.toggleDockFlyout("near");
+    });
+    document.getElementById("dockInsertBtn")?.addEventListener("click", () => {
+      this.toggleDockFlyout("insert");
+    });
+    document.getElementById("closeNearFlyout")?.addEventListener("click", () => {
+      this.closeDockFlyouts();
+    });
+    document.getElementById("closeInsertFlyout")?.addEventListener("click", () => {
+      this.closeDockFlyouts();
     });
 
     document.querySelectorAll(".filter-option").forEach((button) => {
@@ -114,19 +129,11 @@ export class AtlasApp {
     document.getElementById("saveButtonMobile")?.addEventListener("click", () => void this.addEvent("mobile"));
 
     document.getElementById("openSearchMobile")?.addEventListener("click", () => {
-      document.getElementById("mobileSheet")?.classList.add("open");
-      document.getElementById("mobileInsertForm")?.classList.remove("open");
-      const toggle = document.getElementById("toggleInsertEventMobile");
-      if (toggle) toggle.textContent = "＋ Inserisci un evento";
+      this.openMobileSheet("near");
     });
 
-    document.getElementById("toggleInsertEventMobile")?.addEventListener("click", () => {
-      const form = document.getElementById("mobileInsertForm");
-      const button = document.getElementById("toggleInsertEventMobile");
-      const willOpen = !form?.classList.contains("open");
-      form?.classList.toggle("open", willOpen);
-      if (button) button.textContent = willOpen ? "− Chiudi inserimento evento" : "＋ Inserisci un evento";
-      if (willOpen) setTimeout(() => form?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    document.getElementById("openInsertMobile")?.addEventListener("click", () => {
+      this.openMobileSheet("insert");
     });
 
     document.getElementById("closeSheet")?.addEventListener("click", () => {
@@ -134,7 +141,7 @@ export class AtlasApp {
     });
 
     document.getElementById("stableEventOverlay")?.addEventListener("click", closeEventSheet);
-    document.getElementById("nearMeButtonTop")?.addEventListener("click", () => this.goNearMe());
+    document.getElementById("nearMeButtonDock")?.addEventListener("click", () => this.goNearMe());
     document.getElementById("nearMeButtonMobile")?.addEventListener("click", () => this.goNearMe());
 
     window.addEventListener("pageshow", () => this.restoreTopbar());
@@ -195,6 +202,44 @@ export class AtlasApp {
     if (!el) return;
     const skipped = inRange - withCoords;
     el.textContent = `📍 ${pins} pin · ${inRange} nel periodo · ${loaded} caricati · v${ATLAS_VERSION}${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
+  }
+
+  private toggleDockFlyout(which: "near" | "insert"): void {
+    const near = document.getElementById("dockNearFlyout");
+    const insert = document.getElementById("dockInsertFlyout");
+    const nearBtn = document.getElementById("dockNearBtn");
+    const insertBtn = document.getElementById("dockInsertBtn");
+    document.getElementById("filterPanel")?.classList.remove("open");
+    document.getElementById("programsPanel")?.classList.remove("open");
+
+    const nearOpen = which === "near" && !near?.classList.contains("open");
+    const insertOpen = which === "insert" && !insert?.classList.contains("open");
+
+    near?.classList.toggle("open", nearOpen);
+    insert?.classList.toggle("open", insertOpen);
+    near?.setAttribute("aria-hidden", nearOpen ? "false" : "true");
+    insert?.setAttribute("aria-hidden", insertOpen ? "false" : "true");
+    nearBtn?.classList.toggle("active", nearOpen);
+    insertBtn?.classList.toggle("active", insertOpen);
+  }
+
+  private closeDockFlyouts(): void {
+    ["dockNearFlyout", "dockInsertFlyout"].forEach((id) => {
+      const el = document.getElementById(id);
+      el?.classList.remove("open");
+      el?.setAttribute("aria-hidden", "true");
+    });
+    document.getElementById("dockNearBtn")?.classList.remove("active");
+    document.getElementById("dockInsertBtn")?.classList.remove("active");
+  }
+
+  private openMobileSheet(which: "near" | "insert"): void {
+    const sheet = document.getElementById("mobileSheet");
+    const nearPanel = document.getElementById("mobileNearPanel");
+    const insertPanel = document.getElementById("mobileInsertPanel");
+    sheet?.classList.add("open");
+    nearPanel?.classList.toggle("hidden", which !== "near");
+    insertPanel?.classList.toggle("hidden", which !== "insert");
   }
 
   private updateWhenButtonLabel(): void {
@@ -414,11 +459,12 @@ export class AtlasApp {
   }
 
   private setLocationButtonsBusy(isBusy: boolean): void {
-    ["nearMeButtonTop", "nearMeButtonMobile"].forEach((id) => {
+    const label = isBusy ? "📍 Cerco vicino a te..." : "📍 Cerca vicino a me";
+    ["nearMeButtonDock", "nearMeButtonMobile"].forEach((id) => {
       const button = document.getElementById(id) as HTMLButtonElement | null;
       if (!button) return;
       button.disabled = isBusy;
-      button.textContent = isBusy ? "📍 Cerco vicino a te..." : "📍 Cerca vicino a me";
+      button.textContent = label;
     });
   }
 

@@ -16,25 +16,25 @@ export function renderShell(): string {
       <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: ${rangeLabel}</button>
       <span id="mapEventCount" class="chip muted" aria-live="polite"></span>
       <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
-      <button id="nearMeButtonTop" class="chip blue" type="button">📍 Cerca vicino a me</button>
     </div>
 
-    <aside class="desktop-panel" id="desktopPanel">
-      <h1>Scopri cosa succede vicino a te</h1>
-      <p>Esplora la mappa, cerca una località o segnala un evento. Le proposte entrano in revisione prima della pubblicazione.</p>
+    <aside class="dock-panel" id="desktopDock" aria-label="Azioni rapide">
+      <button id="dockNearBtn" class="dock-btn" type="button">📍 Eventi vicino a te</button>
+      <button id="dockInsertBtn" class="dock-btn secondary" type="button">＋ Inserisci un evento</button>
+    </aside>
 
+    <div id="dockNearFlyout" class="dock-flyout" aria-hidden="true">
+      <div class="dock-flyout-header">
+        <h2>Eventi vicino a te</h2>
+        <button id="closeNearFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
+      </div>
+      <p class="dock-flyout-lead">Esplora la mappa, cerca una località o centrati sulla tua posizione.</p>
       <div class="search-box">
-        <input id="searchPlace" placeholder="Cerca evento o località disponibile" />
+        <input id="searchPlace" placeholder="Cerca evento o località" />
         <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
       </div>
-
-      <div class="panel-section" id="desktopInsertForm">
-        ${insertFormFields("")}
-        <button id="saveButton" class="btn full" type="button">Invia segnalazione per revisione</button>
-        <div class="hint">Clicca sulla mappa per impostare automaticamente la posizione.</div>
-        <div id="status" class="status" aria-live="polite"></div>
-      </div>
-
+      <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
+      <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
       <div class="legend">
         <div class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Musica</div>
         <div class="legend-item"><span class="legend-dot" style="background:#ea580c"></span>Enogastronomia</div>
@@ -43,7 +43,21 @@ export function renderShell(): string {
         <div class="legend-item"><span class="legend-dot" style="background:#0891b2"></span>Famiglie</div>
         <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span>Altri</div>
       </div>
-    </aside>
+    </div>
+
+    <div id="dockInsertFlyout" class="dock-flyout" aria-hidden="true">
+      <div class="dock-flyout-header">
+        <h2>Inserisci un evento</h2>
+        <button id="closeInsertFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
+      </div>
+      <p class="dock-flyout-lead">Segnala un evento: entra in revisione prima della pubblicazione.</p>
+      <div class="panel-section" id="desktopInsertForm">
+        ${insertFormFields("")}
+        <button id="saveButton" class="btn full" type="button">Invia segnalazione per revisione</button>
+        <div class="hint">Clicca sulla mappa per impostare la posizione.</div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </div>
+    </div>
 
     <div id="filterPanel" class="filter-panel">
       <h3>Quando vuoi uscire?</h3>
@@ -60,30 +74,30 @@ export function renderShell(): string {
     <div id="map"></div>
 
     <div class="mobile-actions">
-      <button id="openSearchMobile" class="btn dark" type="button">🔎 Cerca / segnala</button>
-      <button id="nearMeButtonMobile" class="btn" type="button">📍 Cerca vicino a me</button>
+      <button id="openSearchMobile" class="btn dark" type="button">📍 Eventi vicino a te</button>
+      <button id="openInsertMobile" class="btn" type="button">＋ Inserisci evento</button>
     </div>
 
     <div id="mobileSheet" class="bottom-sheet">
       <div class="sheet-handle"></div>
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
-      <h2>Cerca eventi</h2>
-      <p>Cerca soltanto tra gli eventi attivi presenti su Atlas.</p>
-
-      <div class="search-box">
-        <input id="searchPlaceMobile" placeholder="Cerca evento o località disponibile" />
-        <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>
+      <div id="mobileNearPanel">
+        <h2>Eventi vicino a te</h2>
+        <p class="dock-flyout-lead">Cerca tra gli eventi attivi o centrati sulla tua posizione.</p>
+        <div class="search-box">
+          <input id="searchPlaceMobile" placeholder="Cerca evento o località" />
+          <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>
+        </div>
+        <button id="nearMeButtonMobile" class="btn full" type="button">📍 Cerca vicino a me</button>
+        <div class="search-note">La ricerca non sposta la mappa verso località senza eventi attivi.</div>
       </div>
-      <div class="search-note">La ricerca non sposta la mappa verso località prive di eventi attivi.</div>
-
-      <button id="toggleInsertEventMobile" class="btn insert-event-toggle" type="button">＋ Inserisci un evento</button>
-
-      <div id="mobileInsertForm" class="mobile-insert-form">
+      <div id="mobileInsertPanel" class="hidden">
+        <h2>Inserisci un evento</h2>
+        <p class="dock-flyout-lead">Segnala un evento per la revisione.</p>
         <div class="panel-section">
-          <h3>Inserisci un evento</h3>
           ${insertFormFields("Mobile")}
           <button id="saveButtonMobile" class="btn full" type="button">Invia segnalazione per revisione</button>
-          <div class="hint">Chiudi il pannello e clicca sulla mappa per impostare la posizione dell'evento.</div>
+          <div class="hint">Clicca sulla mappa per impostare la posizione.</div>
           <div id="statusMobile" class="status" aria-live="polite"></div>
         </div>
       </div>

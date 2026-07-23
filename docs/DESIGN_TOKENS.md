@@ -1,4 +1,4 @@
-# Token UI Atlas — contratto v1
+# Token UI Atlas — contratto v2
 
 **Non perdere tempo su dimensioni a caso.** Tutte le misure UI della mappa sono centralizzate e verificate in CI.
 
@@ -6,45 +6,43 @@
 
 | File | Ruolo |
 |------|--------|
-| `packages/core/src/map-ui-scale.ts` | Numeri desktop/mobile (pin, testo, tooltip, pannello) |
+| `packages/core/src/map-ui-scale.ts` | Numeri desktop/mobile (pin, testo, tooltip, pannello, scheda evento) |
 | `packages/core/src/map-marker.ts` | Factory pin Leaflet condivisa web + admin |
-| `packages/core/styles/atlas-map-ui.css` | CSS pin e tooltip (importato da entrambe le app) |
+| `packages/core/styles/atlas-map-ui.css` | CSS pin e tooltip |
 
-## Valori attuali (bloccati)
+## Valori attuali (bloccati — contratto v2)
 
 | Token | Desktop | Mobile |
 |-------|---------|--------|
 | Pin | 68px | 80px |
-| Icona pin | 30px | 36px |
-| Testo base | 18px | 18px |
-| Tooltip titolo | 23px | 24px |
-| Tooltip corpo | 18px | 19px |
+| Testo base / form | **20px** | **20px** |
+| Tooltip titolo | **26px** | **27px** |
+| Tooltip corpo | **20px** | **21px** |
+| Scheda evento titolo | **28px** | **28px** |
+| Dock (solo desktop) | 248px, 2 pulsanti | — |
+| Pannello espanso (flyout) | 500px | bottom sheet |
 
-Minimi accessibilità (non scendere sotto): touch **48px**, testo **16px**.
+Minimi accessibilità: touch **48px**, testo **16px**.
+
+## UX desktop — dock
+
+Pannello sinistro compatto con due pulsanti:
+
+1. **Eventi vicino a te** → flyout con ricerca, geolocalizzazione, legenda
+2. **Inserisci un evento** → flyout con modulo segnalazione
 
 ## Come modificare (solo se necessario)
 
 1. Modifica **solo** `map-ui-scale.ts`
-2. Incrementa `ATLAS_UI_SCALE_CONTRACT_VERSION` se cambiano i valori pubblicati
+2. Incrementa `ATLAS_UI_SCALE_CONTRACT_VERSION`
 3. Esegui `npm run verify:ui-scale`
 4. Aggiorna questa tabella
 
 ## Vietato
 
-- `iconSize: [28, 28]` o simili in `map-service.ts` / `admin-map.ts`
-- `font-size: 12px` su tooltip mappa (Leaflet default)
-- Duplicare CSS pin fuori da `atlas-map-ui.css`
-
-## Obbligatorio nel codice
-
-```ts
-import { applyMapUiScale, createAtlasMapMarkerIcon, ATLAS_MAP_TOOLTIP_CLASS } from "@atlas/core";
-
-applyMapUiScale(); // all'avvio + al resize
-
-L.divIcon({ className: "", ...createAtlasMapMarkerIcon(category) });
-marker.bindTooltip(html, { className: ATLAS_MAP_TOOLTIP_CLASS });
-```
+- Pin o font hardcoded in `map-service.ts` / `admin-map.ts`
+- `font-size: 10px` / `12px` su schede evento o tooltip
+- Ripristinare il pannello sinistro monolitico a schermo intero
 
 ## Verifica automatica
 
@@ -52,4 +50,4 @@ marker.bindTooltip(html, { className: ATLAS_MAP_TOOLTIP_CLASS });
 npm run verify:ui-scale
 ```
 
-Eseguito in CI su ogni push/PR. Fallisce se qualcuno reintroduce dimensioni hardcoded o scende sotto i minimi.
+Eseguito in CI su ogni push/PR.
