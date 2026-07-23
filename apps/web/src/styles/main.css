@@ -5,18 +5,23 @@
   --atlas-border: #e5e7eb;
   --shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
-  --font-base: 16px;
-  --panel-width: 440px;
-  --filter-panel-width: 360px;
-  --programs-panel-width: 400px;
+  --font-base: 18px;
+  --panel-width: 460px;
+  --filter-panel-width: 380px;
+  --programs-panel-width: 420px;
   --marker-size: 56px;
   --marker-border: 3px;
   --marker-icon-font: 24px;
-  --tooltip-width: 360px;
-  --tooltip-min-width: 300px;
-  --tooltip-padding: 16px;
-  --tooltip-font: 16px;
-  --tooltip-title-font: 18px;
+  --tooltip-width: 380px;
+  --tooltip-min-width: 320px;
+  --tooltip-padding: 18px;
+  --tooltip-font: 18px;
+  --tooltip-title-font: 22px;
+  --panel-label-font: 18px;
+  --panel-input-font: 18px;
+  --chip-font: 17px;
+  --legend-font: 16px;
+  --filter-option-font: 17px;
 }
 
 html { font-size: var(--font-base); }
@@ -62,7 +67,7 @@ body {
 
 .brand-pill {
   padding: 11px 16px;
-  font-size: 1.05rem;
+  font-size: calc(var(--chip-font) + 1px);
   font-weight: 800;
   color: var(--atlas-dark);
   white-space: nowrap;
@@ -70,7 +75,7 @@ body {
 
 .chip {
   padding: 10px 14px;
-  font-size: 0.95rem;
+  font-size: var(--chip-font);
   font-weight: 700;
   color: var(--atlas-text);
   cursor: pointer;
@@ -96,8 +101,8 @@ body {
   border: 1px solid rgba(229, 231, 235, 0.9);
 }
 
-.desktop-panel h1 { margin: 0 0 6px; font-size: 1.45rem; }
-.desktop-panel p { margin: 0 0 14px; font-size: 1rem; color: #555; line-height: 1.45; }
+.desktop-panel h1 { margin: 0 0 6px; font-size: 1.55rem; }
+.desktop-panel p { margin: 0 0 14px; font-size: var(--panel-input-font); color: #555; line-height: 1.45; }
 .panel-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
 
 .search-box {
@@ -115,10 +120,11 @@ body {
 .bottom-sheet select,
 .bottom-sheet textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #d0d5dd;
   border-radius: 10px;
-  font: inherit;
+  font-size: var(--panel-input-font);
+  line-height: 1.4;
   background: #fff;
 }
 
@@ -129,7 +135,7 @@ body {
 .bottom-sheet label {
   display: block;
   margin: 10px 0 5px;
-  font-size: 1rem;
+  font-size: var(--panel-label-font);
   font-weight: 800;
 }
 
@@ -138,7 +144,8 @@ button { font: inherit; cursor: pointer; }
 .btn {
   border: 0;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
+  font-size: var(--panel-input-font);
   font-weight: 800;
   background: var(--atlas-blue);
   color: #fff;
@@ -147,10 +154,10 @@ button { font: inherit; cursor: pointer; }
 .btn.dark { background: var(--atlas-dark); }
 .btn.full { width: 100%; margin-top: 12px; }
 
-.status { margin-top: 10px; font-size: 13px; font-weight: 800; }
+.status { margin-top: 10px; font-size: var(--legend-font); font-weight: 800; }
 .status.error { color: #b42318; }
 .status.success { color: #167a38; }
-.hint { margin-top: 9px; font-size: 12px; color: #666; line-height: 1.35; }
+.hint { margin-top: 9px; font-size: var(--legend-font); color: #666; line-height: 1.4; }
 
 .filter-panel,
 .programs-panel {
@@ -178,8 +185,9 @@ button { font: inherit; cursor: pointer; }
 .filter-option {
   border: 1px solid #d0d5dd;
   background: #fff;
-  padding: 9px;
+  padding: 11px;
   border-radius: 10px;
+  font-size: var(--filter-option-font);
   font-weight: 800;
   color: var(--atlas-text);
 }
@@ -251,16 +259,25 @@ button { font: inherit; cursor: pointer; }
   overflow-wrap: break-word;
 }
 
-/* Tooltip mappa: larghezza da token, mai più stretta di 300px */
+/* Tooltip mappa: override font 12px di Leaflet */
 .leaflet-tooltip.atlas-event-tooltip {
   white-space: normal !important;
   width: var(--tooltip-width) !important;
   min-width: var(--tooltip-min-width) !important;
   max-width: min(var(--tooltip-width), calc(100vw - 32px)) !important;
   box-sizing: border-box;
-  padding: var(--tooltip-padding);
-  line-height: 1.4;
-  font-size: var(--tooltip-font);
+  padding: var(--tooltip-padding) !important;
+  line-height: 1.45 !important;
+  font-size: var(--tooltip-font) !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip .event-preview strong {
+  font-size: var(--tooltip-title-font) !important;
+  font-weight: 800 !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip .event-preview span {
+  font-size: var(--tooltip-font) !important;
 }
 
 .legend {
@@ -269,13 +286,14 @@ button { font: inherit; cursor: pointer; }
   border-top: 1px solid #eee;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  font-size: 12px;
+  gap: 8px;
+  font-size: var(--legend-font);
   color: #444;
 }
 
-.legend-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+
+.legend-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 
 .program-item {
   border: 1px solid #e5e7eb;
@@ -285,8 +303,8 @@ button { font: inherit; cursor: pointer; }
   background: #f8fafc;
 }
 
-.program-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
-.program-item span { display: block; font-size: 12px; color: #555; line-height: 1.35; }
+.program-item strong { display: block; margin-bottom: 5px; font-size: var(--panel-label-font); }
+.program-item span { display: block; font-size: var(--legend-font); color: #555; line-height: 1.4; }
 .program-item button {
   margin-top: 8px;
   border: 0;
@@ -329,7 +347,7 @@ button { font: inherit; cursor: pointer; }
 .mobile-insert-form { display: none; }
 .mobile-insert-form.open { display: block; }
 .insert-event-toggle { width: 100%; margin-top: 12px; border: 1px solid #cbd5e1; background: #f8fafc; color: #111827; }
-.search-note { margin: 7px 0 0; font-size: 12px; line-height: 1.35; color: #667085; }
+.search-note { margin: 7px 0 0; font-size: var(--legend-font); line-height: 1.4; color: #667085; }
 
 .stable-event-overlay {
   position: fixed;

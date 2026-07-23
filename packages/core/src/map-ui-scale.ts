@@ -3,15 +3,20 @@ export const MAP_UI_SCALE = {
   markerSizePx: 56,
   markerBorderPx: 3,
   markerIconFontPx: 24,
-  tooltipWidthPx: 360,
-  tooltipMinWidthPx: 300,
-  tooltipPaddingPx: 16,
-  tooltipFontPx: 16,
-  tooltipTitleFontPx: 18,
-  panelWidthPx: 440,
-  filterPanelWidthPx: 360,
-  programsPanelWidthPx: 400,
-  baseFontPx: 16,
+  tooltipWidthPx: 380,
+  tooltipMinWidthPx: 320,
+  tooltipPaddingPx: 18,
+  tooltipFontPx: 18,
+  tooltipTitleFontPx: 22,
+  panelWidthPx: 460,
+  filterPanelWidthPx: 380,
+  programsPanelWidthPx: 420,
+  baseFontPx: 18,
+  panelLabelFontPx: 18,
+  panelInputFontPx: 18,
+  chipFontPx: 17,
+  legendFontPx: 16,
+  filterOptionFontPx: 17,
 } as const;
 
 export type MapMarkerIconLayout = {
@@ -49,4 +54,9 @@ export function applyMapUiScale(root: HTMLElement = document.documentElement): v
   root.style.setProperty("--filter-panel-width", `${s.filterPanelWidthPx}px`);
   root.style.setProperty("--programs-panel-width", `${s.programsPanelWidthPx}px`);
   root.style.setProperty("--font-base", `${s.baseFontPx}px`);
+  root.style.setProperty("--panel-label-font", `${s.panelLabelFontPx}px`);
+  root.style.setProperty("--panel-input-font", `${s.panelInputFontPx}px`);
+  root.style.setProperty("--chip-font", `${s.chipFontPx}px`);
+  root.style.setProperty("--legend-font", `${s.legendFontPx}px`);
+  root.style.setProperty("--filter-option-font", `${s.filterOptionFontPx}px`);
 }
