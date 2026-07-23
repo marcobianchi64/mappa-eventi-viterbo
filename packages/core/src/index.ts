@@ -39,9 +39,15 @@ export {
 
 export {
   MAP_UI_SCALE,
+  MAP_UI_SCALE_DESKTOP,
+  MAP_UI_SCALE_MOBILE,
+  MAP_UI_BREAKPOINT_PX,
   applyMapUiScale,
   getMapMarkerIconLayout,
+  getMapUiScale,
+  isMobileMapViewport,
   type MapMarkerIconLayout,
+  type MapUiScaleTokens,
 } from "./map-ui-scale.js";
 
 export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";

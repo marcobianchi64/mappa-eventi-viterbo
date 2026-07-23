@@ -2,6 +2,7 @@ import {
   ATLAS_VERSION,
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
+  applyMapUiScale,
   detectContactType,
   escapeHtml,
   eventsLookSimilar,
@@ -142,6 +143,15 @@ export class AtlasApp {
         this.restoreTopbar();
         setTimeout(() => this.mapService.invalidateSize(), 100);
       }
+    });
+
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    window.addEventListener("resize", () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        applyMapUiScale();
+        this.renderMapEvents();
+      }, 150);
     });
   }
 

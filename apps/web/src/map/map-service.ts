@@ -8,6 +8,7 @@ import {
   getEventDisplayTitle,
   getCategoryMeta,
   getMapMarkerIconLayout,
+  getMapUiScale,
   type AtlasEvent,
 } from "@atlas/core";
 
@@ -32,7 +33,7 @@ export class MapService {
 
   private createMarkerIcon(category: string): L.DivIcon {
     const meta = getCategoryMeta(category);
-    const layout = getMapMarkerIconLayout();
+    const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
     return L.divIcon({
       className: "",
       html: `<div class="atlas-marker" style="background:${meta.color}"><span>${meta.icon}</span></div>`,
@@ -41,7 +42,7 @@ export class MapService {
   }
 
   private createDraftIcon(): L.DivIcon {
-    const layout = getMapMarkerIconLayout();
+    const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
     return L.divIcon({
       className: "",
       html: `<div class="draft-marker"></div>`,
@@ -119,8 +120,9 @@ export class MapService {
 
   flyToUser(lat: number, lng: number): void {
     if (this.userMarker) this.map.removeLayer(this.userMarker);
+    const pinRadius = Math.round(getMapUiScale().markerSizePx * 0.18);
     this.userMarker = L.circleMarker([lat, lng], {
-      radius: 9,
+      radius: pinRadius,
       color: "#ffffff",
       weight: 3,
       fillColor: "#2563eb",

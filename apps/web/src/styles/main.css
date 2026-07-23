@@ -9,14 +9,14 @@
   --panel-width: 460px;
   --filter-panel-width: 380px;
   --programs-panel-width: 420px;
-  --marker-size: 56px;
+  --marker-size: 68px;
   --marker-border: 3px;
-  --marker-icon-font: 24px;
-  --tooltip-width: 380px;
+  --marker-icon-font: 30px;
+  --tooltip-width: 400px;
   --tooltip-min-width: 320px;
   --tooltip-padding: 18px;
   --tooltip-font: 18px;
-  --tooltip-title-font: 22px;
+  --tooltip-title-font: 23px;
   --panel-label-font: 18px;
   --panel-input-font: 18px;
   --chip-font: 17px;
