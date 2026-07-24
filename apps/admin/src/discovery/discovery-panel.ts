@@ -1,5 +1,7 @@
 import {
   escapeHtml,
+  discoveryEventExternalId,
+  countDiscoveryDataRowsInPaste,
   eventsAreDiscoveryDuplicates,
   formatComuneLabel,
   geocodeComuneViterbo,
@@ -22,11 +24,25 @@ export interface ProcessedDiscoveryRow {
   reason?: string;
 }
 
+export interface DiscoveryPasteAudit {
+  dataRowsInPaste: number;
+  parsedCount: number;
+}
+
 export function processDiscoveryPaste(
   text: string,
   existing: AtlasEvent[],
-): { rows: ProcessedDiscoveryRow[]; session: ReturnType<typeof loadDiscoverySession> } {
+): {
+  rows: ProcessedDiscoveryRow[];
+  session: ReturnType<typeof loadDiscoverySession>;
+  audit: DiscoveryPasteAudit;
+} {
+  const audit: DiscoveryPasteAudit = {
+    dataRowsInPaste: countDiscoveryDataRowsInPaste(text),
+    parsedCount: 0,
+  };
   const parsed = parseDiscoveryText(text);
+  audit.parsedCount = parsed.length;
   const rows: ProcessedDiscoveryRow[] = [];
   const acceptedInBatch: DuplicateComparableEvent[] = [];
 
@@ -39,7 +55,7 @@ export function processDiscoveryPaste(
   }
 
   const session = rows.length > 0 ? registerDiscoveryBlock() : loadDiscoverySession();
-  return { rows, session };
+  return { rows, session, audit };
 }
 
 function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
@@ -76,7 +92,15 @@ function classifyRow(
   if (start.getTime() < Date.now() - 86400000) return { row, status: "past", reason: "Evento passato" };
 
   const candidate = toComparableEvent(row);
+  const comuneKey =
+    inferComuneFromText(row.comune, row.luogo, row.titolo) ??
+    (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
+  const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || "";
+  const externalId = discoveryEventExternalId(title, start.toISOString(), comune);
+
   const duplicate = existing.find((e) => {
+    const ext = (e as AtlasEvent).external_id;
+    if (ext && ext === externalId) return true;
     const existingComparable: DuplicateComparableEvent = {
       title: e.title,
       start_date: e.start_date,
@@ -117,6 +141,7 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
       (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
     const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
     const coords = geocodeComuneViterbo(comuneKey ?? comune);
+    const externalId = discoveryEventExternalId(row.titolo.trim(), start.toISOString(), comune ?? "");
 
     try {
       await createEventAdmin({
@@ -136,6 +161,7 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
         lng: coords.lng,
         source_id: MANUAL_DISCOVERY_SOURCE_ID,
         territory_id: "IT-VT",
+        external_id: externalId,
         verified: true,
         review_status: "approved",
       });
@@ -154,8 +180,8 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <span>Blocchi incollati: <strong id="blockCount">${session.blockCount}</strong></span>
     </div>
     <h2>Scoperta eventi</h2>
-    <p class="small">Incolla <strong>un blocco alla volta</strong> (tabella markdown con barre <code>|</code>). Dopo «Elabora», il campo si svuota da solo. <strong>Non incollare</strong> le righe finali <code>[1]: https://…</code>. Se «0 righe lette», salva la tabella in un file <code>.md</code> e usa <code>npm run import:discovery</code> (vedi <code>docs/operativo/IMPORT_SCOPERTA_TABELLA.md</code>).</p>
-    <textarea id="discoveryPaste" rows="10" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
+    <p class="small">Incolla la tabella (righe con <code>|</code>). Le righe <code>[1]: https://…</code> in calce vengono <strong>ignorate automaticamente</strong>. Dopo «Elabora» controlla: <strong>righe nel testo = righe lette</strong> (es. 27 = 27). Se non coincidono, salva in un file <code>.md</code> e usa <code>npm run import:discovery</code>.</p>
+    <textarea id="discoveryPaste" rows="12" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
     <div class="discovery-actions">
       <button type="button" class="primary" id="processDiscovery">Elabora blocco</button>
       <button type="button" class="btn-secondary" id="clearDiscovery" type="button">Svuota campo</button>
@@ -165,10 +191,17 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
   `;
 }
 
-export function renderDiscoveryResults(rows: ProcessedDiscoveryRow[]): string {
+export function renderDiscoveryResults(
+  rows: ProcessedDiscoveryRow[],
+  audit?: DiscoveryPasteAudit,
+): string {
   if (rows.length === 0) {
-    return `<p class="error">Nessuna riga riconosciuta.</p>
-      <p class="small">Copia la <strong>tabella</strong> da Google (righe con <code>|</code>), non il testo descrittivo.
+    const hint =
+      audit && audit.dataRowsInPaste > 0
+        ? `<p class="error">Nel testo ci sono circa <strong>${audit.dataRowsInPaste}</strong> righe dati, ma il parser ne ha lette <strong>0</strong>. Probabile tabella troncata o senza <code>|</code>. Usa <code>npm run import:discovery -- percorso/file.md</code>.</p>`
+        : "";
+    return `${hint}<p class="error">Nessuna riga riconosciuta.</p>
+      <p class="small">Copia la <strong>tabella</strong> da ChatGPT (righe con <code>|</code>).
       Clicca <strong>Svuota campo</strong>, incolla un solo blocco, poi <strong>Elabora</strong>.</p>`;
   }
 
@@ -179,7 +212,34 @@ export function renderDiscoveryResults(rows: ProcessedDiscoveryRow[]): string {
     invalid: rows.filter((r) => r.status === "invalid"),
   };
 
-  let html = `<p><strong>${rows.length}</strong> righe lette dalla tabella · <strong>${groups.ready.length}</strong> pronti · ${groups.duplicate.length} duplicati · ${groups.past.length} passati · ${groups.invalid.length} non validi</p>`;
+  let html = "";
+  if (audit) {
+    html += `<p>Righe dati nel testo: <strong>${audit.dataRowsInPaste}</strong> · Lette dal parser: <strong>${audit.parsedCount}</strong></p>`;
+    if (audit.dataRowsInPaste > audit.parsedCount + 1) {
+      html += `<p class="error"><strong>Attenzione:</strong> il testo contiene più righe di quelle lette. L’incolla è probabilmente incompleto: salva la tabella in un file e usa <code>npm run import:discovery</code>.</p>`;
+    } else if (audit.dataRowsInPaste > 0 && audit.dataRowsInPaste === audit.parsedCount) {
+      html += `<p class="success">Tabella letta per intero (${audit.parsedCount} eventi).</p>`;
+    }
+  }
+
+  html += `<p><strong>${rows.length}</strong> righe elaborate · <strong>${groups.ready.length}</strong> pronti · ${groups.duplicate.length} duplicati · ${groups.past.length} passati · ${groups.invalid.length} non validi</p>`;
+
+  const byComune = (status: ProcessedDiscoveryRow["status"]) => {
+    const m = new Map<string, number>();
+    for (const item of rows.filter((r) => r.status === status)) {
+      const c = (item.row.comune ?? "?").trim();
+      m.set(c, (m.get(c) ?? 0) + 1);
+    }
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  };
+  const readyComuni = byComune("ready");
+  if (readyComuni.length) {
+    html += `<p class="small"><strong>Pronti per comune:</strong> ${readyComuni.map(([c, n]) => `${escapeHtml(c)} (${n})`).join(" · ")}</p>`;
+  }
+  const dupComuni = byComune("duplicate");
+  if (dupComuni.length) {
+    html += `<p class="small"><strong>Già in DB (duplicati):</strong> ${dupComuni.map(([c, n]) => `${escapeHtml(c)} (${n})`).join(" · ")}</p>`;
+  }
 
   if (groups.ready.length) {
     html += `<button type="button" class="primary approve" id="publishDiscovery">Pubblica ${groups.ready.length} eventi</button>`;

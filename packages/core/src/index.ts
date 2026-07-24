@@ -63,11 +63,17 @@ export {
 
 export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";
 export {
+  countDiscoveryDataRowsInPaste,
+  mergeBrokenMarkdownTableLines,
+  prepareDiscoveryPasteText,
+  stripDiscoveryFootnotes,
   parseMarkdownTables,
   parseDiscoveryText,
   loadDiscoverySession,
   registerDiscoveryBlock,
 } from "./discovery-parse.js";
+
+export { discoveryEventExternalId } from "./discovery-external-id.js";
 
 export {
   normalizeDiscoveryDateString,

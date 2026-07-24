@@ -5,8 +5,8 @@ Se in **Scoperta** vedi «0 righe lette» o **Pubblica** non inserisce nulla nel
 ## 1. Salva la tabella
 
 1. Copia **solo la tabella** (righe con `|`), dalla riga `stato | titolo | …` fino all’ultimo evento.
-2. **Non** includere le righe finali tipo `[1]: https://…` (note a piè di pagina).
-3. Incolla in un file, es. `Desktop/atlas-bolsena-2026.md`.
+2. **Non** serve un campo separato per i link in calce: le righe `[1]: https://…` vengono **tagliate automaticamente** dal parser (v1.2.0+).
+3. Incolla in un file, es. `Desktop/atlas-musica-2026.md`.
 
 ## 2. Configura la chiave (una volta)
 

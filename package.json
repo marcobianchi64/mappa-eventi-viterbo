@@ -28,7 +28,8 @@
     "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin",
     "verify:ui-scale": "npm run build -w @atlas/core && node scripts/verify-ui-scale.mjs",
     "verify:map-dedupe": "npm run build -w @atlas/core && node scripts/verify-map-dedupe.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe"
+    "verify:discovery-table": "npm run build -w @atlas/core && node scripts/verify-discovery-table.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table"
   },
   "engines": {
     "node": ">=20"

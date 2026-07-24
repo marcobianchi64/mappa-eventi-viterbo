@@ -325,7 +325,7 @@ export class AdminApp {
       const text = textarea.value;
       const processed = processDiscoveryPaste(text, existing);
       if (blockCount) blockCount.textContent = String(processed.session.blockCount);
-      results.innerHTML = renderDiscoveryResults(processed.rows);
+      results.innerHTML = renderDiscoveryResults(processed.rows, processed.audit);
       if (processed.rows.length > 0) {
         textarea.value = "";
       }

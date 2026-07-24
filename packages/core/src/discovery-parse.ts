@@ -32,6 +32,51 @@ const HEADER_ALIASES: Record<string, keyof DiscoveryRow> = {
   note: "note",
 };
 
+/** Rimuove definizioni note ChatGPT ([1]: https://…) — non servono all'import. */
+export function stripDiscoveryFootnotes(text: string): string {
+  const idx = text.search(/\n\[\d+\]:\s*\S/);
+  return idx === -1 ? text : text.slice(0, idx);
+}
+
+/** Unisce righe spezzate dall'interfaccia chat (seconda riga senza |). */
+export function mergeBrokenMarkdownTableLines(text: string): string {
+  const lines = text.split(/\r?\n/);
+  const out: string[] = [];
+  let buf = "";
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) {
+      if (buf) {
+        out.push(buf);
+        buf = "";
+      }
+      continue;
+    }
+    if (/^\[\d+\]:/.test(t)) break;
+    if (t.includes("|")) {
+      if (buf) out.push(buf);
+      buf = t;
+    } else if (buf) {
+      buf += ` ${t}`;
+    }
+  }
+  if (buf) out.push(buf);
+  return out.join("\n");
+}
+
+export function prepareDiscoveryPasteText(text: string): string {
+  return mergeBrokenMarkdownTableLines(stripDiscoveryFootnotes(text));
+}
+
+/** Conta righe dati (confermato / da verificare) nel testo incollato. */
+export function countDiscoveryDataRowsInPaste(text: string): number {
+  const prepared = prepareDiscoveryPasteText(text);
+  return prepared
+    .split(/\r?\n/)
+    .filter((l) => /^\|\s*(confermato|da verificare|ok)\b/i.test(l.trim())).length;
+}
+
 export function parseMarkdownTables(text: string): DiscoveryRow[] {
   const lines = text.split(/\r?\n/);
   const rows: DiscoveryRow[] = [];
@@ -74,7 +119,7 @@ export function parseMarkdownTables(text: string): DiscoveryRow[] {
 
 /** Prova markdown, TSV (Fogli), CSV ; e testo incollato da Google senza separatori */
 export function parseDiscoveryText(text: string): DiscoveryRow[] {
-  const trimmed = text.trim();
+  const trimmed = prepareDiscoveryPasteText(text.trim());
   if (!trimmed) return [];
 
   const md = parseMarkdownTables(trimmed);

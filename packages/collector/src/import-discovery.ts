@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
+  discoveryEventExternalId,
   eventsAreDiscoveryDuplicates,
   formatComuneLabel,
   geocodeComuneViterbo,
@@ -116,7 +117,14 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
     }
 
     const pool = [...existing, ...acceptedInBatch];
+    const externalId = discoveryEventExternalId(
+      title,
+      start.toISOString(),
+      candidate.comune ?? candidate.city ?? "",
+    );
     const duplicate = pool.find((e) => {
+      const ext = (e as AtlasEvent).external_id;
+      if (ext && ext === externalId) return true;
       const other: DuplicateComparableEvent = {
         title: e.title,
         start_date: e.start_date,
@@ -166,6 +174,7 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
       lng: coords.lng,
       source_id: MANUAL_DISCOVERY_SOURCE_ID,
       territory_id: "IT-VT",
+      external_id: externalId,
       verified: true,
       review_status: "approved",
       archived: false,
