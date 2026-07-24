@@ -180,15 +180,168 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <span>Blocchi incollati: <strong id="blockCount">${session.blockCount}</strong></span>
     </div>
     <h2>Scoperta eventi</h2>
-    <p class="small">Incolla la tabella (righe con <code>|</code>). Le righe <code>[1]: https://…</code> in calce vengono <strong>ignorate automaticamente</strong>. Dopo «Elabora» controlla: <strong>righe nel testo = righe lette</strong> (es. 27 = 27). Se non coincidono, salva in un file <code>.md</code> e usa <code>npm run import:discovery</code>.</p>
-    <textarea id="discoveryPaste" rows="12" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
+    <p class="small">Flusso consigliato: copia la tabella da ChatGPT/Gemini → <strong>incolla qui</strong> oppure <strong>trascina un file</strong> (.md/.txt) — senza passare da Blocco note. Le note <code>[1]: https://…</code> in calce vengono ignorate. Controlla che <strong>righe nel testo = righe lette</strong> (es. 27 = 27), poi pubblica.</p>
+    <div id="discoveryDropzone" class="discovery-dropzone">
+      <p class="discovery-dropzone-label">Incolla la tabella qui o trascina un file</p>
+      <textarea id="discoveryPaste" rows="14" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
+      <p id="discoveryPasteStatus" class="small discovery-paste-status" aria-live="polite"></p>
+      <input type="file" id="discoveryFile" accept=".md,.txt,text/markdown,text/plain" hidden />
+    </div>
     <div class="discovery-actions">
-      <button type="button" class="primary" id="processDiscovery">Elabora blocco</button>
-      <button type="button" class="btn-secondary" id="clearDiscovery" type="button">Svuota campo</button>
+      <button type="button" class="primary" id="processDiscoveryPublish">Elabora e pubblica</button>
+      <button type="button" class="btn-secondary" id="processDiscovery">Solo elabora (anteprima)</button>
+      <button type="button" class="btn-secondary" id="discoveryPickFile">Carica file…</button>
+      <button type="button" class="btn-secondary" id="clearDiscovery" type="button">Svuota</button>
       <button type="button" class="btn-secondary" id="newDiscoveryBlock" type="button">Nuovo blocco</button>
     </div>
     <div id="discoveryResults"></div>
   `;
+}
+
+export function formatPublishResultHtml(result: PublishDiscoveryResult): string {
+  let html = `<p class="success">Pubblicati <strong>${result.published}</strong> eventi nel database.</p>`;
+  if (result.failed.length) {
+    html += `<p class="error">Non pubblicati (${result.failed.length}):</p><ul class="discovery-list">`;
+    for (const f of result.failed) {
+      html += `<li>${escapeHtml(f.title)} — ${escapeHtml(f.error)}</li>`;
+    }
+    html += "</ul>";
+  }
+  if (result.published === 0 && result.failed.length === 0) {
+    html += `<p class="error">Nessuna riga «pronta». Controlla duplicati o date.</p>`;
+  }
+  html += `<p class="small">Apri <strong>Registro</strong> (filtra per comune, es. Bolsena) e <strong>Mappa gestore</strong> per i pin.</p>`;
+  return html;
+}
+
+export interface DiscoveryPanelBindings {
+  loadExisting: () => Promise<AtlasEvent[]>;
+  onPublish: (
+    rows: ProcessedDiscoveryRow[],
+    results: HTMLElement,
+    existing: AtlasEvent[],
+  ) => Promise<void>;
+  onBlockCount?: (count: number) => void;
+}
+
+function updatePasteStatus(text: string, statusEl: HTMLElement | null): void {
+  if (!statusEl) return;
+  if (!text.trim()) {
+    statusEl.textContent = "";
+    return;
+  }
+  const rows = countDiscoveryDataRowsInPaste(text);
+  statusEl.textContent = `${text.length.toLocaleString("it-IT")} caratteri · circa ${rows} righe evento nel testo`;
+}
+
+export function bindDiscoveryPanel(panel: HTMLElement, bindings: DiscoveryPanelBindings): void {
+  const results = panel.querySelector("#discoveryResults") as HTMLElement;
+  const blockCount = panel.querySelector("#blockCount");
+  const textarea = panel.querySelector("#discoveryPaste") as HTMLTextAreaElement;
+  const statusEl = panel.querySelector("#discoveryPasteStatus") as HTMLElement;
+  const fileInput = panel.querySelector("#discoveryFile") as HTMLInputElement;
+  const dropzone = panel.querySelector("#discoveryDropzone") as HTMLElement;
+
+  let lastBatch: {
+    rows: ProcessedDiscoveryRow[];
+    audit: DiscoveryPasteAudit;
+    existing: AtlasEvent[];
+  } | null = null;
+
+  const runElaborate = async (text: string, autoPublish: boolean) => {
+    const existing = await bindings.loadExisting();
+    const processed = processDiscoveryPaste(text, existing);
+    if (blockCount) blockCount.textContent = String(processed.session.blockCount);
+    bindings.onBlockCount?.(processed.session.blockCount);
+    lastBatch = { rows: processed.rows, audit: processed.audit, existing };
+    results.innerHTML = renderDiscoveryResults(processed.rows, processed.audit);
+
+    if (autoPublish) {
+      const ready = processed.rows.filter((r) => r.status === "ready").length;
+      if (processed.audit.dataRowsInPaste > processed.audit.parsedCount + 1) {
+        window.alert(
+          `Tabella incompleta: ${processed.audit.dataRowsInPaste} righe nel testo ma solo ${processed.audit.parsedCount} lette. Usa «Carica file» (esporta/incolla da ChatGPT in un file) o incolla di nuovo.`,
+        );
+        return;
+      }
+      if (ready === 0) {
+        window.alert("Nessun evento pronto da pubblicare (tutti duplicati, passati o non validi).");
+        return;
+      }
+      const ok = window.confirm(`Pubblicare ${ready} eventi sulla mappa?`);
+      if (!ok) return;
+      await bindings.onPublish(processed.rows, results, existing);
+      textarea.value = "";
+      updatePasteStatus("", statusEl);
+      lastBatch = null;
+      return;
+    }
+
+    results.querySelector("#publishDiscovery")?.addEventListener("click", () => {
+      if (!lastBatch) return;
+      const ready = lastBatch.rows.filter((r) => r.status === "ready").length;
+      if (!window.confirm(`Pubblicare ${ready} eventi sulla mappa?`)) return;
+      void bindings.onPublish(lastBatch.rows, results, lastBatch.existing);
+    });
+  };
+
+  const ingestText = (text: string, autoPublish: boolean) => {
+    textarea.value = text;
+    updatePasteStatus(text, statusEl);
+    void runElaborate(text, autoPublish);
+  };
+
+  textarea.addEventListener("input", () => updatePasteStatus(textarea.value, statusEl));
+
+  panel.querySelector("#clearDiscovery")?.addEventListener("click", () => {
+    textarea.value = "";
+    results.innerHTML = "";
+    updatePasteStatus("", statusEl);
+    lastBatch = null;
+    textarea.focus();
+  });
+
+  panel.querySelector("#newDiscoveryBlock")?.addEventListener("click", () => {
+    textarea.value = "";
+    results.innerHTML = '<p class="small">Pronto per il prossimo blocco (altra provincia o altro tema).</p>';
+    updatePasteStatus("", statusEl);
+    lastBatch = null;
+    textarea.focus();
+  });
+
+  panel.querySelector("#processDiscovery")?.addEventListener("click", () => {
+    void runElaborate(textarea.value, false);
+  });
+
+  panel.querySelector("#processDiscoveryPublish")?.addEventListener("click", () => {
+    void runElaborate(textarea.value, true);
+  });
+
+  panel.querySelector("#discoveryPickFile")?.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = "";
+    if (!file) return;
+    void file.text().then((text) => ingestText(text, false));
+  });
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("discovery-dropzone-active");
+  });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("discovery-dropzone-active"));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("discovery-dropzone-active");
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      void file.text().then((text) => ingestText(text, false));
+      return;
+    }
+    const plain = e.dataTransfer?.getData("text/plain");
+    if (plain?.includes("|")) ingestText(plain, false);
+  });
 }
 
 export function renderDiscoveryResults(
@@ -216,7 +369,7 @@ export function renderDiscoveryResults(
   if (audit) {
     html += `<p>Righe dati nel testo: <strong>${audit.dataRowsInPaste}</strong> · Lette dal parser: <strong>${audit.parsedCount}</strong></p>`;
     if (audit.dataRowsInPaste > audit.parsedCount + 1) {
-      html += `<p class="error"><strong>Attenzione:</strong> il testo contiene più righe di quelle lette. L’incolla è probabilmente incompleto: salva la tabella in un file e usa <code>npm run import:discovery</code>.</p>`;
+      html += `<p class="error"><strong>Attenzione:</strong> il testo contiene più righe di quelle lette. Incolla di nuovo, oppure usa <strong>Carica file</strong> / trascina un .md dalla chat.</p>`;
     } else if (audit.dataRowsInPaste > 0 && audit.dataRowsInPaste === audit.parsedCount) {
       html += `<p class="success">Tabella letta per intero (${audit.parsedCount} eventi).</p>`;
     }

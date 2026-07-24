@@ -8,12 +8,14 @@ import {
   prepareDiscoveryPasteText,
 } from "../packages/core/dist/index.js";
 
-const fixture = resolve("fixtures/discovery-musica-2026-full.md");
-let text;
+const fixtureFull = resolve("fixtures/discovery-musica-2026-full.md");
+const fixtureSmall = resolve("fixtures/discovery-musica-2026.md");
+let text = readFileSync(fixtureSmall, "utf8");
 try {
-  text = readFileSync(fixture, "utf8");
+  const full = readFileSync(fixtureFull, "utf8");
+  if (full.length > 2000) text = full;
 } catch {
-  text = readFileSync(resolve("fixtures/discovery-musica-2026.md"), "utf8");
+  /* use small */
 }
 
 const dataRows = countDiscoveryDataRowsInPaste(text);

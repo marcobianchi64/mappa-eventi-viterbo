@@ -26,10 +26,10 @@ import {
   updateSubmissionStatus,
 } from "@atlas/supabase-client";
 import {
-  processDiscoveryPaste,
+  bindDiscoveryPanel,
+  formatPublishResultHtml,
   publishDiscoveryRows,
   renderDiscoveryPanelHtml,
-  renderDiscoveryResults,
   type ProcessedDiscoveryRow,
 } from "./discovery/discovery-panel.js";
 import { EventEditor } from "./events/event-editor.js";
@@ -302,36 +302,15 @@ export class AdminApp {
 
   private async renderDiscovery(panel: HTMLElement): Promise<void> {
     const session = loadDiscoverySession();
-    const existing = (await fetchAllEventsAdmin()).filter((e) => e.archived !== true);
     panel.innerHTML = renderDiscoveryPanelHtml(session);
 
-    const results = panel.querySelector("#discoveryResults") as HTMLElement;
-    const blockCount = panel.querySelector("#blockCount");
-    const textarea = panel.querySelector("#discoveryPaste") as HTMLTextAreaElement;
-
-    panel.querySelector("#clearDiscovery")?.addEventListener("click", () => {
-      textarea.value = "";
-      results.innerHTML = "";
-      textarea.focus();
-    });
-
-    panel.querySelector("#newDiscoveryBlock")?.addEventListener("click", () => {
-      textarea.value = "";
-      results.innerHTML = '<p class="small">Campo pronto: incolla il prossimo blocco da Google.</p>';
-      textarea.focus();
-    });
-
-    panel.querySelector("#processDiscovery")?.addEventListener("click", () => {
-      const text = textarea.value;
-      const processed = processDiscoveryPaste(text, existing);
-      if (blockCount) blockCount.textContent = String(processed.session.blockCount);
-      results.innerHTML = renderDiscoveryResults(processed.rows, processed.audit);
-      if (processed.rows.length > 0) {
-        textarea.value = "";
-      }
-      results.querySelector("#publishDiscovery")?.addEventListener("click", () => {
-        void this.publishDiscovery(processed.rows, results, existing);
-      });
+    bindDiscoveryPanel(panel, {
+      loadExisting: async () => (await fetchAllEventsAdmin()).filter((e) => e.archived !== true),
+      onBlockCount: (count) => {
+        const el = panel.querySelector("#blockCount");
+        if (el) el.textContent = String(count);
+      },
+      onPublish: (rows, results, existing) => this.publishDiscovery(rows, results, existing),
     });
   }
 
@@ -340,23 +319,9 @@ export class AdminApp {
     results: HTMLElement,
     existing: AtlasEvent[],
   ): Promise<void> {
-    const ok = window.confirm("Pubblicare gli eventi pronti sulla mappa?");
-    if (!ok) return;
     try {
       const result = await publishDiscoveryRows(rows);
-      let html = `<p class="success">Pubblicati <strong>${result.published}</strong> eventi nel database.</p>`;
-      if (result.failed.length) {
-        html += `<p class="error">Non pubblicati (${result.failed.length}):</p><ul class="discovery-list">`;
-        for (const f of result.failed) {
-          html += `<li>${escapeHtml(f.title)} — ${escapeHtml(f.error)}</li>`;
-        }
-        html += "</ul>";
-      }
-      if (result.published === 0 && result.failed.length === 0) {
-        html += `<p class="error">Nessuna riga «pronta». Rielabora il blocco: devono comparire righe pronte prima di Pubblica.</p>`;
-      }
-      html += `<p class="small">Apri <strong>Registro</strong> (cerca «Bolsena») e <strong>Mappa gestore</strong> per verificare. Se Elabora mostra 0 righe lette, salva la tabella in un file .md e usa <code>npm run import:discovery</code> (vedi docs/operativo/IMPORT_SCOPERTA_TABELLA.md).</p>`;
-      results.innerHTML = html;
+      results.innerHTML = formatPublishResultHtml(result);
       const refreshed = await fetchAllEventsAdmin();
       existing.length = 0;
       existing.push(...refreshed.filter((e) => e.archived !== true));

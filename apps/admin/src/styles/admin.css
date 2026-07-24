@@ -217,6 +217,38 @@ textarea {
   font-family: inherit;
 }
 
+.discovery-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px 8px;
+  margin-bottom: 8px;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.discovery-dropzone-active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.discovery-dropzone-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.discovery-dropzone textarea {
+  width: 100%;
+  min-height: 220px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.discovery-paste-status {
+  margin: 6px 0 0;
+  color: #475569;
+}
+
 .discovery-actions {
   display: flex;
   flex-wrap: wrap;
