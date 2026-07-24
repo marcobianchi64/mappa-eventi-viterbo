@@ -37,11 +37,11 @@ export type MapUiScaleTokens = {
   sheetBadgeFontPx: number;
 };
 
-/** Allineato al tooltip (titolo 26px): tutta l'UI almeno 22px. */
+/** Desktop: pin visibili ma non invadenti (testo invariato). */
 export const MAP_UI_SCALE_DESKTOP: MapUiScaleTokens = {
-  markerSizePx: 68,
+  markerSizePx: 54,
   markerBorderPx: 3,
-  markerIconFontPx: 30,
+  markerIconFontPx: 24,
   tooltipWidthPx: 420,
   tooltipMinWidthPx: 340,
   tooltipPaddingPx: 20,
@@ -70,9 +70,9 @@ export const MAP_UI_SCALE_DESKTOP: MapUiScaleTokens = {
 };
 
 export const MAP_UI_SCALE_MOBILE: MapUiScaleTokens = {
-  markerSizePx: 80,
+  markerSizePx: 54,
   markerBorderPx: 3,
-  markerIconFontPx: 36,
+  markerIconFontPx: 24,
   tooltipWidthPx: 420,
   tooltipMinWidthPx: 300,
   tooltipPaddingPx: 22,
