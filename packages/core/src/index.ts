@@ -53,6 +53,11 @@ export {
   type MapUiScaleTokens,
 } from "./map-ui-scale.js";
 
+export {
+  buildAtlasTypographyLockCss,
+  injectAtlasTypography,
+} from "./atlas-typography-lock.js";
+
 export type { DiscoveryRow, DiscoverySessionMeta } from "./discovery-parse.js";
 export {
   parseMarkdownTables,

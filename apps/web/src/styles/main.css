@@ -5,12 +5,26 @@
   --atlas-border: #e5e7eb;
   --shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
-  --font-base: 20px;
-  --dock-width: 248px;
-  --flyout-panel-width: 500px;
-  --panel-width: 500px;
-  --filter-panel-width: 400px;
-  --programs-panel-width: 440px;
+  --font-base: 22px;
+  --dock-width: 260px;
+  --flyout-panel-width: 520px;
+  --tooltip-date-font: 22px;
+  --tooltip-meta-font: 20px;
+  --chip-font: 22px;
+  --dock-btn-font: 22px;
+  --panel-label-font: 22px;
+  --panel-input-font: 22px;
+  --legend-font: 20px;
+  --filter-option-font: 22px;
+  --sheet-title-font: 32px;
+  --sheet-section-heading-font: 24px;
+  --sheet-body-font: 22px;
+  --sheet-action-font: 18px;
+  --sheet-action-icon-font: 26px;
+  --sheet-badge-font: 18px;
+  --panel-width: 520px;
+  --filter-panel-width: 420px;
+  --programs-panel-width: 460px;
   --marker-size: 68px;
   --marker-border: 3px;
   --marker-icon-font: 30px;
@@ -19,16 +33,6 @@
   --tooltip-padding: 20px;
   --tooltip-font: 20px;
   --tooltip-title-font: 26px;
-  --panel-label-font: 20px;
-  --panel-input-font: 20px;
-  --dock-btn-font: 19px;
-  --chip-font: 18px;
-  --legend-font: 18px;
-  --filter-option-font: 19px;
-  --sheet-title-font: 28px;
-  --sheet-body-font: 20px;
-  --sheet-action-font: 15px;
-  --sheet-badge-font: 16px;
 }
 
 html { font-size: var(--font-base); }
@@ -230,7 +234,10 @@ body {
   font-weight: 800;
 }
 
-button { font: inherit; cursor: pointer; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
 
 .btn {
   border: 0;
@@ -568,7 +575,7 @@ button { font: inherit; cursor: pointer; }
   transition: transform 0.15s ease;
 }
 
-.stable-event-action span { display: block; font-size: 22px; margin-bottom: 4px; }
+.stable-event-action span { display: block; font-size: var(--sheet-action-icon-font); margin-bottom: 4px; }
 .stable-event-action:active { transform: scale(0.96); }
 .stable-event-action.reminder { background: linear-gradient(180deg, #fff, #f8fafc); border-color: #cbd5e1; }
 

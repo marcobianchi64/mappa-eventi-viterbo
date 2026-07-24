@@ -2,7 +2,7 @@ import {
   ATLAS_VERSION,
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
-  applyMapUiScale,
+  injectAtlasTypography,
   detectContactType,
   escapeHtml,
   eventsLookSimilar,
@@ -62,6 +62,7 @@ export class AtlasApp {
 
     this.bindEvents();
     this.renderPrograms();
+    injectAtlasTypography();
     void this.loadEvents();
     this.restoreTopbar();
   }
@@ -156,7 +157,7 @@ export class AtlasApp {
     window.addEventListener("resize", () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        applyMapUiScale();
+        injectAtlasTypography();
         this.renderMapEvents();
       }, 150);
     });

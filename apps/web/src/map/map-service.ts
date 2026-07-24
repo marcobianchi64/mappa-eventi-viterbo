@@ -57,8 +57,8 @@ export class MapService {
       <div class="event-preview">
         ${image}
         <strong>${title}</strong>
-        <span>${new Date(event.start_date).toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}</span>
-        ${venue ? `<span>${venue}</span>` : ""}
+        <span class="event-preview-date">${new Date(event.start_date).toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}</span>
+        ${venue ? `<span class="event-preview-venue">${escapeHtml(venue)}</span>` : ""}
       </div>
     `;
   }

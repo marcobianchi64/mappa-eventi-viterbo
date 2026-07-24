@@ -72,16 +72,21 @@ if (mapService.match(/iconSize:\s*\[\d+/)) {
 }
 
 const webMain = read("apps/web/src/main.ts");
-if (!webMain.includes("applyMapUiScale")) {
-  errors.push("apps/web/main.ts deve chiamare applyMapUiScale()");
+if (!webMain.includes("injectAtlasTypography")) {
+  errors.push("apps/web/main.ts deve chiamare injectAtlasTypography()");
 }
 if (!webMain.includes("atlas-map-ui.css")) {
   errors.push("apps/web deve importare packages/core/styles/atlas-map-ui.css");
 }
 
+const typographyLock = read("packages/core/src/atlas-typography-lock.ts");
+if (!typographyLock.includes("!important")) {
+  errors.push("atlas-typography-lock.ts deve forzare font-size con !important");
+}
+
 const webApp = read("apps/web/src/app.ts");
-if (!webApp.includes("applyMapUiScale")) {
-  errors.push("apps/web/app.ts deve richiamare applyMapUiScale() al resize");
+if (!webApp.includes("injectAtlasTypography")) {
+  errors.push("apps/web/app.ts deve richiamare injectAtlasTypography()");
 }
 
 // --- Admin: stesso contratto ---

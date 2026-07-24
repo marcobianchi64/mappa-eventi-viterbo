@@ -48,7 +48,12 @@
   font-weight: 800 !important;
 }
 
-.leaflet-tooltip.atlas-event-tooltip span,
-.leaflet-tooltip.atlas-event-tooltip .event-preview span {
-  font-size: var(--tooltip-font) !important;
+.leaflet-tooltip.atlas-event-tooltip .event-preview-date {
+  font-size: var(--tooltip-date-font) !important;
+  font-weight: 700 !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date),
+.leaflet-tooltip.atlas-event-tooltip .event-preview span:not(.event-preview-date) {
+  font-size: var(--tooltip-meta-font) !important;
 }

@@ -2,11 +2,11 @@ import "leaflet/dist/leaflet.css";
 import "../../../packages/core/styles/atlas-map-ui.css";
 import "./styles/main.css";
 
-import { applyMapUiScale } from "@atlas/core";
+import { injectAtlasTypography } from "@atlas/core";
 import { initSupabaseClient } from "@atlas/supabase-client";
 import { AtlasApp } from "./app";
 
-applyMapUiScale();
+injectAtlasTypography();
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
