@@ -120,12 +120,53 @@ function datesCloseEnough(a: DuplicateComparableEvent, b: DuplicateComparableEve
   return daysApart <= maxDays;
 }
 
+function normalizeEventUrl(url: string | null | undefined): string {
+  if (!url?.trim()) return "";
+  try {
+    const u = new URL(url.trim());
+    u.hash = "";
+    u.search = "";
+    let path = u.pathname.replace(/\/+$/, "");
+    return `${u.hostname.toLowerCase()}${path}`.toLowerCase();
+  } catch {
+    return url.trim().toLowerCase().replace(/\/+$/, "");
+  }
+}
+
+function sameEventUrl(a: string | null | undefined, b: string | null | undefined): boolean {
+  const na = normalizeEventUrl(a);
+  const nb = normalizeEventUrl(b);
+  return Boolean(na && nb && na === nb);
+}
+
+function sameStartDay(a: DuplicateComparableEvent, b: DuplicateComparableEvent): boolean {
+  return (
+    startOfDay(new Date(a.start_date)).getTime() === startOfDay(new Date(b.start_date)).getTime()
+  );
+}
+
+/**
+ * Scoperta manuale: una sola URL (pagina festival/programma) copre molti concerti.
+ * Duplicato solo se stesso link + stesso giorno + titolo simile.
+ */
+export function eventsAreDiscoveryDuplicates(
+  a: DuplicateComparableEvent,
+  b: DuplicateComparableEvent,
+): boolean {
+  if (sameEventUrl(a.event_url, b.event_url)) {
+    return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
+  }
+  return eventsAreLikelyDuplicates(a, b);
+}
+
 /** Confronto per deduplicazione DB: titolo simile + stesso luogo + date vicine/sovrapposte. */
 export function eventsAreLikelyDuplicates(
   a: DuplicateComparableEvent,
   b: DuplicateComparableEvent,
 ): boolean {
-  if (a.event_url && b.event_url && a.event_url === b.event_url) return true;
+  if (sameEventUrl(a.event_url, b.event_url)) {
+    return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
+  }
   if (!titlesLookSimilar(a.title, b.title)) return false;
   if (!datesCloseEnough(a, b)) return false;
   return samePinArea(a, b) || sameComune(a, b);
@@ -136,7 +177,9 @@ export function eventsAreMapDuplicates(
   a: DuplicateComparableEvent,
   b: DuplicateComparableEvent,
 ): boolean {
-  if (a.event_url && b.event_url && a.event_url === b.event_url) return true;
+  if (sameEventUrl(a.event_url, b.event_url)) {
+    return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
+  }
   if (!samePinArea(a, b)) return false;
   if (sameTitleFingerprint(a.title, b.title)) return true;
   return titlesLookSimilar(a.title, b.title);

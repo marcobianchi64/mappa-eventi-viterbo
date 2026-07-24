@@ -290,7 +290,7 @@ export class AdminApp {
 
   private async renderDiscovery(panel: HTMLElement): Promise<void> {
     const session = loadDiscoverySession();
-    const existing = await fetchAllEventsAdmin();
+    const existing = (await fetchAllEventsAdmin()).filter((e) => e.archived !== true);
     panel.innerHTML = renderDiscoveryPanelHtml(session);
 
     const results = panel.querySelector("#discoveryResults") as HTMLElement;
@@ -332,8 +332,10 @@ export class AdminApp {
     if (!ok) return;
     try {
       const count = await publishDiscoveryRows(rows);
-      results.innerHTML = `<p class="success">Pubblicati ${count} eventi.</p>`;
-      existing.push(...rows.filter((r) => r.status === "ready").map(() => ({} as AtlasEvent)));
+      results.innerHTML = `<p class="success">Pubblicati ${count} eventi. Ricarica «Scoperta» o rielabora il blocco per pubblicare le righe prima segnate come duplicate.</p>`;
+      const refreshed = await fetchAllEventsAdmin();
+      existing.length = 0;
+      existing.push(...refreshed.filter((e) => e.archived !== true));
     } catch (error) {
       results.innerHTML = `<p class="error">${escapeHtml((error as Error).message)}</p>`;
     }

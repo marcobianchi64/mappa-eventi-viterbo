@@ -103,6 +103,7 @@ export type { DuplicateComparableEvent } from "./event-duplicate.js";
 export {
   dedupeEventsForMap,
   eventDatesOverlap,
+  eventsAreDiscoveryDuplicates,
   eventsAreLikelyDuplicates,
   eventsAreMapDuplicates,
   findAllDuplicateClusters,

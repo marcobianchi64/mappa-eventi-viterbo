@@ -1,6 +1,6 @@
 import {
   escapeHtml,
-  eventsLookSimilar,
+  eventsAreDiscoveryDuplicates,
   formatComuneLabel,
   geocodeComuneViterbo,
   inferComuneFromText,
@@ -76,8 +76,18 @@ function classifyRow(
 
   const candidate = toComparableEvent(row);
   const duplicate = existing.find((e) => {
-    if (row.url_evento && e.event_url === row.url_evento) return true;
-    return eventsLookSimilar(candidate, e);
+    const existingComparable: DuplicateComparableEvent = {
+      title: e.title,
+      start_date: e.start_date,
+      end_date: e.end_date,
+      venue: e.venue,
+      comune: e.comune,
+      city: e.city,
+      lat: e.lat,
+      lng: e.lng,
+      event_url: e.event_url,
+    };
+    return eventsAreDiscoveryDuplicates(candidate, existingComparable);
   });
   if (duplicate) return { row, status: "duplicate", reason: `Già presente: ${duplicate.title}` };
 
