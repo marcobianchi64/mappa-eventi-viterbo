@@ -1,9 +1,11 @@
 import {
   applyMapUiScale,
+  ATLAS_VERSION,
   compareMapRegistryFromEvents,
   escapeHtml,
   formatDate,
   getCategoryMeta,
+  isRegistryInPubblicazione,
   loadDiscoverySession,
   type AtlasEvent,
   type SourceInput,
@@ -34,6 +36,7 @@ import { EventEditor } from "./events/event-editor.js";
 import { AdminMapService } from "./map/admin-map.js";
 import {
   bindRegistryPanel,
+  countRegistryInPubblicazione,
   DEFAULT_REGISTRY_FILTERS,
   renderRegistryPanelHtml,
   type RegistryFilters,
@@ -210,9 +213,12 @@ export class AdminApp {
       pendingId ? fetchAllEventsAdmin(2000) : Promise.resolve([] as AtlasEvent[]),
     ]);
     this.mapEvents = mapEvents;
+    const mapDisplayEvents = mapEvents.filter(isRegistryInPubblicazione);
+    const pubStats = countRegistryInPubblicazione(mapEvents);
     panel.innerHTML = `
       <h2>Mappa gestore</h2>
-      <p class="small">Clicca un pin per modificare titolo, date e link. Conferma con «Salva modifiche».</p>
+      <p class="small map-pin-stats" id="adminMapPinStats">📍 … pin in pubblicazione · confronta con il registro (colonna #)</p>
+      <p class="small">Clicca un pin per modificare titolo, date e link. Conferma con «Salva modifiche». Stessi pin della mappa utente (stesso elenco eventi in pubblicazione).</p>
       <div class="map-layout">
         <div id="adminMap" class="admin-map"></div>
         <div id="eventEditorHost" class="editor-host"></div>
@@ -230,7 +236,13 @@ export class AdminApp {
       this.eventEditor?.open(event);
       this.mapService?.focus(event);
     });
-    this.mapService.render(this.mapEvents);
+    const pinCount = this.mapService.render(mapDisplayEvents);
+    const statsEl = panel.querySelector("#adminMapPinStats");
+    if (statsEl) {
+      const coordNote =
+        pubStats.withoutCoords > 0 ? ` · ${pubStats.withoutCoords} in pubblicazione senza coordinate` : "";
+      statsEl.textContent = `📍 ${pinCount} pin in pubblicazione · ${pubStats.total} eventi in pubblicazione nel registro${coordNote} · v${ATLAS_VERSION}`;
+    }
     setTimeout(() => this.mapService?.invalidateSize(), 200);
 
     if (this.pendingMapEventId) {
@@ -249,7 +261,7 @@ export class AdminApp {
 
   private async renderRegistry(panel: HTMLElement): Promise<void> {
     const [events, sources, publicEvents] = await Promise.all([
-      fetchAllEventsAdmin(2000),
+      fetchAllEventsAdmin(5000),
       fetchSources(),
       fetchVerifiedEvents(),
     ]);

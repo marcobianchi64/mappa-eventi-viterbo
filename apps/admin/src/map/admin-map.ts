@@ -5,7 +5,7 @@ import {
   MAP_TILE_ATTRIBUTION,
   MAP_TILE_SUBDOMAINS,
   MAP_TILE_URL,
-  dedupeEventsForMap,
+  buildMapMarkerPlacements,
   escapeHtml,
   formatDisplayTitle,
   getDisplayCategory,
@@ -32,14 +32,15 @@ export class AdminMapService {
     this.layer.addTo(this.map);
   }
 
-  render(events: AtlasEvent[]): void {
+  render(events: AtlasEvent[]): number {
     this.lastEvents = events;
     this.layer.clearLayers();
     this.markers.clear();
 
-    for (const event of dedupeEventsForMap(events)) {
-      if (!Number.isFinite(event.lat) || !Number.isFinite(event.lng)) continue;
-      const marker = L.marker([event.lat, event.lng], {
+    const placements = buildMapMarkerPlacements(events);
+
+    for (const { event, lat, lng } of placements) {
+      const marker = L.marker([lat, lng], {
         icon: L.divIcon({
           className: "",
           ...createAtlasMapMarkerIcon(getDisplayCategory(event)),
@@ -55,6 +56,8 @@ export class AdminMapService {
       marker.addTo(this.layer);
       if (event.date_event) this.markers.set(event.date_event, marker);
     }
+
+    return placements.length;
   }
 
   refreshScale(): void {
@@ -63,9 +66,14 @@ export class AdminMapService {
 
   focus(event: AtlasEvent): void {
     if (!Number.isFinite(event.lat) || !Number.isFinite(event.lng)) return;
-    this.map.setView([event.lat, event.lng], 14);
     const marker = event.date_event ? this.markers.get(event.date_event) : undefined;
-    marker?.openTooltip();
+    if (marker) {
+      const latLng = marker.getLatLng();
+      this.map.setView(latLng, 14);
+      marker.openTooltip();
+      return;
+    }
+    this.map.setView([event.lat, event.lng], 14);
   }
 
   invalidateSize(): void {

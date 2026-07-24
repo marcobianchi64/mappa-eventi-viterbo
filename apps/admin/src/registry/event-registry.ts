@@ -5,6 +5,8 @@ import {
   formatDate,
   getCategoryMeta,
   getEventLifecycle,
+  hasValidEventCoords,
+  isRegistryInPubblicazione,
   renderCompareSummaryHtml,
   type AtlasEvent,
   type AtlasSource,
@@ -21,7 +23,12 @@ export type RegistryVisibility =
   | "pending"
   | "rejected";
 
-export type RegistrySort = "start_desc" | "start_asc" | "created_desc" | "title_asc";
+export type RegistrySort =
+  | "live_first"
+  | "start_desc"
+  | "start_asc"
+  | "created_desc"
+  | "title_asc";
 
 export interface RegistryFilters {
   q: string;
@@ -65,7 +72,7 @@ export const DEFAULT_REGISTRY_FILTERS: RegistryFilters = {
   visibility: "all",
   dateFrom: "",
   dateTo: "",
-  sort: "start_desc",
+  sort: "live_first",
 };
 
 function startOfDay(date: Date): Date {
@@ -152,9 +159,28 @@ export function filterRegistryEvents(events: AtlasEvent[], filters: RegistryFilt
   return sortRegistryEvents(filtered, filters.sort);
 }
 
+function lifecycleSortRank(event: AtlasEvent): number {
+  const lifecycle = getEventLifecycle(event);
+  if (lifecycle === "live" && event.verified === true) return 0;
+  if (lifecycle === "past") return 1;
+  if (lifecycle === "pending") return 2;
+  if (lifecycle === "rejected") return 3;
+  if (lifecycle === "archived") return 4;
+  return 5;
+}
+
 function sortRegistryEvents(events: AtlasEvent[], sort: RegistrySort): AtlasEvent[] {
   const copy = [...events];
   copy.sort((a, b) => {
+    if (sort === "live_first") {
+      const rankDiff = lifecycleSortRank(a) - lifecycleSortRank(b);
+      if (rankDiff !== 0) return rankDiff;
+      const sa = new Date(a.start_date).getTime();
+      const sb = new Date(b.start_date).getTime();
+      if (lifecycleSortRank(a) === 0) return sa - sb;
+      if (lifecycleSortRank(a) === 1) return sb - sa;
+      return sb - sa;
+    }
     if (sort === "title_asc") return a.title.localeCompare(b.title, "it");
     if (sort === "created_desc") {
       const ca = new Date(a.created_at ?? 0).getTime();
@@ -166,6 +192,20 @@ function sortRegistryEvents(events: AtlasEvent[], sort: RegistrySort): AtlasEven
     return sort === "start_asc" ? sa - sb : sb - sa;
   });
   return copy;
+}
+
+export function countRegistryInPubblicazione(events: AtlasEvent[]): {
+  total: number;
+  withCoords: number;
+  withoutCoords: number;
+} {
+  const live = events.filter(isRegistryInPubblicazione);
+  const withCoords = live.filter(hasValidEventCoords).length;
+  return {
+    total: live.length,
+    withCoords,
+    withoutCoords: live.length - withCoords,
+  };
 }
 
 function uniqueSorted(values: string[]): string[] {
@@ -202,6 +242,8 @@ export function renderRegistryPanelHtml(
   compareReport?: CompareMapRegistryReport,
 ): string {
   const filtered = filterRegistryEvents(events, filters);
+  const inPubblicazioneStats = countRegistryInPubblicazione(events);
+  const inPubblicazioneInList = filtered.filter(isRegistryInPubblicazione).length;
   const comuni = uniqueSorted(events.map(eventComune));
   const provinces = uniqueSorted(events.map(eventProvince));
   const territories = uniqueSorted(events.map((e) => e.territory_id ?? ""));
@@ -213,16 +255,24 @@ export function renderRegistryPanelHtml(
     })
     .join("");
 
+  let liveRowNumber = 0;
   const rows =
     filtered.length === 0
-      ? `<tr><td colspan="8" class="registry-empty">Nessun evento corrisponde ai filtri.</td></tr>`
+      ? `<tr><td colspan="9" class="registry-empty">Nessun evento corrisponde ai filtri.</td></tr>`
       : filtered
           .map((event) => {
             const lifecycle = getEventLifecycle(event);
+            const inPubblicazione = isRegistryInPubblicazione(event);
+            const rowNumber = inPubblicazione ? ++liveRowNumber : null;
             const meta = getCategoryMeta(event.category);
             const url = event.event_url ?? event.external_url;
+            const numCell =
+              rowNumber !== null
+                ? `<td class="registry-num" title="In pubblicazione">${rowNumber}</td>`
+                : `<td class="registry-num registry-num-muted">—</td>`;
             return `
-        <tr data-id="${escapeHtml(event.date_event ?? "")}">
+        <tr data-id="${escapeHtml(event.date_event ?? "")}"${inPubblicazione ? ' class="registry-row-live"' : ""}>
+          ${numCell}
           <td>${lifecycleBadge(lifecycle)}</td>
           <td class="registry-title">
             <strong>${escapeHtml(event.title)}</strong>
@@ -250,6 +300,7 @@ export function renderRegistryPanelHtml(
 
     <div class="registry-summary">
       <span><strong>${filtered.length}</strong> mostrati su <strong>${events.length}</strong> totali</span>
+      <span class="registry-summary-pub">In pubblicazione: <strong>${inPubblicazioneStats.total}</strong> nel database · <strong>${inPubblicazioneInList}</strong> numerati in tabella (1–${inPubblicazioneInList || 0})${inPubblicazioneStats.withoutCoords > 0 ? ` · <strong>${inPubblicazioneStats.withoutCoords}</strong> senza coordinate (senza pin)` : ""}</span>
       <button type="button" class="btn-secondary" id="registryExportCsv">Esporta CSV</button>
       <button type="button" class="btn-secondary" id="registryResetFilters">Azzera filtri</button>
     </div>
@@ -316,6 +367,7 @@ export function renderRegistryPanelHtml(
       <label>
         Ordina
         <select name="sort">
+          <option value="live_first" ${filters.sort === "live_first" ? "selected" : ""}>In pubblicazione prima, poi passati</option>
           <option value="start_desc" ${filters.sort === "start_desc" ? "selected" : ""}>Data evento (recenti prima)</option>
           <option value="start_asc" ${filters.sort === "start_asc" ? "selected" : ""}>Data evento (prossimi prima)</option>
           <option value="created_desc" ${filters.sort === "created_desc" ? "selected" : ""}>Inserimento (recenti prima)</option>
@@ -328,6 +380,7 @@ export function renderRegistryPanelHtml(
       <table class="registry-table">
         <thead>
           <tr>
+            <th class="registry-num-col" title="Solo righe in pubblicazione">#</th>
             <th>Stato</th>
             <th>Evento</th>
             <th>Inizio</th>
@@ -357,7 +410,7 @@ export function readRegistryFilters(form: HTMLFormElement): RegistryFilters {
     visibility: (String(data.get("visibility") ?? "all") || "all") as RegistryVisibility,
     dateFrom: String(data.get("dateFrom") ?? ""),
     dateTo: String(data.get("dateTo") ?? ""),
-    sort: (String(data.get("sort") ?? "start_desc") || "start_desc") as RegistrySort,
+    sort: (String(data.get("sort") ?? "live_first") || "live_first") as RegistrySort,
   };
 }
 

@@ -246,6 +246,34 @@ textarea {
 
 .registry-summary button { width: auto; margin: 0; }
 
+.registry-summary-pub {
+  flex: 1 1 280px;
+  font-size: 0.9rem;
+}
+
+.map-pin-stats {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.registry-num-col,
+.registry-num {
+  width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.registry-num-muted {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.registry-row-live {
+  background: rgba(21, 128, 61, 0.04);
+}
+
 .registry-filters {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
