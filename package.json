@@ -26,7 +26,8 @@
     "report:categories": "npm run build -w @atlas/collector && npm run report:categories -w @atlas/collector",
     "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin",
     "verify:ui-scale": "npm run build -w @atlas/core && node scripts/verify-ui-scale.mjs",
-    "verify": "npm run verify:ui-scale"
+    "verify:map-dedupe": "npm run build -w @atlas/core && node scripts/verify-map-dedupe.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe"
   },
   "engines": {
     "node": ">=20"

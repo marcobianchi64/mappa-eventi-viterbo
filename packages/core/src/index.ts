@@ -106,6 +106,8 @@ export {
   eventsAreDiscoveryDuplicates,
   eventsAreLikelyDuplicates,
   eventsAreMapDuplicates,
+  eventsAreSameCalendarEvent,
+  eventsSuppressedByMapDedupe,
   findAllDuplicateClusters,
   findCoordTitleClusters,
   findDuplicateClusters,

@@ -90,16 +90,28 @@ export async function fetchPendingEvents(): Promise<AtlasEvent[]> {
   return (data ?? []) as AtlasEvent[];
 }
 
-export async function fetchAllEventsAdmin(limit = 2000): Promise<AtlasEvent[]> {
+export async function fetchAllEventsAdmin(limit = 5000): Promise<AtlasEvent[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .order("start_date", { ascending: false })
-    .limit(limit);
+  const pageSize = 1000;
+  const all: AtlasEvent[] = [];
+  let offset = 0;
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as AtlasEvent[];
+  while (all.length < limit) {
+    const take = Math.min(pageSize, limit - all.length);
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("start_date", { ascending: false })
+      .range(offset, offset + take - 1);
+
+    if (error) throw new Error(error.message);
+    const batch = (data ?? []) as AtlasEvent[];
+    all.push(...batch);
+    if (batch.length < take) break;
+    offset += batch.length;
+  }
+
+  return all;
 }
 
 export async function createEventAdmin(
@@ -155,15 +167,27 @@ export async function updateEventAdmin(id: string, patch: Partial<AtlasEvent>): 
 
 export async function fetchVerifiedEventsAdmin(): Promise<AtlasEvent[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("verified", true)
-    .eq("archived", false)
-    .order("start_date", { ascending: true });
+  const pageSize = 1000;
+  const all: AtlasEvent[] = [];
+  let offset = 0;
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as AtlasEvent[];
+  while (true) {
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .eq("verified", true)
+      .eq("archived", false)
+      .order("start_date", { ascending: true })
+      .range(offset, offset + pageSize - 1);
+
+    if (error) throw new Error(error.message);
+    const batch = (data ?? []) as AtlasEvent[];
+    all.push(...batch);
+    if (batch.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return all;
 }
 
 export async function submitUserReport(

@@ -156,7 +156,22 @@ export function eventsAreDiscoveryDuplicates(
   if (sameEventUrl(a.event_url, b.event_url)) {
     return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
   }
-  return eventsAreLikelyDuplicates(a, b);
+  return eventsAreSameCalendarEvent(a, b);
+}
+
+/** Stesso evento in Scoperta / import: stesso giorno, stesso luogo, stesso titolo (non «simile»). */
+export function eventsAreSameCalendarEvent(
+  a: DuplicateComparableEvent,
+  b: DuplicateComparableEvent,
+): boolean {
+  if (!sameStartDay(a, b)) return false;
+  if (!samePinArea(a, b) && !sameComune(a, b)) return false;
+
+  const titleA = normalizeSearchText(a.title);
+  const titleB = normalizeSearchText(b.title);
+  if (titleA && titleA === titleB) return true;
+
+  return sameTitleFingerprint(a.title, b.title);
 }
 
 /** Confronto per deduplicazione DB: titolo simile + stesso luogo + date vicine/sovrapposte. */
@@ -172,17 +187,66 @@ export function eventsAreLikelyDuplicates(
   return samePinArea(a, b) || sameComune(a, b);
 }
 
-/** Confronto più permissivo per la mappa: stesso pin + titolo simile. */
+/**
+ * Duplicato sulla mappa: solo copie reali dello stesso evento.
+ * Eventi distinti nello stesso comune (stesse coordinate) restano tutti visibili
+ * (offset circolare in buildMapMarkerPlacements).
+ */
 export function eventsAreMapDuplicates(
   a: DuplicateComparableEvent,
   b: DuplicateComparableEvent,
 ): boolean {
+  const idA = (a as { date_event?: string }).date_event;
+  const idB = (b as { date_event?: string }).date_event;
+  if (idA && idB && idA === idB) return true;
+
   if (sameEventUrl(a.event_url, b.event_url)) {
     return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
   }
-  if (!samePinArea(a, b)) return false;
-  if (sameTitleFingerprint(a.title, b.title)) return true;
-  return titlesLookSimilar(a.title, b.title);
+
+  if (!sameStartDay(a, b)) return false;
+  if (!samePinArea(a, b) && !sameComune(a, b)) return false;
+
+  const titleA = normalizeSearchText(a.title);
+  const titleB = normalizeSearchText(b.title);
+  if (titleA && titleA === titleB) return true;
+
+  return sameTitleFingerprint(a.title, b.title);
+}
+
+/** Eventi esclusi da dedupeEventsForMap (per diagnostica Registro ↔ Mappa). */
+export function eventsSuppressedByMapDedupe(events: AtlasEvent[]): AtlasEvent[] {
+  const kept: AtlasEvent[] = [];
+  const suppressed: AtlasEvent[] = [];
+
+  for (const event of events) {
+    const existingIndex = kept.findIndex((candidate) => eventsAreMapDuplicates(event, candidate));
+    if (existingIndex === -1) {
+      kept.push(event);
+      continue;
+    }
+
+    const current = kept[existingIndex];
+    const score = mapDedupeRichnessScore;
+    if (score(event) > score(current)) {
+      suppressed.push(current);
+      kept[existingIndex] = event;
+    } else {
+      suppressed.push(event);
+    }
+  }
+
+  return suppressed;
+}
+
+function mapDedupeRichnessScore(e: AtlasEvent): number {
+  return (
+    (e.end_date ? 2 : 0) +
+    (e.event_url ? 2 : 0) +
+    (e.venue ? 1 : 0) +
+    (e.description ? 1 : 0) +
+    (e.comune || e.city ? 1 : 0)
+  );
 }
 
 /** Rimuove duplicati visivi prima di disegnare i pin (tiene il record più completo). */
@@ -197,14 +261,8 @@ export function dedupeEventsForMap(events: AtlasEvent[]): AtlasEvent[] {
     }
 
     const current = kept[existingIndex];
-    const score = (e: AtlasEvent) =>
-      (e.end_date ? 2 : 0) +
-      (e.event_url ? 2 : 0) +
-      (e.venue ? 1 : 0) +
-      (e.description ? 1 : 0) +
-      (e.comune || e.city ? 1 : 0);
 
-    if (score(event) > score(current)) {
+    if (mapDedupeRichnessScore(event) > mapDedupeRichnessScore(current)) {
       kept[existingIndex] = event;
     }
   }

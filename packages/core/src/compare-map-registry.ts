@@ -2,9 +2,11 @@ import type { AtlasEvent, DateRangeKey } from "./types/event.js";
 import {
   buildMapMarkerPlacements,
   escapeHtml,
+  hasValidEventCoords,
   isEventVisibleInRange,
   isRegistryInPubblicazione,
 } from "./utils.js";
+import { eventsSuppressedByMapDedupe } from "./event-duplicate.js";
 
 export interface CompareEventRow {
   id: string;
@@ -29,6 +31,7 @@ export interface CompareMapRegistryReport {
   onlyMap: CompareEventRow[];
   registryOutsideRange: CompareEventRow[];
   registryInRangeButMissingOnMap: CompareEventRow[];
+  suppressedByMapDedupe: CompareEventRow[];
   publicApiFetched: number | null;
   publicApiVisible60: number | null;
   blockedByPublicApi: CompareEventRow[];
@@ -84,6 +87,11 @@ export function compareMapRegistryFromEvents(
   const registryInRange = registry.filter((e) => isEventVisibleInRange(e, range));
   const mapVisible = allEvents.filter((e) => isEventVisibleInRange(e, range));
   const mapPinCount = buildMapMarkerPlacements(mapVisible).length;
+  const suppressed = eventsSuppressedByMapDedupe(
+    mapVisible.filter((e) => hasValidEventCoords(e)),
+  ).map((e) =>
+    toRow(e, "nascosto da deduplicazione mappa (copia dello stesso evento)"),
+  );
 
   const registryKeys = new Set(registry.map(eventKey));
   const mapKeys = new Set(mapVisible.map(eventKey));
@@ -141,6 +149,7 @@ export function compareMapRegistryFromEvents(
     registryInRangeButMissingOnMap: onlyRegistry.filter(
       (r) => r.reason?.includes("escluso") || r.reason?.includes("coordinate"),
     ),
+    suppressedByMapDedupe: suppressed,
     publicApiFetched,
     publicApiVisible60,
     blockedByPublicApi,
@@ -183,6 +192,7 @@ export function formatCompareReport(report: CompareMapRegistryReport): string {
     `  di cui oltre finestra ${report.rangeDays}g: ${report.registryOutsideRange.length}`,
     `  di cui nella finestra ma assenti dalla mappa: ${report.registryInRangeButMissingOnMap.length}`,
     `Solo Mappa:                    ${report.onlyMap.length}`,
+    `Nascosti da dedupe mappa:      ${report.suppressedByMapDedupe.length}`,
     "",
   ];
 
@@ -213,6 +223,11 @@ export function formatCompareReport(report: CompareMapRegistryReport): string {
       `ANOMALIE: in pubblicazione, nella finestra ${report.rangeDays}g, ma assenti dalla mappa (${report.registryInRangeButMissingOnMap.length})`,
       report.registryInRangeButMissingOnMap,
     ),
+    "",
+    ...formatRows(
+      `DEDUPE MAPPA: eventi nel periodo ma senza pin (${report.suppressedByMapDedupe.length})`,
+      report.suppressedByMapDedupe,
+    ),
   );
   return lines.join("\n");
 }
@@ -221,7 +236,8 @@ export function renderCompareSummaryHtml(report: CompareMapRegistryReport): stri
   const ok =
     report.registryInRangeButMissingOnMap.length === 0 &&
     report.blockedByPublicApi.length === 0 &&
-    report.onlyMap.length === 0;
+    report.onlyMap.length === 0 &&
+    report.suppressedByMapDedupe.length === 0;
   const statusClass = ok ? "registry-compare-ok" : "registry-compare-warn";
   const statusLabel = ok ? "Allineato" : "Differenze rilevate";
 
@@ -240,6 +256,13 @@ export function renderCompareSummaryHtml(report: CompareMapRegistryReport): stri
     .join("");
 
   const rlsRows = report.blockedByPublicApi
+    .map(
+      (row) =>
+        `<li><strong>${escapeHtml(row.title)}</strong> — ${escapeHtml(row.comune)} (${formatDateShort(row.start_date)})</li>`,
+    )
+    .join("");
+
+  const dedupeRows = report.suppressedByMapDedupe
     .map(
       (row) =>
         `<li><strong>${escapeHtml(row.title)}</strong> — ${escapeHtml(row.comune)} (${formatDateShort(row.start_date)})</li>`,
@@ -268,6 +291,11 @@ export function renderCompareSummaryHtml(report: CompareMapRegistryReport): stri
       ${
         report.blockedByPublicApi.length > 0
           ? `<details class="registry-compare-details"><summary>Bloccati RLS (${report.blockedByPublicApi.length})</summary><ul>${rlsRows}</ul></details>`
+          : ""
+      }
+      ${
+        report.suppressedByMapDedupe.length > 0
+          ? `<details class="registry-compare-details"><summary>Dedupe mappa (${report.suppressedByMapDedupe.length}) — copie dello stesso evento, un solo pin</summary><ul>${dedupeRows}</ul></details>`
           : ""
       }
       ${
