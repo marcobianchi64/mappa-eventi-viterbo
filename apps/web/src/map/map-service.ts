@@ -2,6 +2,9 @@ import L from "leaflet";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
+  MAP_TILE_ATTRIBUTION,
+  MAP_TILE_SUBDOMAINS,
+  MAP_TILE_URL,
   buildMapMarkerPlacements,
   escapeHtml,
   getDisplayCategory,
@@ -24,8 +27,9 @@ export class MapService {
     private onOpenEvent: (event: AtlasEvent) => void,
   ) {
     this.map = L.map("map").setView(DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
+    L.tileLayer(MAP_TILE_URL, {
+      attribution: MAP_TILE_ATTRIBUTION,
+      subdomains: [...MAP_TILE_SUBDOMAINS],
     }).addTo(this.map);
     this.eventLayer.addTo(this.map);
 
