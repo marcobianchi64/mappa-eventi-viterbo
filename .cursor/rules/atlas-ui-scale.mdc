@@ -1,0 +1,23 @@
+---
+description: Contratto dimensioni UI Atlas — pin, testo, tooltip
+globs:
+  - apps/web/**
+  - apps/admin/**
+  - packages/core/src/map-ui-scale.ts
+  - packages/core/src/map-marker.ts
+  - packages/core/styles/**
+---
+
+# UI scale Atlas (obbligatorio)
+
+Prima di modificare UI mappa o pannello:
+
+1. **Mai** hardcodare `iconSize`, `width: Npx` su pin, o font tooltip sotto 16px.
+2. Modificare dimensioni **solo** in `packages/core/src/map-ui-scale.ts`.
+3. Pin Leaflet: usare `createAtlasMapMarkerIcon()` da `@atlas/core`.
+4. Tooltip: classe `ATLAS_MAP_TOOLTIP_CLASS` + CSS in `packages/core/styles/atlas-map-ui.css`.
+5. All'avvio e al resize: `applyMapUiScale()`.
+6. Desktop: dock compatto (`dock-panel`) + flyout — non ripristinare pannello monolitico.
+7. Prima di commit UI: `npm run verify:ui-scale` (fallisce in CI se saltato).
+
+Documentazione completa: `docs/DESIGN_TOKENS.md`

@@ -1,0 +1,41 @@
+{
+  "name": "@atlas/collector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "atlas-collect": "./dist/cli.js",
+    "atlas-import": "./dist/import-cli.js",
+    "atlas-gap": "./dist/gap-cli.js",
+    "atlas-compare": "./dist/compare-cli.js",
+    "atlas-fix-coords": "./dist/fix-coords-cli.js"
+  },
+  "scripts": {
+    "build": "npm run build -w @atlas/core && tsc",
+    "typecheck": "npm run build -w @atlas/core && tsc --noEmit",
+    "collect": "node dist/cli.js",
+    "import:events": "node dist/import-cli.js",
+    "import:discovery": "node dist/import-discovery-cli.js",
+    "report:gap": "node dist/gap-cli.js",
+    "report:compare": "node dist/compare-cli.js",
+    "fix:coords": "node dist/fix-coords-cli.js",
+    "report:locate": "node dist/locate-comuni-cli.js",
+    "report:duplicates": "node dist/report-duplicates-cli.js",
+    "fix:duplicates": "node dist/fix-duplicates-cli.js",
+    "fix:categories": "node dist/fix-categories-cli.js",
+    "fix:titles": "node dist/fix-titles-cli.js",
+    "report:categories": "node dist/report-categories-cli.js"
+  },
+  "dependencies": {
+    "@atlas/core": "1.0.0",
+    "@supabase/supabase-js": "^2.49.8",
+    "dotenv": "^16.5.0",
+    "fast-xml-parser": "^5.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3"
+  }
+}
