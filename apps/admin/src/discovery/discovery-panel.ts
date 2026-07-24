@@ -1,4 +1,5 @@
 import {
+  ATLAS_VERSION,
   escapeHtml,
   discoveryEventExternalId,
   countDiscoveryDataRowsInPaste,
@@ -16,7 +17,7 @@ import {
   type DiscoveryRow,
   type DuplicateComparableEvent,
 } from "@atlas/core";
-import { createEventAdmin } from "@atlas/supabase-client";
+import { createEventAdmin, getSession } from "@atlas/supabase-client";
 
 export interface ProcessedDiscoveryRow {
   row: DiscoveryRow;
@@ -126,6 +127,17 @@ export interface PublishDiscoveryResult {
 
 export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promise<PublishDiscoveryResult> {
   const result: PublishDiscoveryResult = { published: 0, failed: [] };
+
+  const session = await getSession();
+  if (!session) {
+    result.failed.push({
+      title: "Accesso",
+      error:
+        "Sessione admin scaduta o assente. Ricarica la pagina e accedi di nuovo con il link email prima di pubblicare.",
+    });
+    return result;
+  }
+
   for (const item of rows) {
     if (item.status !== "ready") continue;
     const row = item.row;
@@ -179,8 +191,9 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <span>Sessione: <strong>${escapeHtml(session.sessionDate)}</strong></span>
       <span>Blocchi incollati: <strong id="blockCount">${session.blockCount}</strong></span>
     </div>
-    <h2>Scoperta eventi</h2>
-    <p class="small">Flusso consigliato: copia la tabella da ChatGPT/Gemini → <strong>incolla qui</strong> oppure <strong>trascina un file</strong> (.md/.txt) — senza passare da Blocco note. Le note <code>[1]: https://…</code> in calce vengono ignorate. Controlla che <strong>righe nel testo = righe lette</strong> (es. 27 = 27), poi pubblica.</p>
+    <h2>Scoperta eventi <span class="small">v${escapeHtml(ATLAS_VERSION)}</span></h2>
+    <p class="discovery-flow-hint"><strong>Importante:</strong> «Anteprima» <em>non</em> scrive nel Registro. Per mettere gli eventi su mappa e registro usa il pulsante verde <strong>Salva sulla mappa</strong>.</p>
+    <p class="small">Copia la tabella da ChatGPT/Gemini → incolla o trascina un file. Note <code>[1]:</code> in calce ignorate. Verifica <strong>righe nel testo = righe lette</strong> (es. 27 = 27).</p>
     <div id="discoveryDropzone" class="discovery-dropzone">
       <p class="discovery-dropzone-label">Incolla la tabella qui o trascina un file</p>
       <textarea id="discoveryPaste" rows="14" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
@@ -188,8 +201,8 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <input type="file" id="discoveryFile" accept=".md,.txt,text/markdown,text/plain" hidden />
     </div>
     <div class="discovery-actions">
-      <button type="button" class="primary" id="processDiscoveryPublish">Elabora e pubblica</button>
-      <button type="button" class="btn-secondary" id="processDiscovery">Solo elabora (anteprima)</button>
+      <button type="button" class="primary approve" id="processDiscoveryPublish">Salva sulla mappa (elabora + pubblica)</button>
+      <button type="button" class="btn-secondary" id="processDiscovery">Solo anteprima (non salva)</button>
       <button type="button" class="btn-secondary" id="discoveryPickFile">Carica file…</button>
       <button type="button" class="btn-secondary" id="clearDiscovery" type="button">Svuota</button>
       <button type="button" class="btn-secondary" id="newDiscoveryBlock" type="button">Nuovo blocco</button>
@@ -211,6 +224,9 @@ export function formatPublishResultHtml(result: PublishDiscoveryResult): string 
     html += `<p class="error">Nessuna riga «pronta». Controlla duplicati o date.</p>`;
   }
   html += `<p class="small">Apri <strong>Registro</strong> (filtra per comune, es. Bolsena) e <strong>Mappa gestore</strong> per i pin.</p>`;
+  if (result.published > 0) {
+    html += `<p class="success"><strong>Fatto.</strong> Clicca il tab <strong>Registro</strong> in alto per vedere gli eventi (il tab non si aggiorna da solo).</p>`;
+  }
   return html;
 }
 
@@ -254,7 +270,7 @@ export function bindDiscoveryPanel(panel: HTMLElement, bindings: DiscoveryPanelB
     if (blockCount) blockCount.textContent = String(processed.session.blockCount);
     bindings.onBlockCount?.(processed.session.blockCount);
     lastBatch = { rows: processed.rows, audit: processed.audit, existing };
-    results.innerHTML = renderDiscoveryResults(processed.rows, processed.audit);
+    results.innerHTML = renderDiscoveryResults(processed.rows, processed.audit, { saved: false });
 
     if (autoPublish) {
       const ready = processed.rows.filter((r) => r.status === "ready").length;
@@ -275,6 +291,20 @@ export function bindDiscoveryPanel(panel: HTMLElement, bindings: DiscoveryPanelB
       updatePasteStatus("", statusEl);
       lastBatch = null;
       return;
+    }
+
+    const ready = processed.rows.filter((r) => r.status === "ready").length;
+    if (ready > 0) {
+      const go = window.confirm(
+        `Anteprima pronta: ${ready} eventi da salvare.\n\nL'anteprima NON è ancora nel Registro.\n\nPubblicarli ora sulla mappa?`,
+      );
+      if (go) {
+        await bindings.onPublish(processed.rows, results, existing);
+        textarea.value = "";
+        updatePasteStatus("", statusEl);
+        lastBatch = null;
+        return;
+      }
     }
 
     results.querySelector("#publishDiscovery")?.addEventListener("click", () => {
@@ -347,6 +377,7 @@ export function bindDiscoveryPanel(panel: HTMLElement, bindings: DiscoveryPanelB
 export function renderDiscoveryResults(
   rows: ProcessedDiscoveryRow[],
   audit?: DiscoveryPasteAudit,
+  options?: { saved?: boolean },
 ): string {
   if (rows.length === 0) {
     const hint =
@@ -394,8 +425,12 @@ export function renderDiscoveryResults(
     html += `<p class="small"><strong>Già in DB (duplicati):</strong> ${dupComuni.map(([c, n]) => `${escapeHtml(c)} (${n})`).join(" · ")}</p>`;
   }
 
-  if (groups.ready.length) {
-    html += `<button type="button" class="primary approve" id="publishDiscovery">Pubblica ${groups.ready.length} eventi</button>`;
+  if (groups.ready.length && options?.saved !== true) {
+    html += `<div class="discovery-not-saved" role="alert">
+      <strong>Non ancora nel Registro né sulla mappa.</strong>
+      Clicca il pulsante verde qui sotto (o «Salva sulla mappa» in alto) per scrivere ${groups.ready.length} eventi nel database.
+    </div>`;
+    html += `<button type="button" class="primary approve discovery-publish-cta" id="publishDiscovery">Salva ${groups.ready.length} eventi su mappa e registro</button>`;
     html += '<ul class="discovery-list">';
     for (const item of groups.ready) {
       html += `<li>✅ ${escapeHtml(item.row.titolo)} — ${escapeHtml(item.row.comune ?? "")} · ${escapeHtml(item.row.data_inizio ?? "")}</li>`;

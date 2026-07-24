@@ -217,6 +217,33 @@ textarea {
   font-family: inherit;
 }
 
+.discovery-flow-hint {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.discovery-not-saved {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+.discovery-publish-cta {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 8px 0 16px;
+  font-size: 16px;
+  padding: 12px 16px;
+}
+
 .discovery-dropzone {
   border: 2px dashed #cbd5e1;
   border-radius: 10px;

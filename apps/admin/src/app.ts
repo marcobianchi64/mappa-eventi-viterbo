@@ -322,9 +322,11 @@ export class AdminApp {
     try {
       const result = await publishDiscoveryRows(rows);
       results.innerHTML = formatPublishResultHtml(result);
-      const refreshed = await fetchAllEventsAdmin();
-      existing.length = 0;
-      existing.push(...refreshed.filter((e) => e.archived !== true));
+      if (result.published > 0) {
+        const refreshed = await fetchAllEventsAdmin();
+        existing.length = 0;
+        existing.push(...refreshed.filter((e) => e.archived !== true));
+      }
     } catch (error) {
       results.innerHTML = `<p class="error">${escapeHtml((error as Error).message)}</p>`;
     }
