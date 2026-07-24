@@ -70,6 +70,12 @@ export {
 } from "./discovery-parse.js";
 
 export {
+  normalizeDiscoveryDateString,
+  parseDiscoveryDateTime,
+  sanitizeDiscoveryCell,
+} from "./discovery-normalize.js";
+
+export {
   VITERBO_PROVINCE_CENTER,
   geocodeComuneViterbo,
   normalizeComuneName,

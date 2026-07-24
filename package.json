@@ -15,6 +15,7 @@
     "build:admin": "npm run build -w @atlas/admin",
     "collect": "npm run build -w @atlas/collector && npm run collect -w @atlas/collector",
     "import:events": "npm run build -w @atlas/collector && npm run import:events -w @atlas/collector",
+    "import:discovery": "npm run build -w @atlas/collector && npm run import:discovery -w @atlas/collector",
     "report:gap": "npm run build -w @atlas/collector && npm run report:gap -w @atlas/collector",
     "report:compare": "npm run build -w @atlas/collector && npm run report:compare -w @atlas/collector",
     "fix:coords": "npm run build -w @atlas/collector && npm run fix:coords -w @atlas/collector",

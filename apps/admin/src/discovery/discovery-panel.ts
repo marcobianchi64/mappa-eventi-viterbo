@@ -6,6 +6,7 @@ import {
   inferComuneFromText,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
+  parseDiscoveryDateTime,
   parseDiscoveryText,
   registerDiscoveryBlock,
   resolveEventCategory,
@@ -42,8 +43,8 @@ export function processDiscoveryPaste(
 }
 
 function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
-  const start = parseDate(row.data_inizio ?? "", row.orario)!;
-  const end = row.data_fine ? parseDate(row.data_fine, row.orario) : null;
+  const start = parseDiscoveryDateTime(row.data_inizio ?? "", row.orario)!;
+  const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
   const comuneKey =
     inferComuneFromText(row.comune, row.luogo, row.titolo) ??
     (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
@@ -70,7 +71,7 @@ function classifyRow(
   const title = row.titolo?.trim();
   if (!title) return { row, status: "invalid", reason: "Titolo mancante" };
 
-  const start = parseDate(row.data_inizio ?? "", row.orario);
+  const start = parseDiscoveryDateTime(row.data_inizio ?? "", row.orario);
   if (!start) return { row, status: "invalid", reason: "Data non valida" };
   if (start.getTime() < Date.now() - 86400000) return { row, status: "past", reason: "Evento passato" };
 
@@ -94,14 +95,22 @@ function classifyRow(
   return { row, status: "ready" };
 }
 
-export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promise<number> {
-  let count = 0;
+export interface PublishDiscoveryResult {
+  published: number;
+  failed: { title: string; error: string }[];
+}
+
+export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promise<PublishDiscoveryResult> {
+  const result: PublishDiscoveryResult = { published: 0, failed: [] };
   for (const item of rows) {
     if (item.status !== "ready") continue;
     const row = item.row;
-    const start = parseDate(row.data_inizio!, row.orario);
-    if (!start) continue;
-    const end = row.data_fine ? parseDate(row.data_fine, row.orario) : null;
+    const start = parseDiscoveryDateTime(row.data_inizio!, row.orario);
+    if (!start) {
+      result.failed.push({ title: row.titolo, error: "Data non valida" });
+      continue;
+    }
+    const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
 
     const comuneKey =
       inferComuneFromText(row.comune, row.luogo, row.titolo) ??
@@ -109,29 +118,33 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
     const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
     const coords = geocodeComuneViterbo(comuneKey ?? comune);
 
-    await createEventAdmin({
-      title: row.titolo.trim(),
-      category: resolveEventCategory(row.categoria, row.titolo, [row.note ?? "", row.luogo ?? ""]),
-      start_date: start.toISOString(),
-      end_date: end?.toISOString() ?? null,
-      venue: row.luogo?.trim() || null,
-      city: comune,
-      comune,
-      province: "Viterbo",
-      event_url: row.url_evento?.trim() || null,
-      description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
-        .filter(Boolean)
-        .join("\n"),
-      lat: coords.lat,
-      lng: coords.lng,
-      source_id: MANUAL_DISCOVERY_SOURCE_ID,
-      territory_id: "IT-VT",
-      verified: true,
-      review_status: "approved",
-    });
-    count += 1;
+    try {
+      await createEventAdmin({
+        title: row.titolo.trim(),
+        category: resolveEventCategory(row.categoria, row.titolo, [row.note ?? "", row.luogo ?? ""]),
+        start_date: start.toISOString(),
+        end_date: end?.toISOString() ?? null,
+        venue: row.luogo?.trim() || null,
+        city: comune,
+        comune,
+        province: "Viterbo",
+        event_url: row.url_evento?.trim() || null,
+        description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
+          .filter(Boolean)
+          .join("\n"),
+        lat: coords.lat,
+        lng: coords.lng,
+        source_id: MANUAL_DISCOVERY_SOURCE_ID,
+        territory_id: "IT-VT",
+        verified: true,
+        review_status: "approved",
+      });
+      result.published += 1;
+    } catch (error) {
+      result.failed.push({ title: row.titolo, error: (error as Error).message });
+    }
   }
-  return count;
+  return result;
 }
 
 export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscoverySession>): string {
@@ -141,7 +154,7 @@ export function renderDiscoveryPanelHtml(session: ReturnType<typeof loadDiscover
       <span>Blocchi incollati: <strong id="blockCount">${session.blockCount}</strong></span>
     </div>
     <h2>Scoperta eventi</h2>
-    <p class="small">Incolla <strong>un blocco alla volta</strong> (tabella markdown con barre <code>|</code>). Dopo «Elabora», il campo si svuota da solo.</p>
+    <p class="small">Incolla <strong>un blocco alla volta</strong> (tabella markdown con barre <code>|</code>). Dopo «Elabora», il campo si svuota da solo. <strong>Non incollare</strong> le righe finali <code>[1]: https://…</code>. Se «0 righe lette», salva la tabella in un file <code>.md</code> e usa <code>npm run import:discovery</code> (vedi <code>docs/operativo/IMPORT_SCOPERTA_TABELLA.md</code>).</p>
     <textarea id="discoveryPaste" rows="10" placeholder="stato | titolo | comune | data_inizio | url_evento | ..."></textarea>
     <div class="discovery-actions">
       <button type="button" class="primary" id="processDiscovery">Elabora blocco</button>
@@ -166,7 +179,7 @@ export function renderDiscoveryResults(rows: ProcessedDiscoveryRow[]): string {
     invalid: rows.filter((r) => r.status === "invalid"),
   };
 
-  let html = `<p><strong>${groups.ready.length}</strong> pronti · ${groups.duplicate.length} duplicati · ${groups.past.length} passati · ${groups.invalid.length} non validi</p>`;
+  let html = `<p><strong>${rows.length}</strong> righe lette dalla tabella · <strong>${groups.ready.length}</strong> pronti · ${groups.duplicate.length} duplicati · ${groups.past.length} passati · ${groups.invalid.length} non validi</p>`;
 
   if (groups.ready.length) {
     html += `<button type="button" class="primary approve" id="publishDiscovery">Pubblica ${groups.ready.length} eventi</button>`;
@@ -182,18 +195,4 @@ export function renderDiscoveryResults(rows: ProcessedDiscoveryRow[]): string {
   }
 
   return html;
-}
-
-function parseDate(value: string, orario?: string): Date | null {
-  const trimmed = value?.trim();
-  if (!trimmed) return null;
-  const dmy = trimmed.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
-  if (dmy) {
-    const date = new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]), 19, 0);
-    const t = orario?.match(/^(\d{1,2}):(\d{2})$/);
-    if (t) date.setHours(Number(t[1]), Number(t[2]));
-    return date;
-  }
-  const iso = Date.parse(trimmed);
-  return Number.isNaN(iso) ? null : new Date(iso);
 }

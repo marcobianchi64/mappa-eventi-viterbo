@@ -343,8 +343,20 @@ export class AdminApp {
     const ok = window.confirm("Pubblicare gli eventi pronti sulla mappa?");
     if (!ok) return;
     try {
-      const count = await publishDiscoveryRows(rows);
-      results.innerHTML = `<p class="success">Pubblicati ${count} eventi. Ricarica «Scoperta» o rielabora il blocco per pubblicare le righe prima segnate come duplicate.</p>`;
+      const result = await publishDiscoveryRows(rows);
+      let html = `<p class="success">Pubblicati <strong>${result.published}</strong> eventi nel database.</p>`;
+      if (result.failed.length) {
+        html += `<p class="error">Non pubblicati (${result.failed.length}):</p><ul class="discovery-list">`;
+        for (const f of result.failed) {
+          html += `<li>${escapeHtml(f.title)} — ${escapeHtml(f.error)}</li>`;
+        }
+        html += "</ul>";
+      }
+      if (result.published === 0 && result.failed.length === 0) {
+        html += `<p class="error">Nessuna riga «pronta». Rielabora il blocco: devono comparire righe pronte prima di Pubblica.</p>`;
+      }
+      html += `<p class="small">Apri <strong>Registro</strong> (cerca «Bolsena») e <strong>Mappa gestore</strong> per verificare. Se Elabora mostra 0 righe lette, salva la tabella in un file .md e usa <code>npm run import:discovery</code> (vedi docs/operativo/IMPORT_SCOPERTA_TABELLA.md).</p>`;
+      results.innerHTML = html;
       const refreshed = await fetchAllEventsAdmin();
       existing.length = 0;
       existing.push(...refreshed.filter((e) => e.archived !== true));

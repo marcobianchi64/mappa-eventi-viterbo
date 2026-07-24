@@ -1,3 +1,5 @@
+import { sanitizeDiscoveryCell } from "./discovery-normalize.js";
+
 export interface DiscoveryRow {
   stato?: string;
   organizzatore?: string;
@@ -38,18 +40,25 @@ export function parseMarkdownTables(text: string): DiscoveryRow[] {
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed.includes("|")) continue;
+    if (/^\[\d+\]:/.test(trimmed)) continue;
     if (/^\|?[\s\-:|]+\|?$/.test(trimmed.replace(/\|/g, "").trim())) continue;
 
     const cells = trimmed
       .split("|")
-      .map((c) => c.trim())
+      .map((c) => sanitizeDiscoveryCell(c.trim()))
       .filter((_, i, arr) => !(i === 0 && arr[0] === "") && !(i === arr.length - 1 && arr[arr.length - 1] === ""));
 
     if (!headers) {
-      headers = cells.map(normalizeHeader).filter((h): h is keyof DiscoveryRow => h !== null);
-      if (headers.length < 3) headers = null;
+      const mapped = cells.map(normalizeHeader).filter((h): h is keyof DiscoveryRow => h !== null);
+      if (mapped.includes("titolo")) {
+        headers = mapped;
+      }
       continue;
     }
+
+    if (cells.length < 3) continue;
+    const maybeHeader = cells.every((c) => normalizeHeader(c) !== null);
+    if (maybeHeader && cells.map(normalizeHeader).includes("titolo")) continue;
 
     const record: Partial<DiscoveryRow> = {};
     headers.forEach((key, i) => {
@@ -93,7 +102,7 @@ function parseDelimitedTable(text: string, delimiter: string): DiscoveryRow[] {
     const cells = line.split(delimiter).map((c) => c.trim());
     const record: Partial<DiscoveryRow> = {};
     headers.forEach((key, i) => {
-      if (cells[i]) record[key] = cells[i];
+      if (cells[i]) record[key] = sanitizeDiscoveryCell(cells[i]);
     });
     if (record.titolo?.trim()) rows.push(record as DiscoveryRow);
   }
