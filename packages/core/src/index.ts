@@ -154,6 +154,10 @@ export {
   isPlaceholderEventTime,
 } from "./event-datetime-display.js";
 
+export { getEventVenueDisplay } from "./event-venue-display.js";
+
+export { isHttpUrl, openHttpUrl } from "./safe-url.js";
+
 export {
   getCategoryMeta,
   escapeHtml,

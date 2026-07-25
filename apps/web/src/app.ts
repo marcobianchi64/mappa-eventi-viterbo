@@ -29,7 +29,7 @@ import {
 import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
 import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
-import { closeEventSheet, openEventSheet, shareEvent } from "./ui/event-sheet";
+import { closeEventSheet, openEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
 import { renderShell } from "./ui/shell";
 import { setStatus, showToast } from "./ui/toast";
 
@@ -71,11 +71,13 @@ export class AtlasApp {
     this.syncNearRadiusUi();
     this.renderPrograms();
     injectAtlasTypography();
+    setEventSheetOnClose(() => this.syncEventUrlParam(null));
     void this.loadEvents();
     this.restoreTopbar();
   }
 
   private handleOpenEvent(event: AtlasEvent): void {
+    this.syncEventUrlParam(event.date_event ?? null);
     openEventSheet(
       event,
       (e: AtlasEvent) => {
@@ -181,7 +183,16 @@ export class AtlasApp {
         injectAtlasTypography();
         this.renderMapEvents();
       }, 150);
-    });
+    }    );
+  }
+
+  /** Aggiorna ?event= senza cambiare pagina (resta sulla mappa). */
+  private syncEventUrlParam(eventId: string | null): void {
+    const url = new URL(window.location.href);
+    if (eventId) url.searchParams.set("event", String(eventId));
+    else url.searchParams.delete("event");
+    const next = url.search ? `${url.pathname}${url.search}` : url.pathname;
+    history.replaceState(null, "", next);
   }
 
   private async loadEvents(): Promise<void> {

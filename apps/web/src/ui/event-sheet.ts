@@ -5,13 +5,23 @@ import {
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
+  getEventVenueDisplay,
   getCategoryMeta,
+  isHttpUrl,
+  openHttpUrl,
   type AtlasEvent,
 } from "@atlas/core";
+
+let onCloseCallback: (() => void) | null = null;
+
+export function setEventSheetOnClose(callback: (() => void) | null): void {
+  onCloseCallback = callback;
+}
 
 export function closeEventSheet(): void {
   document.getElementById("stableEventOverlay")?.classList.remove("open");
   document.getElementById("stableEventSheet")?.classList.remove("open");
+  onCloseCallback?.();
 }
 
 export function openEventSheet(
@@ -28,9 +38,9 @@ export function openEventSheet(
   const category = getDisplayCategory(event);
   const meta = getCategoryMeta(category);
   const title = escapeHtml(getEventDisplayTitle(event));
-  const venue = escapeHtml(event.venue);
+  const venue = escapeHtml(getEventVenueDisplay(event));
   const description = escapeHtml(event.description);
-  const imageUrl = event.image_url ? escapeHtml(event.image_url) : "";
+  const imageUrl = isHttpUrl(event.image_url) ? escapeHtml(event.image_url) : "";
 
   const coverStyle = imageUrl
     ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
@@ -38,7 +48,8 @@ export function openEventSheet(
   const coverClass = imageUrl ? "" : `${category}-cover`;
 
   const shareUrl = createEventShareUrl(event, window.location.origin + window.location.pathname);
-  const officialAction = event.event_url
+  const hasOfficialUrl = isHttpUrl(event.event_url);
+  const officialAction = hasOfficialUrl
     ? `<button class="stable-event-action" data-action="official" type="button"><span>ℹ️</span>Info</button>`
     : `<button class="stable-event-action" data-action="no-official" type="button"><span>ℹ️</span>Info</button>`;
 
@@ -60,7 +71,7 @@ export function openEventSheet(
       </div>
       <div class="stable-event-actions">
         <button class="stable-event-action reminder" data-action="save" type="button"><span>🔖</span>Ricorda</button>
-        <a class="stable-event-action" href="${directionsUrl(event.lat, event.lng)}" target="_blank" rel="noopener noreferrer"><span>📍</span>Guidami</a>
+        <button class="stable-event-action" data-action="directions" type="button"><span>📍</span>Guidami</button>
         <button class="stable-event-action" data-action="share" type="button"><span>📤</span>Condividi</button>
         ${officialAction}
         <button class="stable-event-action" data-action="access" type="button"><span>🎟</span>Accesso</button>
@@ -76,8 +87,13 @@ export function openEventSheet(
   content.querySelector('[data-action="share"]')?.addEventListener("click", () => {
     onShare(event.title || "Evento", shareUrl);
   });
+  content.querySelector('[data-action="directions"]')?.addEventListener("click", () => {
+    openHttpUrl(directionsUrl(event.lat, event.lng));
+  });
   content.querySelector('[data-action="official"]')?.addEventListener("click", () => {
-    if (event.event_url) window.open(event.event_url, "_blank", "noopener,noreferrer");
+    if (!openHttpUrl(event.event_url)) {
+      onToast("Link ufficiale non valido o assente.");
+    }
   });
   content.querySelector('[data-action="no-official"]')?.addEventListener("click", () => {
     onToast("Nessuna pagina ufficiale indicata");

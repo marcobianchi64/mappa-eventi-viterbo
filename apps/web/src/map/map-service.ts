@@ -11,6 +11,8 @@ import {
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
+  getEventVenueDisplay,
+  isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
   createAtlasMapMarkerIcon,
@@ -79,10 +81,11 @@ export class MapService {
 
   private createTooltip(event: AtlasEvent): string {
     const title = escapeHtml(getEventDisplayTitle(event));
-    const venue = event.venue ?? "";
-    const image = event.image_url
-      ? `<img src="${event.image_url}" alt="${title}" onerror="this.remove()">`
-      : "";
+    const venue = getEventVenueDisplay(event);
+    const image =
+      isHttpUrl(event.image_url)
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        : "";
 
     return `
       <div class="event-preview">
@@ -124,8 +127,12 @@ export class MapService {
         offset: [0, -8],
         opacity: 0.98,
         sticky: true,
+        interactive: false,
       });
-      marker.on("click", () => this.onOpenEvent(event));
+      marker.on("click", (e) => {
+        L.DomEvent.stopPropagation(e);
+        this.onOpenEvent(event);
+      });
       this.eventLayer.addLayer(marker);
 
       if (deepLinkEventId && event.date_event && deepLinkEventId === String(event.date_event)) {

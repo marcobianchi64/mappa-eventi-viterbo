@@ -1,5 +1,5 @@
 import { initSupabaseClient, fetchEventById } from "@atlas/supabase-client";
-import { escapeHtml, formatEventSchedule, getDisplayCategory, getEventDisplayTitle, getCategoryMeta } from "@atlas/core";
+import { escapeHtml, formatEventSchedule, getDisplayCategory, getEventDisplayTitle, getEventVenueDisplay, getCategoryMeta, isHttpUrl } from "@atlas/core";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -35,18 +35,26 @@ async function boot(): Promise<void> {
     const meta = getCategoryMeta(getDisplayCategory(event));
     const mapUrl = `./?event=${encodeURIComponent(id)}`;
 
+    const venue = getEventVenueDisplay(event);
+    const cover = isHttpUrl(event.image_url)
+      ? `<img class="event-page-cover" src="${escapeHtml(event.image_url)}" alt="" />`
+      : "";
+    const accessBtn = isHttpUrl(event.event_url)
+      ? `<a class="btn secondary" href="${escapeHtml(event.event_url!)}" target="_blank" rel="noopener">Accesso</a>`
+      : "";
+
     root.innerHTML = `
       <main class="event-page">
         <p><a href="./">← Torna alla mappa</a></p>
-        ${event.image_url ? `<img class="event-page-cover" src="${escapeHtml(event.image_url)}" alt="" />` : ""}
+        ${cover}
         <span class="event-page-badge" style="color:${meta.color}">${meta.label}</span>
         <h1>${escapeHtml(getEventDisplayTitle(event))}</h1>
         <p><strong>Quando:</strong> ${escapeHtml(formatEventSchedule(event))}</p>
-        ${event.venue ? `<p><strong>Dove:</strong> ${escapeHtml(event.venue)}</p>` : ""}
+        ${venue ? `<p><strong>Dove:</strong> ${escapeHtml(venue)}</p>` : ""}
         ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ""}
         <p>
           <a class="btn" href="${mapUrl}">Apri sulla mappa</a>
-          ${event.event_url ? `<a class="btn secondary" href="${escapeHtml(event.event_url)}" target="_blank" rel="noopener">Accesso</a>` : ""}
+          ${accessBtn}
         </p>
       </main>
     `;

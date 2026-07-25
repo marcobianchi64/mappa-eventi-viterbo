@@ -1,5 +1,11 @@
 #!/usr/bin/env node
-import { formatEventSchedule, isEventOngoing, formatEventDateTime } from "@atlas/core";
+import {
+  formatEventSchedule,
+  isEventOngoing,
+  formatEventDateTime,
+  getEventVenueDisplay,
+  isHttpUrl,
+} from "@atlas/core";
 
 const errors = [];
 
@@ -42,6 +48,18 @@ if (midnightUtc.includes("02:") || midnightUtc.includes("2:00")) {
 if (!midnightUtc.startsWith("Dal ")) {
   errors.push(`atteso intervallo senza orario, ottenuto: ${midnightUtc}`);
 }
+
+const venue = getEventVenueDisplay({
+  title: "Festa",
+  comune: "Viterbo",
+  venue: null,
+  city: null,
+  location: null,
+});
+if (venue !== "Viterbo") errors.push(`venue fallback comune: ${venue}`);
+
+if (isHttpUrl("coda alla vaccinara")) errors.push("testo non deve essere URL");
+if (!isHttpUrl("https://example.com")) errors.push("https deve essere valido");
 
 const onlyDate = formatEventDateTime("2026-09-01");
 if (onlyDate.includes(":")) {
