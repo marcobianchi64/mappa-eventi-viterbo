@@ -101,6 +101,36 @@ body {
 .leaflet-tooltip.atlas-event-tooltip .event-preview span:not(.event-preview-date) {
   font-size: ${s.tooltipMetaFontPx}px !important;
 }
+.atlas-marker {
+  width: ${s.markerSizePx}px !important;
+  height: ${s.markerSizePx}px !important;
+  min-width: ${s.markerSizePx}px !important;
+  min-height: ${s.markerSizePx}px !important;
+  border-width: ${s.markerBorderPx}px !important;
+}
+.atlas-marker span {
+  font-size: ${s.markerIconFontPx}px !important;
+}
+.draft-marker {
+  width: ${s.markerSizePx}px !important;
+  height: ${s.markerSizePx}px !important;
+  border-width: ${s.markerBorderPx}px !important;
+}
+.atlas-cluster-sm {
+  width: ${Math.round(s.markerSizePx * 0.78)}px !important;
+  height: ${Math.round(s.markerSizePx * 0.78)}px !important;
+  font-size: ${Math.round(s.markerIconFontPx * 0.75)}px !important;
+}
+.atlas-cluster-md {
+  width: ${s.markerSizePx}px !important;
+  height: ${s.markerSizePx}px !important;
+  font-size: ${Math.round(s.markerIconFontPx * 0.85)}px !important;
+}
+.atlas-cluster-lg {
+  width: ${Math.round(s.markerSizePx * 1.08)}px !important;
+  height: ${Math.round(s.markerSizePx * 1.08)}px !important;
+  font-size: ${s.markerIconFontPx}px !important;
+}
 `.trim();
 }
 

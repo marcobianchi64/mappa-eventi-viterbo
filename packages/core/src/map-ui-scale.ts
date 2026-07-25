@@ -1,10 +1,12 @@
 /** Versione contratto UI — incrementare solo con revisione esplicita delle dimensioni. */
-export const ATLAS_UI_SCALE_CONTRACT_VERSION = 4;
+export const ATLAS_UI_SCALE_CONTRACT_VERSION = 5;
 
 /** Minimi accessibilità (Material / WCAG 2.5.5). Non scendere sotto questi valori. */
 export const ATLAS_UI_MIN_TOUCH_PX = 48;
 export const ATLAS_UI_MIN_BODY_FONT_PX = 16;
 export const MAP_UI_BREAKPOINT_PX = 760;
+/** Schermi PC larghi (mappa a tutto schermo): pin e testi più leggibili. */
+export const MAP_UI_BREAKPOINT_LARGE_PX = 1200;
 
 export type MapUiScaleTokens = {
   markerSizePx: number;
@@ -69,6 +71,38 @@ export const MAP_UI_SCALE_DESKTOP: MapUiScaleTokens = {
   sheetBadgeFontPx: 18,
 };
 
+/** Monitor larghi: pin e barra in alto più visibili sulla pianta provinciale. */
+export const MAP_UI_SCALE_DESKTOP_LARGE: MapUiScaleTokens = {
+  markerSizePx: 54,
+  markerBorderPx: 3,
+  markerIconFontPx: 24,
+  tooltipWidthPx: 440,
+  tooltipMinWidthPx: 360,
+  tooltipPaddingPx: 22,
+  tooltipFontPx: 22,
+  tooltipTitleFontPx: 28,
+  tooltipDateFontPx: 24,
+  tooltipMetaFontPx: 22,
+  dockWidthPx: 280,
+  flyoutPanelWidthPx: 540,
+  panelWidthPx: 540,
+  filterPanelWidthPx: 440,
+  programsPanelWidthPx: 480,
+  baseFontPx: 24,
+  panelLabelFontPx: 24,
+  panelInputFontPx: 24,
+  dockBtnFontPx: 24,
+  chipFontPx: 24,
+  legendFontPx: 22,
+  filterOptionFontPx: 24,
+  sheetTitleFontPx: 34,
+  sheetSectionHeadingFontPx: 26,
+  sheetBodyFontPx: 24,
+  sheetActionFontPx: 19,
+  sheetActionIconFontPx: 28,
+  sheetBadgeFontPx: 19,
+};
+
 export const MAP_UI_SCALE_MOBILE: MapUiScaleTokens = {
   markerSizePx: 54,
   markerBorderPx: 3,
@@ -114,13 +148,20 @@ export function isMobileMapViewport(width: number): boolean {
   return width <= MAP_UI_BREAKPOINT_PX;
 }
 
+export function isLargeDesktopMapViewport(width: number): boolean {
+  return width > MAP_UI_BREAKPOINT_LARGE_PX;
+}
+
 export function getMapUiScale(viewportWidth?: number): MapUiScaleTokens {
-  if (typeof viewportWidth === "number") {
-    return isMobileMapViewport(viewportWidth) ? MAP_UI_SCALE_MOBILE : MAP_UI_SCALE_DESKTOP;
-  }
-  if (typeof window !== "undefined") {
-    return isMobileMapViewport(window.innerWidth) ? MAP_UI_SCALE_MOBILE : MAP_UI_SCALE_DESKTOP;
-  }
+  const width =
+    typeof viewportWidth === "number"
+      ? viewportWidth
+      : typeof window !== "undefined"
+        ? window.innerWidth
+        : MAP_UI_BREAKPOINT_LARGE_PX + 1;
+
+  if (isMobileMapViewport(width)) return MAP_UI_SCALE_MOBILE;
+  if (isLargeDesktopMapViewport(width)) return MAP_UI_SCALE_DESKTOP_LARGE;
   return MAP_UI_SCALE_DESKTOP;
 }
 
@@ -170,5 +211,9 @@ function applyScaleTokens(root: HTMLElement, s: MapUiScaleTokens): void {
 
 /** Variabili CSS su :root (admin e base). Per la mappa web usare injectAtlasTypography(). */
 export function applyMapUiScale(root: HTMLElement = document.documentElement): void {
-  applyScaleTokens(root, getMapUiScale());
+  const s = getMapUiScale();
+  applyScaleTokens(root, s);
+  const width = typeof window !== "undefined" ? window.innerWidth : MAP_UI_BREAKPOINT_LARGE_PX + 1;
+  const tier = isMobileMapViewport(width) ? "mobile" : isLargeDesktopMapViewport(width) ? "large" : "desktop";
+  root.setAttribute("data-atlas-ui-tier", tier);
 }

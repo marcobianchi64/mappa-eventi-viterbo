@@ -11,6 +11,7 @@ import {
   ATLAS_UI_MIN_TOUCH_PX,
   ATLAS_UI_SCALE_CONTRACT_VERSION,
   MAP_UI_SCALE_DESKTOP,
+  MAP_UI_SCALE_DESKTOP_LARGE,
   MAP_UI_SCALE_MOBILE,
   getMapMarkerIconLayout,
 } from "@atlas/core";
@@ -37,6 +38,7 @@ function scanDir(relDir, exts, onFile) {
 // --- Contratto numerico ---
 for (const [label, scale] of [
   ["desktop", MAP_UI_SCALE_DESKTOP],
+  ["desktop-large", MAP_UI_SCALE_DESKTOP_LARGE],
   ["mobile", MAP_UI_SCALE_MOBILE],
 ]) {
   if (scale.markerSizePx < ATLAS_UI_MIN_TOUCH_PX) {
@@ -134,5 +136,5 @@ if (errors.length) {
 }
 
 console.log(
-  `verify:ui-scale OK — contratto v${ATLAS_UI_SCALE_CONTRACT_VERSION} · desktop ${MAP_UI_SCALE_DESKTOP.markerSizePx}px / mobile ${MAP_UI_SCALE_MOBILE.markerSizePx}px · testo ${MAP_UI_SCALE_DESKTOP.baseFontPx}px`,
+  `verify:ui-scale OK — contratto v${ATLAS_UI_SCALE_CONTRACT_VERSION} · desktop ${MAP_UI_SCALE_DESKTOP.markerSizePx}px / large ${MAP_UI_SCALE_DESKTOP_LARGE.markerSizePx}px / mobile ${MAP_UI_SCALE_MOBILE.markerSizePx}px · testo ${MAP_UI_SCALE_DESKTOP_LARGE.baseFontPx}px`,
 );

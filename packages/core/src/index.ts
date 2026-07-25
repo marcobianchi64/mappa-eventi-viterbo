@@ -43,8 +43,10 @@ export {
 export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,
+  MAP_UI_SCALE_DESKTOP_LARGE,
   MAP_UI_SCALE_MOBILE,
   MAP_UI_BREAKPOINT_PX,
+  MAP_UI_BREAKPOINT_LARGE_PX,
   ATLAS_UI_SCALE_CONTRACT_VERSION,
   ATLAS_UI_MIN_TOUCH_PX,
   ATLAS_UI_MIN_BODY_FONT_PX,
@@ -52,6 +54,7 @@ export {
   getMapMarkerIconLayout,
   getMapUiScale,
   isMobileMapViewport,
+  isLargeDesktopMapViewport,
   type MapMarkerIconLayout,
   type MapUiScaleTokens,
 } from "./map-ui-scale.js";
