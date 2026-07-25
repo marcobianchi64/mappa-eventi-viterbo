@@ -1,0 +1,4 @@
+stato;organizzatore;titolo;comune;luogo;data_inizio;data_fine;orario;url_evento;url_fonte;tipo_fonte;categoria;note
+ok;Pro Loco;Sagra dell'Aglio;Cellere;Piazza del Comune;20/07/2026;21/07/2026;19:00;https://esempio.it/evento;https://esempio.it/calendario;pro_loco;food;Verificato su sito ufficiale
+;Comune di Viterbo;Concerto in piazza;Viterbo;Piazza San Lorenzo;25/07/2026;;21:00;https://esempio.it/concerto;https://comune.viterbo.it/eventi;istituzionale;music;Da verificare
+scartato;;;;;;;https://esempio.it/duplicato;;;other;Già presente su Tuscia Eventi
