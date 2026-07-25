@@ -274,7 +274,7 @@ export function listViterboComuni(): string[] {
 
 /** Alias pubblico per risolvere stringhe comune (anche parziali / con testo extra). */
 export function resolveComuneKeyFromString(raw: string): string | null {
-  return resolveComuneKey(raw);
+  return inferComuneFromText(raw) ?? resolveComuneKey(raw);
 }
 
 /** True se le coordinate sono il fallback Viterbo usato dalla Scoperta legacy. */

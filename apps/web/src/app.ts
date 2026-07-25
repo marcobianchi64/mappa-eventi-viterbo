@@ -19,6 +19,7 @@ import {
   searchableEventText,
   generateSubmissionReference,
   buildSubmissionWhatsAppUrl,
+  withMapAlignedCoordinates,
   type AtlasEvent,
   type DateRangeKey,
   type EventCategory,
@@ -197,7 +198,7 @@ export class AtlasApp {
 
   private async loadEvents(): Promise<void> {
     try {
-      this.allEvents = await fetchVerifiedEvents();
+      this.allEvents = (await fetchVerifiedEvents()).map(withMapAlignedCoordinates);
       this.renderMapEvents();
     } catch (error) {
       console.error(error);

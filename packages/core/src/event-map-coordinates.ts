@@ -85,8 +85,7 @@ export function resolveMapMarkerCoordinates(
   if (
     targetKey &&
     targetKey !== "viterbo" &&
-    isNearViterboUrbanArea(lat, lng, 5) &&
-    dist > 0.8
+    isNearViterboUrbanArea(lat, lng, 6)
   ) {
     return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "misplaced-in-viterbo" };
   }
