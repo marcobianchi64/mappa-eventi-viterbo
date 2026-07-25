@@ -1,4 +1,6 @@
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "../../../packages/core/styles/atlas-map-ui.css";
 import "./styles/main.css";
 

@@ -57,3 +57,44 @@
 .leaflet-tooltip.atlas-event-tooltip .event-preview span:not(.event-preview-date) {
   font-size: var(--tooltip-meta-font) !important;
 }
+
+/* Cluster numerati (leaflet.markercluster) — stile Atlas */
+.atlas-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1d4ed8, #2563eb);
+  color: #fff;
+  font-weight: 800;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+}
+
+.atlas-cluster span {
+  line-height: 1;
+}
+
+.atlas-cluster-sm {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.atlas-cluster-md {
+  width: 48px;
+  height: 48px;
+  font-size: 17px;
+}
+
+.atlas-cluster-lg {
+  width: 56px;
+  height: 56px;
+  font-size: 19px;
+}
+
+.marker-cluster-spider-leg {
+  stroke: #2563eb;
+  stroke-opacity: 0.65;
+}

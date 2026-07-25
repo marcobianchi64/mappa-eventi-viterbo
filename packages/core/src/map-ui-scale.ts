@@ -1,5 +1,5 @@
 /** Versione contratto UI — incrementare solo con revisione esplicita delle dimensioni. */
-export const ATLAS_UI_SCALE_CONTRACT_VERSION = 3;
+export const ATLAS_UI_SCALE_CONTRACT_VERSION = 4;
 
 /** Minimi accessibilità (Material / WCAG 2.5.5). Non scendere sotto questi valori. */
 export const ATLAS_UI_MIN_TOUCH_PX = 48;
@@ -39,9 +39,9 @@ export type MapUiScaleTokens = {
 
 /** Desktop: pin visibili ma non invadenti (testo invariato). */
 export const MAP_UI_SCALE_DESKTOP: MapUiScaleTokens = {
-  markerSizePx: 54,
+  markerSizePx: 48,
   markerBorderPx: 3,
-  markerIconFontPx: 24,
+  markerIconFontPx: 20,
   tooltipWidthPx: 420,
   tooltipMinWidthPx: 340,
   tooltipPaddingPx: 20,

@@ -1,4 +1,5 @@
 import L from "leaflet";
+import "leaflet.markercluster";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
@@ -16,9 +17,34 @@ import {
   type AtlasEvent,
 } from "@atlas/core";
 
+function createAtlasMarkerClusterGroup(): L.MarkerClusterGroup {
+  return L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 17,
+    maxClusterRadius: (zoom) => {
+      if (zoom <= 9) return 90;
+      if (zoom <= 12) return 65;
+      if (zoom <= 14) return 48;
+      return 36;
+    },
+    iconCreateFunction: (cluster) => {
+      const count = cluster.getChildCount();
+      const sizeClass =
+        count < 10 ? "atlas-cluster-sm" : count < 100 ? "atlas-cluster-md" : "atlas-cluster-lg";
+      return L.divIcon({
+        html: `<div class="atlas-cluster ${sizeClass}"><span>${count}</span></div>`,
+        className: "",
+        iconSize: L.point(44, 44),
+      });
+    },
+  });
+}
+
 export class MapService {
   private map: L.Map;
-  private eventLayer = L.layerGroup();
+  private eventLayer = createAtlasMarkerClusterGroup();
   private draftMarker: L.Marker | null = null;
   private userMarker: L.CircleMarker | null = null;
 
@@ -99,7 +125,7 @@ export class MapService {
         sticky: true,
       });
       marker.on("click", () => this.onOpenEvent(event));
-      marker.addTo(this.eventLayer);
+      this.eventLayer.addLayer(marker);
 
       if (deepLinkEventId && event.date_event && deepLinkEventId === String(event.date_event)) {
         this.map.setView([lat, lng], 14);

@@ -67,6 +67,9 @@ const mapService = read("apps/web/src/map/map-service.ts");
 if (!mapService.includes("createAtlasMapMarkerIcon")) {
   errors.push("map-service.ts deve usare createAtlasMapMarkerIcon()");
 }
+if (!mapService.includes("markerClusterGroup")) {
+  errors.push("map-service.ts deve usare markerClusterGroup per i pin evento");
+}
 if (mapService.match(/iconSize:\s*\[\d+/)) {
   errors.push("map-service.ts: iconSize hardcoded vietato");
 }
