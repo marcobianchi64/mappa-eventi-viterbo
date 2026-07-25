@@ -23,13 +23,13 @@ function createAtlasMarkerClusterGroup(): L.MarkerClusterGroup {
     showCoverageOnHover: false,
     zoomToBoundsOnClick: true,
     disableClusteringAtZoom: 17,
-    maxClusterRadius: (zoom) => {
+    maxClusterRadius: (zoom: number): number => {
       if (zoom <= 9) return 90;
       if (zoom <= 12) return 65;
       if (zoom <= 14) return 48;
       return 36;
     },
-    iconCreateFunction: (cluster) => {
+    iconCreateFunction: (cluster: L.MarkerCluster): L.DivIcon => {
       const count = cluster.getChildCount();
       const sizeClass =
         count < 10 ? "atlas-cluster-sm" : count < 100 ? "atlas-cluster-md" : "atlas-cluster-lg";
