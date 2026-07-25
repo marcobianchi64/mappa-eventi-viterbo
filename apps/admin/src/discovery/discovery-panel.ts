@@ -6,7 +6,7 @@ import {
   eventsAreDiscoveryDuplicates,
   formatComuneLabel,
   geocodeEventPlace,
-  inferComuneFromText,
+  resolveEventComuneKey,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
   parseDiscoveryDateTime,
@@ -71,7 +71,11 @@ function discoveryPlace(row: DiscoveryRow): {
   });
   const comuneKey =
     place.comuneKey ??
-    inferComuneFromText(row.comune, row.luogo, row.titolo) ??
+    resolveEventComuneKey({
+      comune: row.comune,
+      venue: row.luogo,
+      title: row.titolo,
+    }) ??
     (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
   const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
   return { lat: place.lat, lng: place.lng, comune };
@@ -108,7 +112,11 @@ function classifyRow(
 
   const candidate = toComparableEvent(row);
   const comuneKey =
-    inferComuneFromText(row.comune, row.luogo, row.titolo) ??
+    resolveEventComuneKey({
+      comune: row.comune,
+      venue: row.luogo,
+      title: row.titolo,
+    }) ??
     (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
   const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || "";
   const externalId = discoveryEventExternalId(title, start.toISOString(), comune);

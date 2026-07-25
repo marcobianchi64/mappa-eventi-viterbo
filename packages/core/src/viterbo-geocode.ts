@@ -77,8 +77,16 @@ const COMUNE_COORDS: Record<string, { lat: number; lng: number }> = {
 const COMUNE_ALIASES: Record<string, string> = {
   vitrochino: "vitorchiano",
   vitrochiano: "vitorchiano",
-  "soriano": "soriano nel cimino",
+  soriano: "soriano nel cimino",
+  "castel s elia": "castel sant'elia",
+  "castel s. elia": "castel sant'elia",
+  "castel sant elia": "castel sant'elia",
+  "castel sant'elia": "castel sant'elia",
+  "s. elia": "castel sant'elia",
+  "s elia": "castel sant'elia",
 };
+
+const COMUNE_ALIAS_KEYS_BY_LENGTH = Object.keys(COMUNE_ALIASES).sort((a, b) => b.length - a.length);
 
 const COMUNE_NAMES_BY_LENGTH = Object.keys(COMUNE_COORDS).sort((a, b) => b.length - a.length);
 
@@ -129,9 +137,7 @@ export function geocodeEventPlace(input: {
     }
   }
 
-  const comuneKey =
-    resolveComuneKey(input.comune ?? input.city ?? "") ??
-    inferComuneFromText(input.venue, input.location, input.title, input.comune, input.city);
+  const comuneKey = resolveEventComuneKey(input);
 
   if (comuneKey) {
     const coords = COMUNE_COORDS[comuneKey];
@@ -170,7 +176,7 @@ export function inferComuneFromText(...parts: Array<string | null | undefined>):
   const haystack = normalizeComuneName(parts.filter(Boolean).join(" "));
   if (!haystack) return null;
 
-  for (const aliasKey of Object.keys(COMUNE_ALIASES)) {
+  for (const aliasKey of COMUNE_ALIAS_KEYS_BY_LENGTH) {
     if (haystack.includes(aliasKey)) return COMUNE_ALIASES[aliasKey];
   }
 
@@ -180,6 +186,22 @@ export function inferComuneFromText(...parts: Array<string | null | undefined>):
   return null;
 }
 
+/**
+ * Comune per geocoding/display: luogo/titolo prima del campo comune (evita Viterbo sbagliato se il testo dice Castel Sant'Elia).
+ */
+export function resolveEventComuneKey(input: {
+  comune?: string | null;
+  city?: string | null;
+  venue?: string | null;
+  title?: string | null;
+  location?: string | null;
+}): string | null {
+  const fromText = inferComuneFromText(input.venue, input.location, input.title);
+  const fromDeclared = resolveComuneKey(input.comune ?? input.city ?? "");
+  if (fromText && fromDeclared && fromText !== fromDeclared) return fromText;
+  return fromText ?? fromDeclared;
+}
+
 export function inferComuneForEvent(event: {
   comune?: string | null;
   city?: string | null;
@@ -187,9 +209,10 @@ export function inferComuneForEvent(event: {
   title?: string | null;
   location?: string | null;
 }): string | null {
-  const direct = resolveComuneKey(event.comune ?? event.city ?? "");
-  if (direct) return direct;
-  return inferComuneFromText(event.venue, event.location, event.title, event.comune, event.city);
+  return (
+    resolveEventComuneKey(event) ??
+    inferComuneFromText(event.comune, event.city)
+  );
 }
 
 export function formatComuneLabel(comuneKey: string): string {

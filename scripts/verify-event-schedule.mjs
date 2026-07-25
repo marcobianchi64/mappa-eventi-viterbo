@@ -50,13 +50,24 @@ if (!midnightUtc.startsWith("Dal ")) {
 }
 
 const venue = getEventVenueDisplay({
+  title: "Sagra del Cavatello",
+  comune: "Vitorchiano",
+  venue: "Centro storico, Piazza Roma",
+  city: null,
+  location: null,
+});
+if (!venue.includes("Vitorchiano") || !venue.includes("Centro storico")) {
+  errors.push(`venue combinato atteso, ottenuto: ${venue}`);
+}
+
+const venueOnlyComune = getEventVenueDisplay({
   title: "Festa",
   comune: "Viterbo",
   venue: null,
   city: null,
   location: null,
 });
-if (venue !== "Viterbo") errors.push(`venue fallback comune: ${venue}`);
+if (venueOnlyComune !== "Viterbo") errors.push(`venue fallback comune: ${venueOnlyComune}`);
 
 if (isHttpUrl("coda alla vaccinara")) errors.push("testo non deve essere URL");
 if (!isHttpUrl("https://example.com")) errors.push("https deve essere valido");

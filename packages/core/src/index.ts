@@ -91,6 +91,7 @@ export {
   normalizeComuneName,
   inferComuneFromText,
   inferComuneForEvent,
+  resolveEventComuneKey,
   formatComuneLabel,
   distanceKm,
   isPinFarFromComune,
@@ -154,7 +155,7 @@ export {
   isPlaceholderEventTime,
 } from "./event-datetime-display.js";
 
-export { getEventVenueDisplay } from "./event-venue-display.js";
+export { getEventVenueDisplay, getEventComuneDisplayLabel } from "./event-venue-display.js";
 
 export { isHttpUrl, openHttpUrl } from "./safe-url.js";
 
