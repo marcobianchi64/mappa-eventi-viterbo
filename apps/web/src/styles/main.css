@@ -333,6 +333,24 @@ button {
   overflow-wrap: break-word;
 }
 
+.event-preview-location-hint {
+  margin-top: 6px;
+  font-size: calc(var(--tooltip-font) * 0.9) !important;
+  color: #b45309 !important;
+  font-weight: 600;
+}
+
+.stable-event-location-notice {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: var(--sheet-body-font);
+  line-height: 1.4;
+}
+
 .legend {
   margin-top: 12px;
   padding-top: 10px;
