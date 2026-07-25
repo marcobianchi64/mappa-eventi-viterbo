@@ -197,7 +197,14 @@ export function resolveEventComuneKey(input: {
   location?: string | null;
 }): string | null {
   const fromText = inferComuneFromText(input.venue, input.location, input.title);
-  const fromDeclared = resolveComuneKey(input.comune ?? input.city ?? "");
+  const fromComune = resolveComuneKey(input.comune ?? "");
+  const fromCity = resolveComuneKey(input.city ?? "");
+  let fromDeclared = fromComune ?? fromCity;
+  if (fromComune && fromCity && fromComune !== fromCity) {
+    if (fromComune === "viterbo" && fromCity !== "viterbo") fromDeclared = fromCity;
+    else if (fromCity === "viterbo" && fromComune !== "viterbo") fromDeclared = fromComune;
+    else fromDeclared = fromComune;
+  }
   if (fromText && fromDeclared && fromText !== fromDeclared) return fromText;
   return fromText ?? fromDeclared;
 }

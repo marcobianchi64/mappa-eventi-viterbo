@@ -157,6 +157,14 @@ export {
 
 export { getEventVenueDisplay, getEventComuneDisplayLabel } from "./event-venue-display.js";
 
+export {
+  MAP_MARKER_COORD_TRUST_KM,
+  resolveMapMarkerCoordinates,
+  withMapAlignedCoordinates,
+  isDefaultViterboCenterCoords,
+  type MapMarkerCoordinateResolution,
+} from "./event-map-coordinates.js";
+
 export { isHttpUrl, openHttpUrl } from "./safe-url.js";
 
 export {

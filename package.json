@@ -31,7 +31,8 @@
     "verify:discovery-table": "npm run build -w @atlas/core && node scripts/verify-discovery-table.mjs",
     "verify:event-schedule": "npm run build -w @atlas/core && node scripts/verify-event-schedule.mjs",
     "verify:frazioni": "npm run build -w @atlas/core && node scripts/verify-frazioni.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni"
+    "verify:geocoding": "npm run build -w @atlas/core && node scripts/verify-geocoding.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding"
   },
   "engines": {
     "node": ">=20"
