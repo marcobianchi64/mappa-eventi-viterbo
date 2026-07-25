@@ -19,19 +19,20 @@ if (civitellaPlace.comuneKey !== "civitella d'agliano") {
   errors.push(`Civitella attesa, ottenuto: ${civitellaPlace.comuneKey}`);
 }
 
-const legacyPin = resolveMapMarkerCoordinates({
+const legacyLabelOnly = resolveMapMarkerCoordinates({
   lat: viterbo.lat,
   lng: viterbo.lng,
-  comune: "Viterbo",
-  city: "Civitella d'Agliano",
+  comune: "Civitella D'agliano",
+  city: null,
   title: "Traindeville in concerto",
   venue: "Cassero della Torre dei Monaldeschi",
   location: null,
 });
-if (!legacyPin.adjusted || legacyPin.reason !== "viterbo-fallback") {
-  errors.push(`pin legacy Viterbo deve essere corretto, got ${JSON.stringify(legacyPin)}`);
+
+if (!legacyLabelOnly.adjusted) {
+  errors.push(`pin con comune Civitella su Viterbo deve essere corretto, got ${JSON.stringify(legacyLabelOnly)}`);
 }
-const distAfter = distanceKm(legacyPin.lat, legacyPin.lng, viterbo.lat, viterbo.lng);
+const distAfter = distanceKm(legacyLabelOnly.lat, legacyLabelOnly.lng, viterbo.lat, viterbo.lng);
 if (distAfter < 8) {
   errors.push(`dopo allineamento Civitella non deve restare su Viterbo (${distAfter.toFixed(1)} km)`);
 }

@@ -1,8 +1,13 @@
 import type { AtlasEvent } from "./types/event.js";
+import { getEventComuneDisplayLabel } from "./event-venue-display.js";
 import {
   distanceKm,
   geocodeEventPlace,
+  getComuneCenterByKey,
   isLegacyViterboCenter,
+  isNearViterboUrbanArea,
+  resolveComuneKeyFromString,
+  resolveEventComuneKey,
   VITERBO_PROVINCE_CENTER,
 } from "./viterbo-geocode.js";
 
@@ -13,7 +18,7 @@ export type MapMarkerCoordinateResolution = {
   lat: number;
   lng: number;
   adjusted: boolean;
-  reason?: "missing" | "viterbo-fallback" | "far-from-place" | "ok";
+  reason?: "missing" | "viterbo-fallback" | "far-from-place" | "misplaced-in-viterbo" | "ok";
 };
 
 export function isDefaultViterboCenterCoords(lat: number, lng: number): boolean {
@@ -21,6 +26,17 @@ export function isDefaultViterboCenterCoords(lat: number, lng: number): boolean 
   return (
     Math.abs(lat - VITERBO_PROVINCE_CENTER.lat) < 0.004 &&
     Math.abs(lng - VITERBO_PROVINCE_CENTER.lng) < 0.004
+  );
+}
+
+function resolveTargetComuneKey(
+  event: Pick<AtlasEvent, "lat" | "lng" | "comune" | "city" | "venue" | "title" | "location">,
+): string | null {
+  return (
+    resolveEventComuneKey(event) ??
+    resolveComuneKeyFromString(getEventComuneDisplayLabel(event)) ??
+    resolveComuneKeyFromString(event.comune ?? "") ??
+    resolveComuneKeyFromString(event.city ?? "")
   );
 }
 
@@ -32,27 +48,47 @@ export function resolveMapMarkerCoordinates(
   event: Pick<AtlasEvent, "lat" | "lng" | "comune" | "city" | "venue" | "title" | "location">,
 ): MapMarkerCoordinateResolution {
   const place = geocodeEventPlace(event);
+  const targetKey = resolveTargetComuneKey(event);
+  const targetCoords = targetKey ? getComuneCenterByKey(targetKey) : null;
+
   const lat = Number(event.lat);
   const lng = Number(event.lng);
   const hasDb = Number.isFinite(lat) && Number.isFinite(lng);
-  const hasPlace = Boolean(place.comuneKey || place.localitaKey);
 
-  if (!hasPlace) {
-    if (hasDb) return { lat, lng, adjusted: false, reason: "ok" };
-    return { lat: place.lat, lng: place.lng, adjusted: true, reason: "missing" };
-  }
+  const expectedLat = targetCoords?.lat ?? place.lat;
+  const expectedLng = targetCoords?.lng ?? place.lng;
+  const hasExpected =
+    Boolean(targetKey || place.comuneKey || place.localitaKey) &&
+    Number.isFinite(expectedLat) &&
+    Number.isFinite(expectedLng);
 
   if (!hasDb) {
-    return { lat: place.lat, lng: place.lng, adjusted: true, reason: "missing" };
+    if (!hasExpected) {
+      return { lat: place.lat, lng: place.lng, adjusted: true, reason: "missing" };
+    }
+    return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "missing" };
   }
 
-  if (isDefaultViterboCenterCoords(lat, lng)) {
-    return { lat: place.lat, lng: place.lng, adjusted: true, reason: "viterbo-fallback" };
+  if (!hasExpected) {
+    return { lat, lng, adjusted: false, reason: "ok" };
   }
 
-  const dist = distanceKm(lat, lng, place.lat, place.lng);
+  if (isDefaultViterboCenterCoords(lat, lng) && targetKey && targetKey !== "viterbo") {
+    return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "viterbo-fallback" };
+  }
+
+  const dist = distanceKm(lat, lng, expectedLat, expectedLng);
   if (dist > MAP_MARKER_COORD_TRUST_KM) {
-    return { lat: place.lat, lng: place.lng, adjusted: true, reason: "far-from-place" };
+    return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "far-from-place" };
+  }
+
+  if (
+    targetKey &&
+    targetKey !== "viterbo" &&
+    isNearViterboUrbanArea(lat, lng, 5) &&
+    dist > 0.8
+  ) {
+    return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "misplaced-in-viterbo" };
   }
 
   return { lat, lng, adjusted: false, reason: "ok" };

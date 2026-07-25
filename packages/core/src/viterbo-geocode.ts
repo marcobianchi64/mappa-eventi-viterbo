@@ -84,6 +84,7 @@ const COMUNE_ALIASES: Record<string, string> = {
   "castel sant'elia": "castel sant'elia",
   "s. elia": "castel sant'elia",
   "s elia": "castel sant'elia",
+  "civitella dagliano": "civitella d'agliano",
 };
 
 const COMUNE_ALIAS_KEYS_BY_LENGTH = Object.keys(COMUNE_ALIASES).sort((a, b) => b.length - a.length);
@@ -168,7 +169,8 @@ function resolveComuneKey(raw: string): string | null {
   for (const name of COMUNE_NAMES_BY_LENGTH) {
     if (key.includes(name) || name.includes(key)) return name;
   }
-  return null;
+
+  return inferComuneFromText(raw);
 }
 
 /** Cerca un comune VT in testo libero (titolo, luogo, venue…). */
@@ -206,7 +208,11 @@ export function resolveEventComuneKey(input: {
     else fromDeclared = fromComune;
   }
   if (fromText && fromDeclared && fromText !== fromDeclared) return fromText;
-  return fromText ?? fromDeclared;
+  const loose =
+    inferComuneFromText(input.comune) ??
+    inferComuneFromText(input.city) ??
+    inferComuneFromText(input.location);
+  return fromText ?? fromDeclared ?? loose;
 }
 
 export function inferComuneForEvent(event: {
@@ -254,8 +260,21 @@ export function isPinFarFromComune(
   return distanceKm(event.lat, event.lng, expected.lat, expected.lng) > thresholdKm;
 }
 
+export function getComuneCenterByKey(comuneKey: string): { lat: number; lng: number } | null {
+  return COMUNE_COORDS[comuneKey] ?? null;
+}
+
+export function isNearViterboUrbanArea(lat: number, lng: number, radiusKm = 5): boolean {
+  return distanceKm(lat, lng, VITERBO_PROVINCE_CENTER.lat, VITERBO_PROVINCE_CENTER.lng) <= radiusKm;
+}
+
 export function listViterboComuni(): string[] {
   return Object.keys(COMUNE_COORDS).sort((a, b) => a.localeCompare(b, "it"));
+}
+
+/** Alias pubblico per risolvere stringhe comune (anche parziali / con testo extra). */
+export function resolveComuneKeyFromString(raw: string): string | null {
+  return resolveComuneKey(raw);
 }
 
 /** True se le coordinate sono il fallback Viterbo usato dalla Scoperta legacy. */
