@@ -105,10 +105,11 @@ export interface MapMarkerPlacement {
 
 /** Separa pin sovrapposti (stesse coordinate) in cerchio attorno al punto reale. */
 export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlacement[] {
-  const unique = dedupeEventsForMap(events).map((event) => {
+  const aligned = events.map((event) => {
     const assessed = assessEventLocation(event);
     return { ...event, lat: assessed.lat, lng: assessed.lng };
   });
+  const unique = dedupeEventsForMap(aligned);
   const valid = unique.filter(hasValidEventCoords);
   const buckets = new Map<string, AtlasEvent[]>();
 

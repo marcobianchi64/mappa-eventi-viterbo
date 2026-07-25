@@ -75,4 +75,29 @@ const cavB = cavatello(3, 3, 5);
 assert.equal(eventsAreMapDuplicates(cavA, cavB), true, "Sagra Cavatello reimportata");
 assert.equal(dedupeEventsForMap([cavA, cavB]).length, 1);
 
+const cavLong = {
+  ...cavatello(31, 31, 3),
+  title: "Sagra del Cavatello Vitorchiano Centro Storico",
+  start_date: "2026-07-31T19:00:00.000Z",
+  end_date: "2026-08-03T19:00:00.000Z",
+};
+const cavShort = {
+  ...cavatello(2, 2, 4),
+  title: "Sagra del Cavatello - Vitorchiano",
+  start_date: "2026-08-02T19:00:00.000Z",
+  end_date: "2026-08-04T19:00:00.000Z",
+  lat: 42.42,
+  lng: 12.104,
+};
+assert.equal(
+  eventsAreMapDuplicates(cavLong, cavShort),
+  true,
+  "titoli scraping diversi, stessa sagra",
+);
+assert.equal(
+  buildMapMarkerPlacements([cavLong, cavShort]).length,
+  1,
+  "dedupe dopo allineamento coordinate",
+);
+
 console.log("verify-map-dedupe: OK");

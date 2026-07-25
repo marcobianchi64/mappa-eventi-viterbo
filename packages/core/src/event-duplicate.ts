@@ -1,4 +1,6 @@
 import type { AtlasEvent } from "./types/event.js";
+import { refineEventTitle } from "./title-format.js";
+import { listViterboComuni, normalizeComuneName } from "./viterbo-geocode.js";
 import { normalizeSearchText } from "./utils.js";
 
 function startOfDay(date: Date): Date {
@@ -30,9 +32,53 @@ export interface DuplicateComparableEvent {
   venue?: string | null;
   comune?: string | null;
   city?: string | null;
+  description?: string | null;
   lat: number;
   lng: number;
   event_url?: string | null;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Chiave manifestazione (sagra/festa) senza suffissi comune/luogo — per dedupe reimport. */
+export function manifestationDedupeKey(
+  event: Pick<
+    DuplicateComparableEvent,
+    "title" | "description" | "venue" | "comune" | "city"
+  >,
+): string {
+  let text = normalizeSearchText(refineEventTitle(event));
+  if (!text) return "";
+
+  const stripTail = (key: string) => {
+    if (!key) return;
+    const re = new RegExp(`[\\s\\-–—]+${escapeRegExp(key)}([\\s\\-–—].*)?$`, "i");
+    text = text.replace(re, "").trim();
+  };
+
+  stripTail(normalizeSearchText(event.comune ?? ""));
+  stripTail(normalizeSearchText(event.city ?? ""));
+  for (const name of listViterboComuni()) {
+    stripTail(normalizeSearchText(normalizeComuneName(name)));
+  }
+
+  text = text
+    .replace(/\s+centro\s+storico.*$/, "")
+    .replace(/\s+piazza\s+.+$/, "")
+    .replace(/[\s\-–—]+$/, "")
+    .trim();
+
+  return titleFingerprint(text);
+}
+
+function sameManifestationTitle(a: DuplicateComparableEvent, b: DuplicateComparableEvent): boolean {
+  const ka = manifestationDedupeKey(a);
+  const kb = manifestationDedupeKey(b);
+  if (!ka || !kb || ka.length < 8) return false;
+  if (ka === kb) return true;
+  return ka.includes(kb) || kb.includes(ka);
 }
 
 function eventDateRange(event: DuplicateComparableEvent): { start: Date; end: Date } {
@@ -219,6 +265,11 @@ export function eventsAreMapDuplicates(
   if (samePlace && exactSameTitle && titleA.length >= 10) {
     if (eventDatesOverlap(a, b)) return true;
     if (datesCloseEnough(a, b, 2)) return true;
+  }
+
+  if (samePlace && sameManifestationTitle(a, b)) {
+    if (eventDatesOverlap(a, b)) return true;
+    if (datesCloseEnough(a, b, 7)) return true;
   }
 
   if (samePlace && sameTitleFingerprint(a.title, b.title) && eventDatesOverlap(a, b)) {

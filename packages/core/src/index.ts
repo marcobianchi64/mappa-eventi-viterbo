@@ -132,6 +132,7 @@ export {
   findCoordTitleClusters,
   findDuplicateClusters,
   findMapPinClusters,
+  manifestationDedupeKey,
   mergeEventClusters,
   titleFingerprint,
   titlesLookSimilar,
