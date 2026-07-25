@@ -26,7 +26,20 @@ Per una nuova provincia servono:
 
 Non usiamo geocoder generico (Nominatim) in produzione senza revisione: troppi falsi positivi per eventi culturali.
 
-## Comandi utili
+## Navigazione stradale (Google Maps / «Guidami»)
+
+**Regola prodotto:** il pulsante **Guidami** compare solo se `assessEventLocation()` restituisce `allowDirections: true` (confidenza **high**).
+
+| Livello | Pin in mappa | Guidami |
+|---------|----------------|---------|
+| **high** | Coordinate coerenti con comune/luogo dichiarati | Sì |
+| **medium** | Pin spostato o luogo generico | No — messaggio all’utente |
+| **low** | Comune incerto o solo «Viterbo» senza indirizzo | No |
+
+Esempi collaudati: `npm run verify:location-confidence`.
+
+In pubblicazione (Scoperta) conviene sempre: **comune corretto**, **luogo con via/piazza** quando possibile, evitare solo «Viterbo» generico.
+
 
 | Comando | Uso |
 |---------|-----|

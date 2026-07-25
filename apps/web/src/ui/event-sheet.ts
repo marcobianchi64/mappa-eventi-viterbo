@@ -1,4 +1,5 @@
 import {
+  assessEventLocation,
   createEventShareUrl,
   directionsUrl,
   escapeHtml,
@@ -38,9 +39,19 @@ export function openEventSheet(
   const category = getDisplayCategory(event);
   const meta = getCategoryMeta(category);
   const title = escapeHtml(getEventDisplayTitle(event));
-  const venue = escapeHtml(getEventVenueDisplay(event));
+  const location = assessEventLocation(event);
+  const venue = escapeHtml(location.placeLabel);
   const description = escapeHtml(event.description);
   const imageUrl = isHttpUrl(event.image_url) ? escapeHtml(event.image_url) : "";
+
+  const locationNotice =
+    location.warnings.length > 0
+      ? `<p class="stable-event-location-notice" role="status">${escapeHtml(location.warnings[0])}</p>`
+      : "";
+
+  const directionsAction = location.allowDirections
+    ? `<button class="stable-event-action" data-action="directions" type="button"><span>📍</span>Guidami</button>`
+    : `<button class="stable-event-action" data-action="no-directions" type="button" title="Posizione non verificata con sufficiente certezza"><span>📍</span>Guidami</button>`;
 
   const coverStyle = imageUrl
     ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
@@ -64,6 +75,7 @@ export function openEventSheet(
       <div class="stable-event-facts">
         ${event.start_date ? `<div>📅 ${escapeHtml(formatEventSchedule(event))}</div>` : ""}
         ${venue ? `<div>📍 ${venue}</div>` : ""}
+        ${locationNotice}
       </div>
       <div class="stable-event-section">
         <h3>Informazioni</h3>
@@ -71,7 +83,7 @@ export function openEventSheet(
       </div>
       <div class="stable-event-actions">
         <button class="stable-event-action reminder" data-action="save" type="button"><span>🔖</span>Ricorda</button>
-        <button class="stable-event-action" data-action="directions" type="button"><span>📍</span>Guidami</button>
+        ${directionsAction}
         <button class="stable-event-action" data-action="share" type="button"><span>📤</span>Condividi</button>
         ${officialAction}
         <button class="stable-event-action" data-action="access" type="button"><span>🎟</span>Accesso</button>
@@ -88,7 +100,13 @@ export function openEventSheet(
     onShare(event.title || "Evento", shareUrl);
   });
   content.querySelector('[data-action="directions"]')?.addEventListener("click", () => {
-    openHttpUrl(directionsUrl(event.lat, event.lng));
+    openHttpUrl(directionsUrl(location.lat, location.lng));
+  });
+  content.querySelector('[data-action="no-directions"]')?.addEventListener("click", () => {
+    onToast(
+      location.warnings[0] ??
+        "Indicazioni stradali non disponibili: verifica il luogo con l'organizzatore dell'evento.",
+    );
   });
   content.querySelector('[data-action="official"]')?.addEventListener("click", () => {
     if (!openHttpUrl(event.event_url)) {

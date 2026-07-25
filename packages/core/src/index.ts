@@ -168,6 +168,13 @@ export {
   type MapMarkerCoordinateResolution,
 } from "./event-map-coordinates.js";
 
+export {
+  assessEventLocation,
+  withAssessedMapCoordinates,
+  type EventLocationAssessment,
+  type EventLocationConfidence,
+} from "./event-location-confidence.js";
+
 export { isHttpUrl, openHttpUrl } from "./safe-url.js";
 
 export {

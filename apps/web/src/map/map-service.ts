@@ -7,11 +7,11 @@ import {
   MAP_TILE_SUBDOMAINS,
   MAP_TILE_URL,
   buildMapMarkerPlacements,
+  assessEventLocation,
   escapeHtml,
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
-  getEventVenueDisplay,
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
@@ -81,7 +81,8 @@ export class MapService {
 
   private createTooltip(event: AtlasEvent): string {
     const title = escapeHtml(getEventDisplayTitle(event));
-    const venue = getEventVenueDisplay(event);
+    const location = assessEventLocation(event);
+    const venue = escapeHtml(location.placeLabel);
     const image =
       isHttpUrl(event.image_url)
         ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
@@ -92,7 +93,12 @@ export class MapService {
         ${image}
         <strong>${title}</strong>
         <span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>
-        ${venue ? `<span class="event-preview-venue">${escapeHtml(venue)}</span>` : ""}
+        ${venue ? `<span class="event-preview-venue">${venue}</span>` : ""}
+        ${
+          !location.allowDirections
+            ? `<span class="event-preview-location-hint">Posizione da confermare — navigatore non disponibile</span>`
+            : ""
+        }
       </div>
     `;
   }
