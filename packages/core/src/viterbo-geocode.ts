@@ -1,5 +1,15 @@
+import { getFrazioneEntry, inferLocalitaFromText } from "./viterbo-frazioni.js";
+
 /** Coordinate centro abitato — provincia di Viterbo (fonte: dati ISTAT/OSM). */
 export const VITERBO_PROVINCE_CENTER = { lat: 42.4174, lng: 12.1049 };
+
+export type GeocodedEventPlace = {
+  lat: number;
+  lng: number;
+  comuneKey: string | null;
+  localitaKey: string | null;
+  localitaLabel: string | null;
+};
 
 const COMUNE_COORDS: Record<string, { lat: number; lng: number }> = {
   acquapendente: { lat: 42.7448467, lng: 11.8651623 },
@@ -89,6 +99,60 @@ export function geocodeComuneViterbo(comune?: string | null): { lat: number; lng
   return COMUNE_COORDS[key];
 }
 
+/**
+ * Geocoding eventi: frazione/località nel testo (venue, titolo…) prima del centro comune.
+ */
+export function geocodeEventPlace(input: {
+  comune?: string | null;
+  city?: string | null;
+  venue?: string | null;
+  title?: string | null;
+  location?: string | null;
+}): GeocodedEventPlace {
+  const localitaKey = inferLocalitaFromText(
+    input.venue,
+    input.location,
+    input.title,
+    input.comune,
+    input.city,
+  );
+  if (localitaKey) {
+    const entry = getFrazioneEntry(localitaKey);
+    if (entry) {
+      return {
+        lat: entry.lat,
+        lng: entry.lng,
+        comuneKey: entry.parentComune,
+        localitaKey,
+        localitaLabel: entry.label,
+      };
+    }
+  }
+
+  const comuneKey =
+    resolveComuneKey(input.comune ?? input.city ?? "") ??
+    inferComuneFromText(input.venue, input.location, input.title, input.comune, input.city);
+
+  if (comuneKey) {
+    const coords = COMUNE_COORDS[comuneKey];
+    return {
+      lat: coords.lat,
+      lng: coords.lng,
+      comuneKey,
+      localitaKey: null,
+      localitaLabel: null,
+    };
+  }
+
+  return {
+    lat: VITERBO_PROVINCE_CENTER.lat,
+    lng: VITERBO_PROVINCE_CENTER.lng,
+    comuneKey: null,
+    localitaKey: null,
+    localitaLabel: null,
+  };
+}
+
 function resolveComuneKey(raw: string): string | null {
   let key = normalizeComuneName(raw);
   if (!key) return null;
@@ -176,11 +240,12 @@ export function resolveEventCoordinates(input: {
   title?: string | null;
   lat?: number | null;
   lng?: number | null;
+  location?: string | null;
 }): { lat: number; lng: number } {
-  const key =
-    resolveComuneKey(input.comune ?? input.city ?? "") ??
-    inferComuneFromText(input.venue, input.title, input.comune, input.city);
-  if (key) return COMUNE_COORDS[key];
+  const place = geocodeEventPlace(input);
+  if (place.comuneKey || place.localitaKey) {
+    return { lat: place.lat, lng: place.lng };
+  }
 
   const lat = Number(input.lat);
   const lng = Number(input.lng);

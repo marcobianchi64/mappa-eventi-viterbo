@@ -6,10 +6,8 @@ import { createClient } from "@supabase/supabase-js";
 import {
   distanceKm,
   formatComuneLabel,
-  geocodeComuneViterbo,
-  inferComuneForEvent,
+  geocodeEventPlace,
   isLegacyViterboCenter,
-  isPinFarFromComune,
   VITERBO_PROVINCE_CENTER,
   type AtlasEvent,
 } from "@atlas/core";
@@ -45,46 +43,58 @@ async function main(): Promise<void> {
   let updated = 0;
   let skipped = 0;
 
-  console.log("=== Correzione coordinate eventi ===\n");
+  console.log("=== Correzione coordinate eventi (comuni e frazioni) ===\n");
 
   for (const event of events) {
-    const comuneKey = inferComuneForEvent(event);
-    if (!comuneKey || comuneKey === "viterbo") {
+    const place = geocodeEventPlace({
+      comune: event.comune,
+      city: event.city,
+      venue: event.venue,
+      title: event.title,
+      location: event.location,
+    });
+
+    if (!place.comuneKey && !place.localitaKey) {
       skipped += 1;
       continue;
     }
 
-    const coords = geocodeComuneViterbo(comuneKey);
-    const dist = distanceKm(event.lat, event.lng, coords.lat, coords.lng);
-    const needsComuneField = !(event.comune ?? event.city)?.trim();
+    const dist = distanceKm(event.lat, event.lng, place.lat, place.lng);
     const needsCoords =
       force ||
-      isDefaultViterboCoords(event.lat, event.lng) ||
-      isPinFarFromComune(event, 3);
+      dist > 1.2 ||
+      (isDefaultViterboCoords(event.lat, event.lng) && Boolean(place.localitaKey));
+
+    const comuneKey = place.comuneKey;
+    const needsComuneField = comuneKey && !(event.comune ?? event.city)?.trim();
 
     if (!needsCoords && !needsComuneField) {
       skipped += 1;
       continue;
     }
 
-    const label = formatComuneLabel(comuneKey);
+    const label = comuneKey ? formatComuneLabel(comuneKey) : event.comune ?? "—";
+    const where = place.localitaLabel ? `${place.localitaLabel} → ${label}` : label;
     console.log(
       `${dryRun ? "[dry-run] " : ""}${event.title}`,
-      `| ${label} (da: ${event.comune ?? event.city ?? "testo"})`,
-      `| ${event.lat.toFixed(4)},${event.lng.toFixed(4)} → ${coords.lat.toFixed(4)},${coords.lng.toFixed(4)}`,
+      `| ${where}`,
+      `| ${event.lat.toFixed(4)},${event.lng.toFixed(4)} → ${place.lat.toFixed(4)},${place.lng.toFixed(4)}`,
       `| dist ${dist.toFixed(1)} km`,
     );
 
     if (!dryRun) {
+      const patch: Record<string, unknown> = {
+        lat: place.lat,
+        lng: place.lng,
+        province: "Viterbo",
+      };
+      if (comuneKey) {
+        patch.comune = label;
+        patch.city = label;
+      }
       const { error: updateError } = await client
         .from("events")
-        .update({
-          lat: coords.lat,
-          lng: coords.lng,
-          comune: label,
-          city: label,
-          province: "Viterbo",
-        })
+        .update(patch)
         .eq("date_event", event.date_event);
 
       if (updateError) throw new Error(updateError.message);
@@ -92,7 +102,7 @@ async function main(): Promise<void> {
     updated += 1;
   }
 
-  console.log(`\nCompletato: ${updated} aggiornati, ${skipped} già ok o senza comune riconosciuto.`);
+  console.log(`\nCompletato: ${updated} aggiornati, ${skipped} già ok o luogo non riconosciuto.`);
 }
 
 main().catch((error) => {

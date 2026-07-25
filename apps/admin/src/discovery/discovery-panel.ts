@@ -5,7 +5,7 @@ import {
   countDiscoveryDataRowsInPaste,
   eventsAreDiscoveryDuplicates,
   formatComuneLabel,
-  geocodeComuneViterbo,
+  geocodeEventPlace,
   inferComuneFromText,
   loadDiscoverySession,
   MANUAL_DISCOVERY_SOURCE_ID,
@@ -59,14 +59,28 @@ export function processDiscoveryPaste(
   return { rows, session, audit };
 }
 
-function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
-  const start = parseDiscoveryDateTime(row.data_inizio ?? "", row.orario)!;
-  const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
+function discoveryPlace(row: DiscoveryRow): {
+  lat: number;
+  lng: number;
+  comune: string | null;
+} {
+  const place = geocodeEventPlace({
+    comune: row.comune,
+    venue: row.luogo,
+    title: row.titolo,
+  });
   const comuneKey =
+    place.comuneKey ??
     inferComuneFromText(row.comune, row.luogo, row.titolo) ??
     (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
   const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
-  const coords = geocodeComuneViterbo(comuneKey ?? comune);
+  return { lat: place.lat, lng: place.lng, comune };
+}
+
+function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
+  const start = parseDiscoveryDateTime(row.data_inizio ?? "", row.orario)!;
+  const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
+  const { lat, lng, comune } = discoveryPlace(row);
 
   return {
     title: row.titolo.trim(),
@@ -75,8 +89,8 @@ function toComparableEvent(row: DiscoveryRow): DuplicateComparableEvent {
     venue: row.luogo?.trim() || null,
     comune,
     city: comune,
-    lat: coords.lat,
-    lng: coords.lng,
+    lat,
+    lng,
     event_url: row.url_evento?.trim() || null,
   };
 }
@@ -148,11 +162,7 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
     }
     const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
 
-    const comuneKey =
-      inferComuneFromText(row.comune, row.luogo, row.titolo) ??
-      (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
-    const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
-    const coords = geocodeComuneViterbo(comuneKey ?? comune);
+    const { lat, lng, comune } = discoveryPlace(row);
     const externalId = discoveryEventExternalId(row.titolo.trim(), start.toISOString(), comune ?? "");
 
     try {
@@ -169,8 +179,8 @@ export async function publishDiscoveryRows(rows: ProcessedDiscoveryRow[]): Promi
         description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
           .filter(Boolean)
           .join("\n"),
-        lat: coords.lat,
-        lng: coords.lng,
+        lat,
+        lng,
         source_id: MANUAL_DISCOVERY_SOURCE_ID,
         territory_id: "IT-VT",
         external_id: externalId,

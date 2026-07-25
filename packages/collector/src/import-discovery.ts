@@ -3,7 +3,7 @@ import {
   discoveryEventExternalId,
   eventsAreDiscoveryDuplicates,
   formatComuneLabel,
-  geocodeComuneViterbo,
+  geocodeEventPlace,
   inferComuneFromText,
   MANUAL_DISCOVERY_SOURCE_ID,
   parseDiscoveryDateTime,
@@ -34,11 +34,16 @@ function rowToComparable(row: DiscoveryRow): DuplicateComparableEvent | null {
   const start = parseDiscoveryDateTime(row.data_inizio, row.orario);
   if (!start) return null;
   const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
+  const place = geocodeEventPlace({
+    comune: row.comune,
+    venue: row.luogo,
+    title: row.titolo,
+  });
   const comuneKey =
+    place.comuneKey ??
     inferComuneFromText(row.comune, row.luogo, row.titolo) ??
     (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
   const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
-  const coords = geocodeComuneViterbo(comuneKey ?? comune);
 
   return {
     title: row.titolo.trim(),
@@ -47,8 +52,8 @@ function rowToComparable(row: DiscoveryRow): DuplicateComparableEvent | null {
     venue: row.luogo?.trim() || null,
     comune,
     city: comune,
-    lat: coords.lat,
-    lng: coords.lng,
+    lat: place.lat,
+    lng: place.lng,
     event_url: row.url_evento?.trim() || null,
   };
 }
@@ -151,11 +156,16 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
     }
 
     const end = row.data_fine ? parseDiscoveryDateTime(row.data_fine, row.orario) : null;
+    const place = geocodeEventPlace({
+      comune: row.comune,
+      venue: row.luogo,
+      title: row.titolo,
+    });
     const comuneKey =
+      place.comuneKey ??
       inferComuneFromText(row.comune, row.luogo, row.titolo) ??
       (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
     const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
-    const coords = geocodeComuneViterbo(comuneKey ?? comune);
 
     const { error } = await client.from("events").insert({
       title: row.titolo.trim(),
@@ -170,8 +180,8 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
       description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
         .filter(Boolean)
         .join("\n"),
-      lat: coords.lat,
-      lng: coords.lng,
+      lat: place.lat,
+      lng: place.lng,
       source_id: MANUAL_DISCOVERY_SOURCE_ID,
       territory_id: "IT-VT",
       external_id: externalId,

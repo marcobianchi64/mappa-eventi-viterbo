@@ -84,6 +84,7 @@ export {
 export {
   VITERBO_PROVINCE_CENTER,
   geocodeComuneViterbo,
+  geocodeEventPlace,
   normalizeComuneName,
   inferComuneFromText,
   inferComuneForEvent,
