@@ -175,6 +175,13 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
       (row.comune?.trim() ? row.comune.trim().toLowerCase() : null);
     const comune = comuneKey ? formatComuneLabel(comuneKey) : row.comune?.trim() || null;
 
+    let imageUrl: string | null = null;
+    const pageUrl = row.url_evento?.trim();
+    if (pageUrl) {
+      const { resolveEventImageFromUrlThrottled } = await import("./resolve-event-image.js");
+      imageUrl = await resolveEventImageFromUrlThrottled(pageUrl, 300);
+    }
+
     const { error } = await client.from("events").insert({
       title: row.titolo.trim(),
       category: resolveEventCategory(row.categoria, row.titolo, [row.note ?? "", row.luogo ?? ""]),
@@ -185,6 +192,7 @@ export async function importDiscoveryText(options: ImportDiscoveryOptions): Prom
       comune,
       province: "Viterbo",
       event_url: row.url_evento?.trim() || null,
+      image_url: imageUrl,
       description: [row.organizzatore, row.note, row.url_fonte ? `Fonte: ${row.url_fonte}` : ""]
         .filter(Boolean)
         .join("\n"),

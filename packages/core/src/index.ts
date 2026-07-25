@@ -177,6 +177,10 @@ export {
 } from "./event-location-confidence.js";
 
 export { isHttpUrl, openHttpUrl } from "./safe-url.js";
+export {
+  extractEventImageFromHtml,
+  resolvePageAssetUrl,
+} from "./event-page-image.js";
 
 export {
   getCategoryMeta,

@@ -6,7 +6,6 @@ import {
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
-  getEventVenueDisplay,
   getCategoryMeta,
   isHttpUrl,
   openHttpUrl,

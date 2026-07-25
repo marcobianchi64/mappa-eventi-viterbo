@@ -6,6 +6,7 @@ import {
   detectContactType,
   escapeHtml,
   eventsLookSimilar,
+  getDisplayCategory,
   formatEventSchedule,
   buildMapMarkerPlacements,
   filterEventsWithinRadiusKm,
@@ -32,6 +33,11 @@ import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
 import { renderShell } from "./ui/shell";
+import {
+  bindEventList,
+  renderEventListHtml,
+  type EventListCategoryFilter,
+} from "./ui/event-list";
 import { setStatus, showToast } from "./ui/toast";
 
 interface FormValues {
@@ -55,6 +61,7 @@ export class AtlasApp {
   private initialMapFitDone = false;
   private nearRadiusPreset: NearRadiusPreset = loadNearRadiusPreset();
   private lastUserPosition: { lat: number; lng: number } | null = null;
+  private listCategory: EventListCategoryFilter = "all";
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
@@ -93,12 +100,25 @@ export class AtlasApp {
   private bindEvents(): void {
     document.getElementById("whenButton")?.addEventListener("click", () => {
       this.closeDockFlyouts();
+      this.closeEventListPanel();
       document.getElementById("filterPanel")?.classList.toggle("open");
       document.getElementById("programsPanel")?.classList.remove("open");
     });
 
+    document.getElementById("listButton")?.addEventListener("click", () => {
+      this.closeDockFlyouts();
+      document.getElementById("filterPanel")?.classList.remove("open");
+      document.getElementById("programsPanel")?.classList.remove("open");
+      this.toggleEventListPanel();
+    });
+
+    document.getElementById("closeEventList")?.addEventListener("click", () => {
+      this.closeEventListPanel();
+    });
+
     document.getElementById("programsButton")?.addEventListener("click", () => {
       this.closeDockFlyouts();
+      this.closeEventListPanel();
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
       document.getElementById("filterPanel")?.classList.remove("open");
@@ -125,6 +145,7 @@ export class AtlasApp {
         this.updateWhenButtonLabel();
         this.renderMapEvents();
         document.getElementById("filterPanel")?.classList.remove("open");
+        this.renderEventList();
       });
     });
 
@@ -213,12 +234,60 @@ export class AtlasApp {
     return this.allEvents.filter((event) => isEventVisibleInRange(event, this.currentRange));
   }
 
+  private getListEvents(): AtlasEvent[] {
+    let events = this.getVisibleEvents();
+    if (this.listCategory !== "all") {
+      events = events.filter((event) => getDisplayCategory(event) === this.listCategory);
+    }
+    return events.sort(
+      (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
+    );
+  }
+
+  private toggleEventListPanel(): void {
+    const panel = document.getElementById("eventListPanel");
+    const button = document.getElementById("listButton");
+    const open = !panel?.classList.contains("open");
+    panel?.classList.toggle("open", open);
+    button?.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) this.renderEventList();
+  }
+
+  private closeEventListPanel(): void {
+    document.getElementById("eventListPanel")?.classList.remove("open");
+    document.getElementById("listButton")?.setAttribute("aria-expanded", "false");
+  }
+
+  private renderEventList(): void {
+    const root = document.getElementById("eventListContent");
+    if (!root) return;
+    root.innerHTML = renderEventListHtml(this.getListEvents(), this.listCategory);
+    bindEventList(
+      root,
+      (category) => {
+        this.listCategory = category;
+        this.renderEventList();
+      },
+      (eventId) => {
+        const event = this.allEvents.find((e) => String(e.date_event) === eventId);
+        if (!event) return;
+        if (hasValidEventCoords(event)) {
+          this.mapService.fitToCoordinates([[event.lat, event.lng]]);
+        }
+        this.handleOpenEvent(event);
+      },
+    );
+  }
+
   private renderMapEvents(): void {
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getVisibleEvents();
     const pinCount = this.mapService.renderEvents(visible, deepLink);
     const withCoords = visible.filter(hasValidEventCoords).length;
     this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length);
+    if (document.getElementById("eventListPanel")?.classList.contains("open")) {
+      this.renderEventList();
+    }
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
       const coords = buildMapMarkerPlacements(visible).map(

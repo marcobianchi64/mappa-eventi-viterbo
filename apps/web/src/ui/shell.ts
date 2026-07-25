@@ -18,6 +18,7 @@ export function renderShell(): string {
     <div class="topbar">
       <div class="brand-pill">Project Atlas</div>
       <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: ${rangeLabel}</button>
+      <button id="listButton" class="chip" type="button" aria-expanded="false">📋 Lista eventi</button>
       <span id="mapEventCount" class="chip muted" aria-live="polite"></span>
       <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
     </div>
@@ -71,6 +72,15 @@ export function renderShell(): string {
         ${filterButtons(DEFAULT_DATE_RANGE)}
       </div>
     </div>
+
+    <aside id="eventListPanel" class="event-list-panel" aria-label="Elenco eventi">
+      <div class="event-list-header">
+        <h3>Eventi</h3>
+        <button id="closeEventList" class="event-list-close" type="button" aria-label="Chiudi elenco">×</button>
+      </div>
+      <p class="event-list-hint small">Stesso periodo del pulsante «Cerca entro». Tocca una riga per aprire la scheda.</p>
+      <div id="eventListContent"></div>
+    </aside>
 
     <div id="programsPanel" class="programs-panel">
       <h3>🔖 Eventi salvati</h3>
