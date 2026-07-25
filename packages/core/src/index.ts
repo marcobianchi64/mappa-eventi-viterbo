@@ -145,6 +145,12 @@ export {
 export { formatEventSchedule, isEventOngoing } from "./event-schedule.js";
 
 export {
+  formatEventDateTime,
+  formatEventTimeOnly,
+  isPlaceholderEventTime,
+} from "./event-datetime-display.js";
+
+export {
   getCategoryMeta,
   escapeHtml,
   formatDate,

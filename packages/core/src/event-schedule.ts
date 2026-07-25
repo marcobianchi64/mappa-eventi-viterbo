@@ -1,5 +1,8 @@
 import type { AtlasEvent } from "./types/event.js";
-import { formatDate } from "./utils.js";
+import {
+  formatEventDateTime,
+  formatEventTimeOnly,
+} from "./event-datetime-display.js";
 
 type ScheduleInput = Pick<AtlasEvent, "start_date" | "end_date">;
 
@@ -17,10 +20,6 @@ function startOfCalendarDay(date: Date): Date {
 
 function sameCalendarDay(a: Date, b: Date): boolean {
   return startOfCalendarDay(a).getTime() === startOfCalendarDay(b).getTime();
-}
-
-function formatTimeIt(date: Date): string {
-  return date.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
 }
 
 /** True se l'evento è iniziato e la fine (o l'istante di inizio, se senza fine) non è ancora passata. */
@@ -41,22 +40,33 @@ export function formatEventSchedule(event: ScheduleInput, now: Date = new Date()
 
   const end = parseEventDate(event.end_date);
   if (!end || end.getTime() <= start.getTime()) {
-    return formatDate(event.start_date);
+    return formatEventDateTime(event.start_date);
   }
 
   const ongoing = isEventOngoing(event, now);
 
   if (sameCalendarDay(start, end)) {
-    if (ongoing) {
-      return `In corso · fino alle ${formatTimeIt(end)}`;
+    const startTime = formatEventTimeOnly(event.start_date);
+    const endTime = formatEventTimeOnly(event.end_date!);
+    if (!startTime && !endTime) {
+      return start.toLocaleDateString("it-IT", { dateStyle: "medium" });
+    }
+    if (ongoing && endTime) {
+      return `In corso · fino alle ${endTime}`;
     }
     const day = start.toLocaleDateString("it-IT", { dateStyle: "medium" });
-    return `${day}, ${formatTimeIt(start)} – ${formatTimeIt(end)}`;
+    if (startTime && endTime) return `${day}, ${startTime} – ${endTime}`;
+    if (startTime) return `${day}, ${startTime}`;
+    return day;
   }
 
   if (ongoing) {
-    return `In corso · fino al ${formatDate(event.end_date!)}`;
+    return `In corso · fino al ${formatEventDateTime(event.end_date!)}`;
   }
 
-  return `Dal ${formatDate(event.start_date)} al ${formatDate(event.end_date!)}`;
+  const startLabel = formatEventDateTime(event.start_date);
+  const endLabel = formatEventDateTime(event.end_date!);
+  if (startLabel === endLabel) return startLabel;
+
+  return `Dal ${startLabel} al ${endLabel}`;
 }

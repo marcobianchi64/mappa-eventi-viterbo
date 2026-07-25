@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { formatEventSchedule, isEventOngoing } from "@atlas/core";
+import { formatEventSchedule, isEventOngoing, formatEventDateTime } from "@atlas/core";
 
 const errors = [];
 
@@ -31,6 +31,22 @@ const singleDay = formatEventSchedule({
   end_date: null,
 });
 if (!singleDay) errors.push("data singola vuota");
+
+const midnightUtc = formatEventSchedule({
+  start_date: "2026-08-16T00:00:00.000Z",
+  end_date: "2026-08-24T00:00:00.000Z",
+});
+if (midnightUtc.includes("02:") || midnightUtc.includes("2:00")) {
+  errors.push(`date senza orario non devono mostrare 02:00, ottenuto: ${midnightUtc}`);
+}
+if (!midnightUtc.startsWith("Dal ")) {
+  errors.push(`atteso intervallo senza orario, ottenuto: ${midnightUtc}`);
+}
+
+const onlyDate = formatEventDateTime("2026-09-01");
+if (onlyDate.includes(":")) {
+  errors.push(`YYYY-MM-DD non deve mostrare orario: ${onlyDate}`);
+}
 
 if (errors.length) {
   console.error("verify-event-schedule FAILED\n" + errors.map((e) => `  - ${e}`).join("\n"));
