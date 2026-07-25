@@ -6,7 +6,7 @@ import {
   detectContactType,
   escapeHtml,
   eventsLookSimilar,
-  formatDate,
+  formatEventSchedule,
   buildMapMarkerPlacements,
   filterEventsWithinRadiusKm,
   getNearRadiusOption,
@@ -460,7 +460,7 @@ export class AtlasApp {
         (item: SavedInterest) => `
         <div class="program-item">
           <strong>${escapeHtml(item.title)}</strong>
-          <span>${formatDate(item.start_date)}</span>
+          <span>${escapeHtml(formatEventSchedule({ start_date: item.start_date ?? "", end_date: item.end_date }))}</span>
           ${item.venue ? `<span>${escapeHtml(item.venue)}</span>` : ""}
           <span>${reminderText(item.start_date)}</span>
           <button type="button" data-remove="${escapeHtml(item.id)}">Rimuovi</button>

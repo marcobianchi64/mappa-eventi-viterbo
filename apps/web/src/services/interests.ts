@@ -24,6 +24,7 @@ export class InterestsService {
       id,
       title: event.title || "Evento",
       start_date: event.start_date || null,
+      end_date: event.end_date ?? null,
       venue: event.venue || "",
       lat: event.lat,
       lng: event.lng,

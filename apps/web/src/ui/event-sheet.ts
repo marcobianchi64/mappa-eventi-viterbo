@@ -2,7 +2,7 @@ import {
   createEventShareUrl,
   directionsUrl,
   escapeHtml,
-  formatDate,
+  formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
   getCategoryMeta,
@@ -51,7 +51,7 @@ export function openEventSheet(
     <div class="stable-event-body">
       <h2 class="stable-event-title">${title}</h2>
       <div class="stable-event-facts">
-        ${event.start_date ? `<div>📅 ${formatDate(event.start_date)}</div>` : ""}
+        ${event.start_date ? `<div>📅 ${escapeHtml(formatEventSchedule(event))}</div>` : ""}
         ${venue ? `<div>📍 ${venue}</div>` : ""}
       </div>
       <div class="stable-event-section">

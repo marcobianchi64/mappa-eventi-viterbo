@@ -8,6 +8,7 @@ import {
   MAP_TILE_URL,
   buildMapMarkerPlacements,
   escapeHtml,
+  formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
   ATLAS_MAP_TOOLTIP_CLASS,
@@ -87,7 +88,7 @@ export class MapService {
       <div class="event-preview">
         ${image}
         <strong>${title}</strong>
-        <span class="event-preview-date">${new Date(event.start_date).toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}</span>
+        <span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>
         ${venue ? `<span class="event-preview-venue">${escapeHtml(venue)}</span>` : ""}
       </div>
     `;

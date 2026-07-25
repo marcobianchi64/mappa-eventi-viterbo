@@ -50,6 +50,7 @@ export interface SavedInterest {
   id: string;
   title: string;
   start_date: string | null;
+  end_date?: string | null;
   venue: string;
   lat: number;
   lng: number;

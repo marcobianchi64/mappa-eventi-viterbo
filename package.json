@@ -29,7 +29,8 @@
     "verify:ui-scale": "npm run build -w @atlas/core && node scripts/verify-ui-scale.mjs",
     "verify:map-dedupe": "npm run build -w @atlas/core && node scripts/verify-map-dedupe.mjs",
     "verify:discovery-table": "npm run build -w @atlas/core && node scripts/verify-discovery-table.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table"
+    "verify:event-schedule": "npm run build -w @atlas/core && node scripts/verify-event-schedule.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule"
   },
   "engines": {
     "node": ">=20"

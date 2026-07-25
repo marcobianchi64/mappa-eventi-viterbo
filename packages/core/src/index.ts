@@ -142,6 +142,8 @@ export {
   type NearRadiusPreset,
 } from "./near-radius.js";
 
+export { formatEventSchedule, isEventOngoing } from "./event-schedule.js";
+
 export {
   getCategoryMeta,
   escapeHtml,
