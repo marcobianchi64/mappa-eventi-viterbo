@@ -164,11 +164,17 @@ export function eventsAreSameCalendarEvent(
   a: DuplicateComparableEvent,
   b: DuplicateComparableEvent,
 ): boolean {
-  if (!sameStartDay(a, b)) return false;
-  if (!samePinArea(a, b) && !sameComune(a, b)) return false;
+  const samePlace = samePinArea(a, b) || sameComune(a, b);
+  if (!samePlace) return false;
 
   const titleA = normalizeSearchText(a.title);
   const titleB = normalizeSearchText(b.title);
+  if (titleA && titleA === titleB && titleA.length >= 10 && eventDatesOverlap(a, b)) {
+    return true;
+  }
+
+  if (!sameStartDay(a, b)) return false;
+
   if (titleA && titleA === titleB) return true;
 
   return sameTitleFingerprint(a.title, b.title);
@@ -204,12 +210,25 @@ export function eventsAreMapDuplicates(
     return sameStartDay(a, b) && titlesLookSimilar(a.title, b.title);
   }
 
-  if (!sameStartDay(a, b)) return false;
-  if (!samePinArea(a, b) && !sameComune(a, b)) return false;
-
+  const samePlace = samePinArea(a, b) || sameComune(a, b);
   const titleA = normalizeSearchText(a.title);
   const titleB = normalizeSearchText(b.title);
-  if (titleA && titleA === titleB) return true;
+  const exactSameTitle = Boolean(titleA && titleA === titleB);
+
+  /** Stessa sagra/manifestazione reimportata (date sovrapposte o inizio a 1–2 giorni). */
+  if (samePlace && exactSameTitle && titleA.length >= 10) {
+    if (eventDatesOverlap(a, b)) return true;
+    if (datesCloseEnough(a, b, 2)) return true;
+  }
+
+  if (samePlace && sameTitleFingerprint(a.title, b.title) && eventDatesOverlap(a, b)) {
+    return true;
+  }
+
+  if (!sameStartDay(a, b)) return false;
+  if (!samePlace) return false;
+
+  if (exactSameTitle) return true;
 
   return sameTitleFingerprint(a.title, b.title);
 }
@@ -240,7 +259,16 @@ export function eventsSuppressedByMapDedupe(events: AtlasEvent[]): AtlasEvent[] 
 }
 
 function mapDedupeRichnessScore(e: AtlasEvent): number {
+  let span = 0;
+  if (e.start_date && e.end_date) {
+    const start = new Date(e.start_date).getTime();
+    const end = new Date(e.end_date).getTime();
+    if (!Number.isNaN(start) && !Number.isNaN(end) && end > start) {
+      span = Math.min(3, Math.round((end - start) / (86400000)));
+    }
+  }
   return (
+    span +
     (e.end_date ? 2 : 0) +
     (e.event_url ? 2 : 0) +
     (e.venue ? 1 : 0) +

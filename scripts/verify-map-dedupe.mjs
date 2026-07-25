@@ -51,4 +51,28 @@ const twin = fakeEvent(5, "Sagra del lago — stand e musica", 20);
 assert.equal(eventsAreMapDuplicates(concerts[3], twin), true);
 assert.equal(dedupeEventsForMap([...concerts, twin]).length, 4);
 
+const vitorchiano = { lat: 42.4664074, lng: 12.1734444 };
+function cavatello(dayStart, dayEndStart, endDay) {
+  return {
+    date_event: `cavatello-${dayStart}`,
+    title: "Sagra del Cavatello",
+    start_date: `2026-08-${String(dayStart).padStart(2, "0")}T17:00:00.000Z`,
+    end_date: `2026-08-${String(endDay).padStart(2, "0")}T23:00:00.000Z`,
+    verified: true,
+    archived: false,
+    comune: "Vitorchiano",
+    city: "Vitorchiano",
+    venue: "Centro storico, Piazza Roma",
+    lat: vitorchiano.lat,
+    lng: vitorchiano.lng,
+    category: "food",
+    source_id: "src-manual-discovery",
+  };
+}
+
+const cavA = cavatello(2, 2, 4);
+const cavB = cavatello(3, 3, 5);
+assert.equal(eventsAreMapDuplicates(cavA, cavB), true, "Sagra Cavatello reimportata");
+assert.equal(dedupeEventsForMap([cavA, cavB]).length, 1);
+
 console.log("verify-map-dedupe: OK");
