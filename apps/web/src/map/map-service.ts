@@ -118,7 +118,7 @@ export class MapService {
     }
   }
 
-  flyToUser(lat: number, lng: number): void {
+  flyToUser(lat: number, lng: number, radiusKm?: number): void {
     if (this.userMarker) this.map.removeLayer(this.userMarker);
     const pinRadius = Math.round(getMapUiScale().markerSizePx * 0.18);
     this.userMarker = L.circleMarker([lat, lng], {
@@ -129,8 +129,51 @@ export class MapService {
       fillOpacity: 1,
     }).addTo(this.map);
     this.userMarker.bindPopup("Sei qui").openPopup();
-    this.map.invalidateSize(true);
-    this.map.flyTo([lat, lng], 14, { animate: true, duration: 0.8 });
+
+    if (radiusKm && radiusKm > 0) {
+      this.setNearRadiusCircle(lat, lng, radiusKm);
+      const circle = L.circle([lat, lng], { radius: radiusKm * 1000 });
+      this.map.fitBounds(circle.getBounds(), { padding: [48, 48], maxZoom: 12 });
+    } else {
+      this.map.invalidateSize(true);
+      this.map.flyTo([lat, lng], 14, { animate: true, duration: 0.8 });
+    }
+  }
+
+  private nearCircle: L.Circle | null = null;
+
+  setNearRadiusCircle(lat: number, lng: number, radiusKm: number): void {
+    if (this.nearCircle) this.map.removeLayer(this.nearCircle);
+    this.nearCircle = L.circle([lat, lng], {
+      radius: radiusKm * 1000,
+      color: "#2563eb",
+      weight: 2,
+      dashArray: "6 4",
+      fillColor: "#2563eb",
+      fillOpacity: 0.1,
+    }).addTo(this.map);
+  }
+
+  clearNearRadiusCircle(): void {
+    if (this.nearCircle) {
+      this.map.removeLayer(this.nearCircle);
+      this.nearCircle = null;
+    }
+  }
+
+  fitBoundsWithUserAndEvents(
+    userLat: number,
+    userLng: number,
+    coordinates: [number, number][],
+    radiusKm: number,
+  ): void {
+    const bounds = L.latLngBounds([[userLat, userLng]]);
+    for (const [lat, lng] of coordinates) bounds.extend([lat, lng]);
+    const circle = L.circle([userLat, userLng], { radius: radiusKm * 1000 });
+    const circleBounds = circle.getBounds();
+    bounds.extend(circleBounds.getSouthWest());
+    bounds.extend(circleBounds.getNorthEast());
+    this.map.fitBounds(bounds, { padding: [52, 52], maxZoom: 13 });
   }
 
   invalidateSize(): void {

@@ -2,11 +2,15 @@ import {
   ATLAS_VERSION,
   DEFAULT_DATE_RANGE,
   DATE_RANGE_LABELS,
+  loadNearRadiusPreset,
+  renderNearRadiusChips,
   type DateRangeKey,
 } from "@atlas/core";
 
 export function renderShell(): string {
   const rangeLabel = DATE_RANGE_LABELS[DEFAULT_DATE_RANGE] ?? "15 giorni";
+  const nearRadius = loadNearRadiusPreset();
+  const nearRadiusChips = renderNearRadiusChips(nearRadius);
 
   return `
     <div class="atlas-version-check">v${ATLAS_VERSION}</div>
@@ -28,7 +32,9 @@ export function renderShell(): string {
         <h2>Eventi vicino a te</h2>
         <button id="closeNearFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
       </div>
-      <p class="dock-flyout-lead">Esplora la mappa, cerca una località o centrati sulla tua posizione.</p>
+      <p class="dock-flyout-lead">Scegli quanto lontano cercare, poi centrati sulla mappa o cerca per nome.</p>
+      <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+      <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
       <div class="search-box">
         <input id="searchPlace" placeholder="Cerca evento o località" />
         <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
@@ -83,7 +89,9 @@ export function renderShell(): string {
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
       <div id="mobileNearPanel">
         <h2>Eventi vicino a te</h2>
-        <p class="dock-flyout-lead">Cerca tra gli eventi attivi o centrati sulla tua posizione.</p>
+        <p class="dock-flyout-lead">Distanza di ricerca e posizione sulla mappa.</p>
+        <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+        <p id="nearRadiusHintMobile" class="near-radius-hint small"></p>
         <div class="search-box">
           <input id="searchPlaceMobile" placeholder="Cerca evento o località" />
           <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>

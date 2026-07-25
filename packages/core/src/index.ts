@@ -130,6 +130,19 @@ export {
 } from "./event-duplicate.js";
 
 export {
+  DEFAULT_NEAR_RADIUS_PRESET,
+  NEAR_RADIUS_OPTIONS,
+  NEAR_RADIUS_STORAGE_KEY,
+  filterEventsWithinRadiusKm,
+  getNearRadiusOption,
+  loadNearRadiusPreset,
+  renderNearRadiusChips,
+  saveNearRadiusPreset,
+  type NearRadiusOption,
+  type NearRadiusPreset,
+} from "./near-radius.js";
+
+export {
   getCategoryMeta,
   escapeHtml,
   formatDate,

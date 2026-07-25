@@ -8,9 +8,13 @@ import {
   eventsLookSimilar,
   formatDate,
   buildMapMarkerPlacements,
+  filterEventsWithinRadiusKm,
+  getNearRadiusOption,
   hasValidEventCoords,
   isEventVisibleInRange,
+  loadNearRadiusPreset,
   normalizeSearchText,
+  saveNearRadiusPreset,
   reminderText,
   searchableEventText,
   generateSubmissionReference,
@@ -19,6 +23,7 @@ import {
   type DateRangeKey,
   type EventCategory,
   type EventSubmissionInput,
+  type NearRadiusPreset,
   type SavedInterest,
 } from "@atlas/core";
 import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
@@ -47,6 +52,8 @@ export class AtlasApp {
   private currentRange: DateRangeKey = DEFAULT_DATE_RANGE;
   private locationRequestRunning = false;
   private initialMapFitDone = false;
+  private nearRadiusPreset: NearRadiusPreset = loadNearRadiusPreset();
+  private lastUserPosition: { lat: number; lng: number } | null = null;
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
@@ -61,6 +68,7 @@ export class AtlasApp {
     );
 
     this.bindEvents();
+    this.syncNearRadiusUi();
     this.renderPrograms();
     injectAtlasTypography();
     void this.loadEvents();
@@ -144,6 +152,19 @@ export class AtlasApp {
     document.getElementById("stableEventOverlay")?.addEventListener("click", closeEventSheet);
     document.getElementById("nearMeButtonDock")?.addEventListener("click", () => this.goNearMe());
     document.getElementById("nearMeButtonMobile")?.addEventListener("click", () => this.goNearMe());
+
+    document.querySelectorAll("[data-near-radius]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const preset = (btn as HTMLButtonElement).dataset.nearRadius as NearRadiusPreset;
+        if (preset !== "city" && preset !== "province") return;
+        this.nearRadiusPreset = preset;
+        saveNearRadiusPreset(preset);
+        this.syncNearRadiusUi();
+        if (this.lastUserPosition) {
+          this.applyNearMe(this.lastUserPosition.lat, this.lastUserPosition.lng, false);
+        }
+      });
+    });
 
     window.addEventListener("pageshow", () => this.restoreTopbar());
     document.addEventListener("visibilitychange", () => {
@@ -459,14 +480,67 @@ export class AtlasApp {
     });
   }
 
+  private syncNearRadiusUi(): void {
+    const opt = getNearRadiusOption(this.nearRadiusPreset);
+    const hint = `${opt.hint}`;
+    ["nearRadiusHintDock", "nearRadiusHintMobile"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = hint;
+    });
+    document.querySelectorAll("[data-near-radius]").forEach((btn) => {
+      const preset = (btn as HTMLButtonElement).dataset.nearRadius;
+      const active = preset === this.nearRadiusPreset;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    const label = `📍 Cerca vicino a me (${opt.shortLabel})`;
+    ["nearMeButtonDock", "nearMeButtonMobile"].forEach((id) => {
+      const button = document.getElementById(id) as HTMLButtonElement | null;
+      if (button && !button.disabled) button.textContent = label;
+    });
+  }
+
   private setLocationButtonsBusy(isBusy: boolean): void {
-    const label = isBusy ? "📍 Cerco vicino a te..." : "📍 Cerca vicino a me";
+    const opt = getNearRadiusOption(this.nearRadiusPreset);
+    const label = isBusy ? "📍 Cerco vicino a te..." : `📍 Cerca vicino a me (${opt.shortLabel})`;
     ["nearMeButtonDock", "nearMeButtonMobile"].forEach((id) => {
       const button = document.getElementById(id) as HTMLButtonElement | null;
       if (!button) return;
       button.disabled = isBusy;
       button.textContent = label;
     });
+  }
+
+  private applyNearMe(lat: number, lng: number, closePanels: boolean): void {
+    const opt = getNearRadiusOption(this.nearRadiusPreset);
+    const nearby = filterEventsWithinRadiusKm(this.getVisibleEvents(), lat, lng, opt.radiusKm);
+
+    if (closePanels) {
+      document.getElementById("mobileSheet")?.classList.remove("open");
+      this.closeDockFlyouts();
+    }
+
+    this.mapService.flyToUser(lat, lng, opt.radiusKm);
+
+    if (nearby.length === 0) {
+      showToast(
+        `Nessun evento nel periodo scelto entro ${opt.shortLabel}. Prova «In provincia» o allarga «Cerca entro».`,
+      );
+      return;
+    }
+
+    const coords = buildMapMarkerPlacements(nearby).map(
+      (p) => [p.lat, p.lng] as [number, number],
+    );
+    this.mapService.fitBoundsWithUserAndEvents(lat, lng, coords, opt.radiusKm);
+
+    if (nearby.length === 1) {
+      showToast(`1 evento entro ${opt.shortLabel} da te.`);
+      setTimeout(() => this.handleOpenEvent(nearby[0]), 400);
+      return;
+    }
+
+    showToast(`${nearby.length} eventi entro ${opt.shortLabel} da te.`);
   }
 
   private goNearMe(): void {
@@ -498,9 +572,8 @@ export class AtlasApp {
           return;
         }
 
-        document.getElementById("mobileSheet")?.classList.remove("open");
-        this.mapService.flyToUser(lat, lng);
-        showToast("Mappa centrata sulla tua posizione.");
+        this.lastUserPosition = { lat, lng };
+        this.applyNearMe(lat, lng, true);
       },
       (error) => {
         this.locationRequestRunning = false;

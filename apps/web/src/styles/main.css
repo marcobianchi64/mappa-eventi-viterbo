@@ -412,6 +412,40 @@ button {
 
 .mobile-insert-form { display: none; }
 .mobile-insert-form.open { display: block; }
+.near-radius {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 4px;
+  padding: 4px;
+  background: #f1f5f9;
+  border-radius: 12px;
+}
+
+.near-radius-chip {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 8px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.near-radius-chip.active {
+  background: #fff;
+  color: var(--atlas-blue);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.near-radius-hint {
+  margin: 0 0 10px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
 .search-note { margin: 10px 0 0; font-size: var(--legend-font); line-height: 1.45; color: #667085; }
 
 .stable-event-overlay {
