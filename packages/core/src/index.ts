@@ -76,6 +76,21 @@ export {
   registerDiscoveryBlock,
 } from "./discovery-parse.js";
 
+export {
+  assessDiscoveryRowQuality,
+  type DiscoveryQualityAssessment,
+  type DiscoveryQualityTier,
+} from "./discovery-quality.js";
+
+export {
+  GOLDEN_DEDUPE_PAIRS,
+  GOLDEN_EVENT_CASES,
+  GOLDEN_GEOCODE_CASES,
+  type GoldenDedupePair,
+  type GoldenEventCase,
+  type GoldenGeocodeCase,
+} from "./golden-events.js";
+
 export { discoveryEventExternalId } from "./discovery-external-id.js";
 
 export {

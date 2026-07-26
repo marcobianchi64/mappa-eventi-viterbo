@@ -13,6 +13,8 @@ import {
   parseDiscoveryText,
   registerDiscoveryBlock,
   resolveEventCategory,
+  assessDiscoveryRowQuality,
+  type DiscoveryQualityAssessment,
   type AtlasEvent,
   type DiscoveryRow,
   type DuplicateComparableEvent,
@@ -23,6 +25,7 @@ export interface ProcessedDiscoveryRow {
   row: DiscoveryRow;
   status: "ready" | "duplicate" | "past" | "invalid";
   reason?: string;
+  quality?: DiscoveryQualityAssessment;
 }
 
 export interface DiscoveryPasteAudit {
@@ -139,7 +142,8 @@ function classifyRow(
   });
   if (duplicate) return { row, status: "duplicate", reason: `Già presente: ${duplicate.title}` };
 
-  return { row, status: "ready" };
+  const quality = assessDiscoveryRowQuality(row);
+  return { row, status: "ready", quality };
 }
 
 export interface PublishDiscoveryResult {
@@ -439,6 +443,18 @@ export function renderDiscoveryResults(
   if (readyComuni.length) {
     html += `<p class="small"><strong>Pronti per comune:</strong> ${readyComuni.map(([c, n]) => `${escapeHtml(c)} (${n})`).join(" · ")}</p>`;
   }
+
+  const readyWithQuality = groups.ready.filter((r) => r.quality);
+  if (readyWithQuality.length) {
+    const greens = readyWithQuality.filter((r) => r.quality!.tier === "green").length;
+    const yellows = readyWithQuality.filter((r) => r.quality!.tier === "yellow").length;
+    const reds = readyWithQuality.filter((r) => r.quality!.tier === "red").length;
+    html += `<p class="small discovery-quality-summary"><strong>Qualità dati:</strong>
+      <span class="discovery-quality-pill green">${greens} alta</span>
+      <span class="discovery-quality-pill yellow">${yellows} media</span>
+      <span class="discovery-quality-pill red">${reds} da verificare</span>
+      — verde = luogo e link affidabili; rosso = controlla prima di pubblicare.</p>`;
+  }
   const dupComuni = byComune("duplicate");
   if (dupComuni.length) {
     html += `<p class="small"><strong>Già in DB (duplicati):</strong> ${dupComuni.map(([c, n]) => `${escapeHtml(c)} (${n})`).join(" · ")}</p>`;
@@ -452,7 +468,11 @@ export function renderDiscoveryResults(
     html += `<button type="button" class="primary approve discovery-publish-cta" id="publishDiscovery">Salva ${groups.ready.length} eventi su mappa e registro</button>`;
     html += '<ul class="discovery-list">';
     for (const item of groups.ready) {
-      html += `<li>✅ ${escapeHtml(item.row.titolo)} — ${escapeHtml(item.row.comune ?? "")} · ${escapeHtml(item.row.data_inizio ?? "")}</li>`;
+      const q = item.quality;
+      const badge = q
+        ? `<span class="discovery-quality-badge ${q.tier}" title="${escapeHtml(q.label)}${q.hints.length ? " — " + escapeHtml(q.hints.join("; ")) : ""}">${q.tier === "green" ? "●" : q.tier === "yellow" ? "◐" : "○"}</span>`
+        : "";
+      html += `<li>${badge} ${escapeHtml(item.row.titolo)} — ${escapeHtml(item.row.comune ?? "")} · ${escapeHtml(item.row.data_inizio ?? "")}</li>`;
     }
     html += "</ul>";
   }

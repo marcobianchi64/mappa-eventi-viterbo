@@ -293,6 +293,34 @@ textarea {
   padding-left: 20px;
 }
 
+.discovery-quality-summary {
+  margin-top: 8px;
+}
+
+.discovery-quality-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin: 0 4px;
+}
+
+.discovery-quality-pill.green { background: #dcfce7; color: #166534; }
+.discovery-quality-pill.yellow { background: #fef9c3; color: #854d0e; }
+.discovery-quality-pill.red { background: #fee2e2; color: #991b1b; }
+
+.discovery-quality-badge {
+  display: inline-block;
+  width: 1.2em;
+  text-align: center;
+  font-weight: 800;
+  margin-right: 4px;
+}
+
+.discovery-quality-badge.green { color: #16a34a; }
+.discovery-quality-badge.yellow { color: #ca8a04; }
+.discovery-quality-badge.red { color: #dc2626; }
+
 .success { color: #15803d; }
 
 .registry-summary {

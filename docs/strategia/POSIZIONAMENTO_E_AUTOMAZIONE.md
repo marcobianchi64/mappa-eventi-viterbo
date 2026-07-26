@@ -117,6 +117,7 @@ Stesso schema:
 - [ ] Scoperta a intervalli regolari per buchi noti
 - [ ] `npm run report:duplicates` / `report:compare` se anomalie
 - [ ] `npm run fix:images` dopo batch di pubblicazioni con `event_url`
+- [ ] `npm run verify:golden` (e `npm run verify` in CI) prima di rilasci
 - [ ] Verifica versione app in mappa (`ATLAS_VERSION`) dopo ogni rilascio
 
 ---
