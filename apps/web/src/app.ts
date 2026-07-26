@@ -34,8 +34,8 @@ import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
 import { renderShell } from "./ui/shell";
 import {
-  bindEventList,
-  renderEventListHtml,
+  bindEventListPage,
+  renderEventListPageHtml,
   type EventListCategoryFilter,
 } from "./ui/event-list";
 import { setStatus, showToast } from "./ui/toast";
@@ -54,9 +54,12 @@ interface FormValues {
   lng: number;
 }
 
+type AppViewMode = "map" | "list";
+
 export class AtlasApp {
   private allEvents: AtlasEvent[] = [];
   private currentRange: DateRangeKey = DEFAULT_DATE_RANGE;
+  private viewMode: AppViewMode = "map";
   private locationRequestRunning = false;
   private initialMapFitDone = false;
   private nearRadiusPreset: NearRadiusPreset = loadNearRadiusPreset();
@@ -80,6 +83,7 @@ export class AtlasApp {
     this.renderPrograms();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
+    this.applyViewFromUrl();
     void this.loadEvents();
     this.restoreTopbar();
   }
@@ -100,25 +104,15 @@ export class AtlasApp {
   private bindEvents(): void {
     document.getElementById("whenButton")?.addEventListener("click", () => {
       this.closeDockFlyouts();
-      this.closeEventListPanel();
       document.getElementById("filterPanel")?.classList.toggle("open");
       document.getElementById("programsPanel")?.classList.remove("open");
     });
 
-    document.getElementById("listButton")?.addEventListener("click", () => {
-      this.closeDockFlyouts();
-      document.getElementById("filterPanel")?.classList.remove("open");
-      document.getElementById("programsPanel")?.classList.remove("open");
-      this.toggleEventListPanel();
-    });
-
-    document.getElementById("closeEventList")?.addEventListener("click", () => {
-      this.closeEventListPanel();
-    });
+    document.getElementById("viewMapBtn")?.addEventListener("click", () => this.setViewMode("map"));
+    document.getElementById("viewListBtn")?.addEventListener("click", () => this.setViewMode("list"));
 
     document.getElementById("programsButton")?.addEventListener("click", () => {
       this.closeDockFlyouts();
-      this.closeEventListPanel();
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
       document.getElementById("filterPanel")?.classList.remove("open");
@@ -143,6 +137,7 @@ export class AtlasApp {
         document.querySelectorAll(".filter-option").forEach((b) => b.classList.remove("active"));
         button.classList.add("active");
         this.updateWhenButtonLabel();
+        this.syncFilterOptionActiveStates();
         this.renderMapEvents();
         document.getElementById("filterPanel")?.classList.remove("open");
         this.renderEventList();
@@ -205,7 +200,51 @@ export class AtlasApp {
         injectAtlasTypography();
         this.renderMapEvents();
       }, 150);
-    }    );
+    });
+  }
+
+  private applyViewFromUrl(): void {
+    const view = new URL(window.location.href).searchParams.get("view");
+    if (view === "list") this.setViewMode("list", { skipUrl: true });
+  }
+
+  private syncViewUrlParam(): void {
+    const url = new URL(window.location.href);
+    if (this.viewMode === "list") url.searchParams.set("view", "list");
+    else url.searchParams.delete("view");
+    const next = url.search ? `${url.pathname}${url.search}` : url.pathname;
+    history.replaceState(null, "", next);
+  }
+
+  private setViewMode(mode: AppViewMode, options?: { skipUrl?: boolean }): void {
+    this.viewMode = mode;
+    document.body.classList.toggle("atlas-view-list", mode === "list");
+
+    const listPage = document.getElementById("listPage");
+    if (listPage) listPage.hidden = mode !== "list";
+
+    document.getElementById("viewMapBtn")?.classList.toggle("active", mode === "map");
+    document.getElementById("viewListBtn")?.classList.toggle("active", mode === "list");
+
+    document.getElementById("filterPanel")?.classList.remove("open");
+    this.closeDockFlyouts();
+
+    if (!options?.skipUrl) this.syncViewUrlParam();
+
+    if (mode === "list") {
+      this.renderEventList();
+      listPage?.scrollTo(0, 0);
+    } else {
+      setTimeout(() => this.mapService.invalidateSize(), 80);
+      this.renderMapEvents();
+    }
+  }
+
+  private syncFilterOptionActiveStates(): void {
+    document.querySelectorAll(".filter-option").forEach((b) => {
+      const range = (b as HTMLButtonElement).dataset.range;
+      b.classList.toggle("active", range === this.currentRange);
+    });
   }
 
   /** Aggiorna ?event= senza cambiare pagina (resta sulla mappa). */
@@ -213,6 +252,7 @@ export class AtlasApp {
     const url = new URL(window.location.href);
     if (eventId) url.searchParams.set("event", String(eventId));
     else url.searchParams.delete("event");
+    if (this.viewMode === "list") url.searchParams.set("view", "list");
     const next = url.search ? `${url.pathname}${url.search}` : url.pathname;
     history.replaceState(null, "", next);
   }
@@ -223,7 +263,8 @@ export class AtlasApp {
         const a = assessEventLocation(event);
         return { ...event, lat: a.lat, lng: a.lng };
       });
-      this.renderMapEvents();
+      if (this.viewMode === "list") this.renderEventList();
+      else this.renderMapEvents();
     } catch (error) {
       console.error(error);
       showToast("Impossibile caricare gli eventi.");
@@ -244,36 +285,30 @@ export class AtlasApp {
     );
   }
 
-  private toggleEventListPanel(): void {
-    const panel = document.getElementById("eventListPanel");
-    const button = document.getElementById("listButton");
-    const open = !panel?.classList.contains("open");
-    panel?.classList.toggle("open", open);
-    button?.setAttribute("aria-expanded", open ? "true" : "false");
-    if (open) this.renderEventList();
-  }
-
-  private closeEventListPanel(): void {
-    document.getElementById("eventListPanel")?.classList.remove("open");
-    document.getElementById("listButton")?.setAttribute("aria-expanded", "false");
-  }
-
   private renderEventList(): void {
     const root = document.getElementById("eventListContent");
     if (!root) return;
-    root.innerHTML = renderEventListHtml(this.getListEvents(), this.listCategory);
-    bindEventList(
+    root.innerHTML = renderEventListPageHtml(
+      this.getListEvents(),
+      this.listCategory,
+      this.currentRange,
+    );
+    bindEventListPage(
       root,
       (category) => {
         this.listCategory = category;
         this.renderEventList();
       },
+      (range) => {
+        this.currentRange = range;
+        this.updateWhenButtonLabel();
+        this.syncFilterOptionActiveStates();
+        this.renderEventList();
+        if (this.viewMode === "map") this.renderMapEvents();
+      },
       (eventId) => {
         const event = this.allEvents.find((e) => String(e.date_event) === eventId);
         if (!event) return;
-        if (hasValidEventCoords(event)) {
-          this.mapService.fitToCoordinates([[event.lat, event.lng]]);
-        }
         this.handleOpenEvent(event);
       },
     );
@@ -285,9 +320,6 @@ export class AtlasApp {
     const pinCount = this.mapService.renderEvents(visible, deepLink);
     const withCoords = visible.filter(hasValidEventCoords).length;
     this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length);
-    if (document.getElementById("eventListPanel")?.classList.contains("open")) {
-      this.renderEventList();
-    }
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
       const coords = buildMapMarkerPlacements(visible).map(

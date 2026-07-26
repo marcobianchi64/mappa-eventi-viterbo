@@ -17,13 +17,16 @@ export function renderShell(): string {
 
     <div class="topbar">
       <div class="brand-pill">Project Atlas</div>
-      <button id="whenButton" class="chip primary" type="button">🗓 Cerca entro: ${rangeLabel}</button>
-      <button id="listButton" class="chip" type="button" aria-expanded="false">📋 Lista eventi</button>
-      <span id="mapEventCount" class="chip muted" aria-live="polite"></span>
+      <nav class="view-switch" aria-label="Vista">
+        <button id="viewMapBtn" class="chip view-switch-btn active" type="button">🗺 Mappa</button>
+        <button id="viewListBtn" class="chip view-switch-btn" type="button">📋 Calendario</button>
+      </nav>
+      <button id="whenButton" class="chip primary atlas-map-only" type="button">🗓 Cerca entro: ${rangeLabel}</button>
+      <span id="mapEventCount" class="chip muted atlas-map-only" aria-live="polite"></span>
       <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
     </div>
 
-    <aside class="dock-panel" id="desktopDock" aria-label="Azioni rapide">
+    <aside class="dock-panel atlas-map-only" id="desktopDock" aria-label="Azioni rapide">
       <button id="dockNearBtn" class="dock-btn" type="button">📍 Eventi vicino a te</button>
       <button id="dockInsertBtn" class="dock-btn secondary" type="button">＋ Inserisci un evento</button>
     </aside>
@@ -66,35 +69,30 @@ export function renderShell(): string {
       </div>
     </div>
 
-    <div id="filterPanel" class="filter-panel">
+    <div id="filterPanel" class="filter-panel atlas-map-only">
       <h3>Quando vuoi uscire?</h3>
       <div class="filter-grid">
         ${filterButtons(DEFAULT_DATE_RANGE)}
       </div>
     </div>
 
-    <aside id="eventListPanel" class="event-list-panel" aria-label="Elenco eventi">
-      <div class="event-list-header">
-        <h3>Eventi</h3>
-        <button id="closeEventList" class="event-list-close" type="button" aria-label="Chiudi elenco">×</button>
-      </div>
-      <p class="event-list-hint small">Stesso periodo del pulsante «Cerca entro». Tocca una riga per aprire la scheda.</p>
-      <div id="eventListContent"></div>
-    </aside>
-
     <div id="programsPanel" class="programs-panel">
       <h3>🔖 Eventi salvati</h3>
       <div id="programsList">Nessun evento salvato.</div>
     </div>
 
-    <div id="map"></div>
+    <div id="map" class="atlas-map-only"></div>
 
-    <div class="mobile-actions">
+    <main id="listPage" class="list-page atlas-list-only" hidden>
+      <div id="eventListContent"></div>
+    </main>
+
+    <div class="mobile-actions atlas-map-only">
       <button id="openSearchMobile" class="btn dark" type="button">📍 Eventi vicino a te</button>
       <button id="openInsertMobile" class="btn" type="button">＋ Inserisci evento</button>
     </div>
 
-    <div id="mobileSheet" class="bottom-sheet">
+    <div id="mobileSheet" class="bottom-sheet atlas-map-only">
       <div class="sheet-handle"></div>
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
       <div id="mobileNearPanel">
