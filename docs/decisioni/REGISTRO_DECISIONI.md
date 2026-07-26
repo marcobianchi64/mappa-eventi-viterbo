@@ -157,3 +157,13 @@ Decisioni consolidate. Formato: data | decisione | motivazione | conseguenze.
 **Motivazione:** L'amministratore deve avere uno storico completo e interrogabile senza passare dalla chat o da query manuali.
 
 **Conseguenze:** Tab Registro in admin; `fetchAllEventsAdmin` fino a 2000 record; filtri client-side con badge stato evento.
+
+---
+
+## 2026-07-26 — Posizionamento: superare la concorrenza, non la perfezione
+
+**Decisione:** L’obiettivo prodotto è **qualità e copertura territoriale migliori dei portali generalisti**, non l’indicizzazione totale del social. Crescita su **due binari**: raccolta automatica (fonti strutturate) + **Scoperta assistita** (AI + revisione) per mantenere il livello attuale. Servizi a pagamento solo incrementali (job immagini, geocoding, social API) quando il volume o il budget lo giustificano. Immagini: `image_url` + `npm run fix:images` senza obbligo di CDN.
+
+**Motivazione:** Consolidare in documentazione ciò che guida roadmap e priorità di sviluppo, allineato al pilota Viterbo e all’espansione multi-provincia.
+
+**Conseguenze:** Documento `docs/strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md`; aggiornamento `ROADMAP.md`, `RACCOLTA.md`, `ARCHITECTURE.md`.

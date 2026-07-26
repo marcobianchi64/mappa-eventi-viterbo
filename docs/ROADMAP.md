@@ -1,5 +1,7 @@
 # Roadmap Project Atlas
 
+**Strategia prodotto (automazione, concorrenza, immagini):** [strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md](./strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md)
+
 ## Fase 1 — Fondamenta (completata in questa riprogettazione)
 
 - [x] Monorepo modulare con TypeScript
@@ -21,14 +23,15 @@
 
 - [ ] PWA con service worker e cache eventi
 - [ ] Notifiche promemoria reali (Web Push / email)
-- [ ] Filtri per categoria e comune
+- [x] Filtri per categoria e vista Calendario (mappa + elenco a pagina)
 - [ ] Itinerari tematici e percorsi multi-evento
 - [ ] Internazionalizzazione (IT/EN)
 
 ## Fase 4 — Scalabilità territoriale
 
-- [ ] Configurazione multi-territorio (non solo Viterbo)
-- [ ] Import automatico da RSS, Facebook Events, API comunali
+- [ ] Configurazione multi-territorio (non solo Viterbo) — vedi [POSIZIONAMENTO_E_AUTOMAZIONE.md](./strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md) §7
+- [ ] Import automatico da RSS e API/HTML comunali (social solo con policy e costi dedicati)
+- [ ] Arricchimento immagini in pipeline server (alternativa a `fix:images` manuale)
 - [ ] Dashboard analytics per organizzatori
 - [ ] API pubblica read-only per partner
 

@@ -39,6 +39,16 @@ ATLAS_SOURCES=src-tuscia-eventi npm run collect
 - Duplicati tra fonti diverse → saltati
 - Coordinate via **Nominatim** (cache locale in `packages/collector/data/`)
 
+## Immagini evento
+
+Dopo import o publish con `event_url` ma senza locandina:
+
+```bash
+npm run fix:images
+```
+
+Dettaglio strategico e limiti (browser vs server): [POSIZIONAMENTO_E_AUTOMAZIONE.md](../strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md) §6.
+
 ## Migrazione DB
 
 Eseguire anche `supabase/migrations/002_collector.sql` per `external_id` e log sync.

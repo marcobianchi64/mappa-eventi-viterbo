@@ -114,4 +114,4 @@ Configura i secret `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` nella CI (vedi
 
 ## Prossimi passi (roadmap)
 
-Vedi [ROADMAP.md](./ROADMAP.md) per le evoluzioni pianificate: notifiche push, itinerari tematici, import da fonti esterne, PWA offline, test automatici.
+Vedi [ROADMAP.md](./ROADMAP.md) e [strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md](./strategia/POSIZIONAMENTO_E_AUTOMAZIONE.md) per evoluzioni pianificate, automazione e posizionamento competitivo.
