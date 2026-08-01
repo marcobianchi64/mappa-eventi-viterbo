@@ -76,6 +76,45 @@ function stripTrailingComune(title: string, comune?: string | null): string {
   return title.replace(glued, "").trim() || title;
 }
 
+/** Titolo riga programma festival: evita «1° appuntamento» se c'è un nome reale. */
+export function getFestivalAppointmentLabel(
+  event: Pick<AtlasEvent, "title" | "description" | "venue">,
+): string {
+  const numberedSuffix =
+    /^(\d+[\s.°º]*\s*)?(appuntament|serata|giornata|edizione|notte|incontro)\b/i;
+
+  const fromDescription = extractFestivalDescriptionLine(event.description);
+  if (fromDescription) return fromDescription;
+
+  const title = event.title.trim();
+  const dashParts = title.split(/\s*[—–-]\s*/);
+
+  if (dashParts.length >= 2) {
+    const prefix = dashParts[0].trim();
+    const suffix = dashParts.slice(1).join(" - ").trim();
+    if (suffix && !numberedSuffix.test(suffix) && !/^\d+[\s.°º]/.test(suffix)) {
+      return suffix;
+    }
+    if (prefix.length >= 8) return prefix;
+  }
+
+  const venue = event.venue?.trim();
+  if (venue && venue.length >= 10 && !/^montefiascone\b/i.test(venue)) {
+    return venue;
+  }
+
+  return cleanPublishedTitle(title);
+}
+
+function extractFestivalDescriptionLine(description?: string | null): string | null {
+  if (!description?.trim()) return null;
+  const line = description.trim().replace(/\s+/g, " ").split(/[.!?\n]/)[0]?.trim();
+  if (!line || line.length < 10 || line.length > 100) return null;
+  if (/^\d+[\s.°]/.test(line)) return null;
+  if (/^(appuntament|serata|giornata)\b/i.test(line)) return null;
+  return line;
+}
+
 /** Titolo mostrato su mappa e schede evento. */
 export function getEventDisplayTitle(
   event: Pick<AtlasEvent, "title" | "description" | "venue" | "comune" | "city">,

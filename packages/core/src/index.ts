@@ -130,6 +130,7 @@ export {
 export {
   cleanPublishedTitle,
   getEventDisplayTitle,
+  getFestivalAppointmentLabel,
   refineEventTitle,
   splitGluedWords,
 } from "./title-format.js";
@@ -199,11 +200,13 @@ export {
 
 export {
   MIN_FESTIVAL_MAP_GROUP_SIZE,
+  festivalGroupAnchorCoords,
   festivalGroupMembership,
   festivalSeriesKey,
   festivalTitleSeriesPrefix,
   findFestivalMapGroups,
   getFestivalGroupForEvent,
+  inferFestivalUmbrellaKey,
   type FestivalMapGroup,
 } from "./event-festival-group.js";
 

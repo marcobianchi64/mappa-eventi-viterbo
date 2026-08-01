@@ -1,5 +1,6 @@
 import type { AtlasEvent } from "./types/event.js";
 import { manifestationDedupeKey, titleFingerprint } from "./event-duplicate.js";
+import { getFestivalAppointmentLabel } from "./title-format.js";
 import { normalizeSearchText } from "./utils.js";
 
 /** Minimo appuntamenti per raggruppare in un pin festival (evita cerchi con pochi eventi distinti). */
@@ -9,6 +10,8 @@ export type FestivalMapGroup = {
   key: string;
   label: string;
   events: AtlasEvent[];
+  /** Manifestazione madre (es. Fiera del Vino) che unisce più sotto-serie. */
+  umbrella?: boolean;
 };
 
 function normalizeEventUrl(url: string | null | undefined): string {
@@ -30,6 +33,40 @@ function comuneKey(event: Pick<AtlasEvent, "comune" | "city">): string {
 
 function coordBucket(lat: number, lng: number, decimals = 3): string {
   return `${Number(lat).toFixed(decimals)},${Number(lng).toFixed(decimals)}`;
+}
+
+function eventText(
+  event: Pick<AtlasEvent, "title" | "description" | "venue" | "location">,
+): string {
+  return [event.title, event.description, event.venue, event.location].filter(Boolean).join(" ");
+}
+
+/**
+ * Manifestazione «ombrello» (es. tutta la Fiera del Vino a Montefiascone),
+ * indipendentemente dalle sotto-serie («In Cantina con Defuk», ecc.).
+ */
+export function inferFestivalUmbrellaKey(
+  event: Pick<AtlasEvent, "title" | "description" | "venue" | "location" | "comune" | "city">,
+): string | null {
+  const place = comuneKey(event);
+  if (!place) return null;
+
+  const norm = normalizeSearchText(eventText(event));
+  if (!norm) return null;
+
+  if (norm.includes("fiera del vino")) return `umbrella|${place}|fiera`;
+
+  if (
+    norm.includes("fiera") &&
+    (norm.includes("vino") ||
+      norm.includes("cantin") ||
+      norm.includes("degustaz") ||
+      norm.includes("enogastronom"))
+  ) {
+    return `umbrella|${place}|fiera`;
+  }
+
+  return null;
 }
 
 /** Prefisso titolo prima di trattino/em dash (es. «Fiera del Vino — Serata jazz»). */
@@ -78,42 +115,90 @@ function pickFestivalLabel(events: AtlasEvent[]): string {
   return shortest ?? events[0]?.title ?? "Manifestazione";
 }
 
+function pickFestivalUmbrellaLabel(events: AtlasEvent[]): string {
+  const joined = events.map((e) => eventText(e)).join(" ");
+  if (/fiera\s+del\s+vino/i.test(joined)) return "Fiera del Vino";
+  if (/\bfiera\b/i.test(joined)) return "Fiera enogastronomica";
+  return "Manifestazione";
+}
+
 function sortFestivalEvents(events: AtlasEvent[]): AtlasEvent[] {
   return [...events].sort((a, b) => {
     const ta = new Date(a.start_date).getTime();
     const tb = new Date(b.start_date).getTime();
     if (!Number.isNaN(ta) && !Number.isNaN(tb) && ta !== tb) return ta - tb;
-    return a.title.localeCompare(b.title, "it");
+    return getFestivalAppointmentLabel(a).localeCompare(getFestivalAppointmentLabel(b), "it");
   });
 }
 
+/** Coordinate medie per un pin unico su manifestazioni diffuse sullo stesso comune. */
+export function festivalGroupAnchorCoords(
+  events: AtlasEvent[],
+): { lat: number; lng: number } {
+  const valid = events.filter(
+    (e) => Number.isFinite(Number(e.lat)) && Number.isFinite(Number(e.lng)),
+  );
+  if (valid.length === 0) return { lat: 0, lng: 0 };
+  const lat = valid.reduce((sum, e) => sum + Number(e.lat), 0) / valid.length;
+  const lng = valid.reduce((sum, e) => sum + Number(e.lng), 0) / valid.length;
+  return { lat, lng };
+}
+
 /**
- * Raggruppa eventi con stessa serie festival e stesse coordinate (dopo allineamento).
- * Restituisce gruppi con almeno MIN_FESTIVAL_MAP_GROUP_SIZE appuntamenti.
+ * Raggruppa eventi festival: prima manifestazioni ombrello (un pin per comune),
+ * poi sotto-serie con stesse coordinate.
  */
 export function findFestivalMapGroups(
   events: AtlasEvent[],
   minSize = MIN_FESTIVAL_MAP_GROUP_SIZE,
 ): FestivalMapGroup[] {
-  const buckets = new Map<string, AtlasEvent[]>();
+  const groups: FestivalMapGroup[] = [];
+  const assigned = new Set<string>();
 
+  const umbrellaBuckets = new Map<string, AtlasEvent[]>();
   for (const event of events) {
-    const key = festivalSeriesKey(event);
-    if (!key) continue;
-    const bucket = `${key}|${coordBucket(event.lat, event.lng)}`;
-    const list = buckets.get(bucket) ?? [];
+    const umbrellaKey = inferFestivalUmbrellaKey(event);
+    if (!umbrellaKey) continue;
+    const list = umbrellaBuckets.get(umbrellaKey) ?? [];
     list.push(event);
-    buckets.set(bucket, list);
+    umbrellaBuckets.set(umbrellaKey, list);
   }
 
-  const groups: FestivalMapGroup[] = [];
-  for (const [bucketKey, list] of buckets) {
+  for (const [key, list] of umbrellaBuckets) {
+    if (list.length < minSize) continue;
+    const sorted = sortFestivalEvents(list);
+    groups.push({
+      key,
+      label: pickFestivalUmbrellaLabel(sorted),
+      events: sorted,
+      umbrella: true,
+    });
+    for (const event of sorted) {
+      if (event.date_event) assigned.add(String(event.date_event));
+    }
+  }
+
+  const seriesBuckets = new Map<string, AtlasEvent[]>();
+  for (const event of events) {
+    const id = event.date_event ? String(event.date_event) : "";
+    if (id && assigned.has(id)) continue;
+
+    const seriesKey = festivalSeriesKey(event);
+    if (!seriesKey) continue;
+    const bucket = `${seriesKey}|${coordBucket(event.lat, event.lng)}`;
+    const list = seriesBuckets.get(bucket) ?? [];
+    list.push(event);
+    seriesBuckets.set(bucket, list);
+  }
+
+  for (const [bucketKey, list] of seriesBuckets) {
     if (list.length < minSize) continue;
     const sorted = sortFestivalEvents(list);
     groups.push({
       key: bucketKey,
       label: pickFestivalLabel(sorted),
       events: sorted,
+      umbrella: false,
     });
   }
 

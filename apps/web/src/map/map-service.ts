@@ -12,6 +12,7 @@ import {
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
+  getFestivalAppointmentLabel,
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
@@ -81,24 +82,50 @@ export class MapService {
   }
 
   private createTooltip(event: AtlasEvent, festivalGroup?: FestivalMapGroup): string {
-    const title = escapeHtml(festivalGroup?.label ?? getEventDisplayTitle(event));
     const location = assessEventLocation(event);
+
+    if (festivalGroup && festivalGroup.events.length > 1) {
+      const title = escapeHtml(festivalGroup.label);
+      const venue = escapeHtml(location.placeLabel);
+      const maxItems = 14;
+      const visible = festivalGroup.events.slice(0, maxItems);
+      const programItems = visible
+        .map((item) => {
+          const label = escapeHtml(getFestivalAppointmentLabel(item));
+          const date = escapeHtml(formatEventSchedule(item));
+          return `<li class="event-preview-program-item">
+            <span class="event-preview-program-date">${date}</span>
+            <span class="event-preview-program-title">${label}</span>
+          </li>`;
+        })
+        .join("");
+      const more =
+        festivalGroup.events.length > maxItems
+          ? `<li class="event-preview-program-more">+ ${festivalGroup.events.length - maxItems} altri appuntamenti</li>`
+          : "";
+
+      return `
+        <div class="event-preview event-preview-festival">
+          <strong>${title}</strong>
+          <span class="event-preview-date">${festivalGroup.events.length} appuntamenti</span>
+          ${venue ? `<span class="event-preview-venue">${venue}</span>` : ""}
+          <ul class="event-preview-program">${programItems}${more}</ul>
+        </div>
+      `;
+    }
+
+    const title = escapeHtml(getEventDisplayTitle(event));
     const venue = escapeHtml(location.placeLabel);
     const image =
       isHttpUrl(event.image_url)
         ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
         : "";
 
-    const scheduleLine =
-      festivalGroup && festivalGroup.events.length > 1
-        ? `<span class="event-preview-date">${festivalGroup.events.length} appuntamenti nel programma</span>`
-        : `<span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>`;
-
     return `
       <div class="event-preview">
         ${image}
         <strong>${title}</strong>
-        ${scheduleLine}
+        <span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>
         ${venue ? `<span class="event-preview-venue">${venue}</span>` : ""}
         ${
           !location.allowDirections
@@ -139,7 +166,7 @@ export class MapService {
         offset: [0, -8],
         opacity: 0.98,
         sticky: true,
-        interactive: false,
+        interactive: Boolean(festivalGroup && festivalGroup.events.length > 1),
       });
       marker.on("click", (e) => {
         L.DomEvent.stopPropagation(e);

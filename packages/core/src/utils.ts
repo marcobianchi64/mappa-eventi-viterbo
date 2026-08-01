@@ -4,6 +4,7 @@ import { dedupeEventsForMap, eventsAreLikelyDuplicates } from "./event-duplicate
 import { assessEventLocation } from "./event-location-confidence.js";
 import {
   findFestivalMapGroups,
+  festivalGroupAnchorCoords,
   festivalGroupMembership,
   type FestivalMapGroup,
 } from "./event-festival-group.js";
@@ -136,10 +137,11 @@ export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlaceme
     if (renderedFestivalKeys.has(group.key)) continue;
     renderedFestivalKeys.add(group.key);
     const anchor = group.events[0];
+    const coords = group.umbrella ? festivalGroupAnchorCoords(group.events) : anchor;
     placements.push({
       event: anchor,
-      lat: anchor.lat,
-      lng: anchor.lng,
+      lat: coords.lat,
+      lng: coords.lng,
       festivalGroup: group,
     });
   }
