@@ -154,7 +154,9 @@ export class MapService {
         icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
       marker.bindTooltip(this.createTooltip(event, festivalGroup), {
-        className: ATLAS_MAP_TOOLTIP_CLASS,
+        className: festivalGroup
+          ? `${ATLAS_MAP_TOOLTIP_CLASS} atlas-festival-tooltip`
+          : ATLAS_MAP_TOOLTIP_CLASS,
         direction: "top",
         offset: [0, -8],
         opacity: 0.98,

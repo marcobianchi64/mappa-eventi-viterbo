@@ -547,27 +547,43 @@ body:not(.atlas-view-list) .atlas-list-only {
 }
 
 .event-preview-compact-row {
-  display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
-  gap: 6px;
-  align-items: baseline;
-  padding: 1px 0;
-  line-height: 1.2;
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr);
+  column-gap: 10px;
+  align-items: start;
+  padding: 2px 0;
+  line-height: 1.25;
+  list-style: none;
+}
+
+.event-preview-festival-compact .event-preview-compact-row > span {
+  display: block !important;
+  min-width: 0;
+  margin: 0;
 }
 
 .event-preview-compact-date {
+  grid-column: 1;
   font-size: 10px !important;
   font-weight: 700 !important;
   color: #64748b !important;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .event-preview-compact-title {
+  grid-column: 2;
   font-size: 10px !important;
   color: #111827 !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.leaflet-tooltip.atlas-festival-tooltip {
+  width: min(320px, calc(100vw - 32px)) !important;
+  min-width: 288px !important;
+  max-width: min(320px, calc(100vw - 32px)) !important;
 }
 
 .event-preview-festival .event-preview-program {
