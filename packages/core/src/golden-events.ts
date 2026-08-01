@@ -89,6 +89,12 @@ export const GOLDEN_GEOCODE_CASES: GoldenGeocodeCase[] = [
     input: { comune: "Viterbo", venue: "Bagnaia", title: "Festa del Pellegrino" },
     expect: { localitaKey: "bagnaia", minKmFromProvinceCenter: 2 },
   },
+  {
+    id: "bagnaia-pin-legacy",
+    description: "Pin legacy su Viterbo con testo Bagnaia",
+    input: { comune: "Viterbo", venue: "Bagnaia", title: "Evento a Bagnaia" },
+    expect: { localitaKey: "bagnaia", minKmFromProvinceCenter: 2 },
+  },
 ];
 
 export const GOLDEN_DEDUPE_PAIRS: GoldenDedupePair[] = [

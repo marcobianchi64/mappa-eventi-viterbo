@@ -2,6 +2,11 @@ import type { AtlasEvent, DateRangeKey, DateRangeWindow } from "./types/event.js
 import { CATEGORY_META } from "./constants.js";
 import { dedupeEventsForMap, eventsAreLikelyDuplicates } from "./event-duplicate.js";
 import { assessEventLocation } from "./event-location-confidence.js";
+import {
+  findFestivalMapGroups,
+  festivalGroupMembership,
+  type FestivalMapGroup,
+} from "./event-festival-group.js";
 
 export function getCategoryMeta(category: string) {
   return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? {
@@ -101,9 +106,11 @@ export interface MapMarkerPlacement {
   event: AtlasEvent;
   lat: number;
   lng: number;
+  /** Più appuntamenti della stessa manifestazione (es. Fiera del Vino). */
+  festivalGroup?: FestivalMapGroup;
 }
 
-/** Separa pin sovrapposti (stesse coordinate) in cerchio attorno al punto reale. */
+/** Separa pin sovrapposti (stesse coordinate) in cerchio; raggruppa festival multi-appuntamento. */
 export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlacement[] {
   const aligned = events.map((event) => {
     const assessed = assessEventLocation(event);
@@ -111,16 +118,41 @@ export function buildMapMarkerPlacements(events: AtlasEvent[]): MapMarkerPlaceme
   });
   const unique = dedupeEventsForMap(aligned);
   const valid = unique.filter(hasValidEventCoords);
+
+  const festivalGroups = findFestivalMapGroups(valid);
+  const inFestival = festivalGroupMembership(valid);
+  const renderedFestivalKeys = new Set<string>();
+
+  const nonFestival: AtlasEvent[] = [];
+  for (const event of valid) {
+    const id = event.date_event ? String(event.date_event) : "";
+    if (id && inFestival.has(id)) continue;
+    nonFestival.push(event);
+  }
+
+  const placements: MapMarkerPlacement[] = [];
+
+  for (const group of festivalGroups) {
+    if (renderedFestivalKeys.has(group.key)) continue;
+    renderedFestivalKeys.add(group.key);
+    const anchor = group.events[0];
+    placements.push({
+      event: anchor,
+      lat: anchor.lat,
+      lng: anchor.lng,
+      festivalGroup: group,
+    });
+  }
+
   const buckets = new Map<string, AtlasEvent[]>();
 
-  for (const event of valid) {
+  for (const event of nonFestival) {
     const key = `${Number(event.lat).toFixed(4)},${Number(event.lng).toFixed(4)}`;
     const group = buckets.get(key) ?? [];
     group.push(event);
     buckets.set(key, group);
   }
 
-  const placements: MapMarkerPlacement[] = [];
   const offsetDeg = 0.004;
 
   for (const group of buckets.values()) {

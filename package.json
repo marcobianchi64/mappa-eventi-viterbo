@@ -36,7 +36,8 @@
     "verify:location-confidence": "npm run build -w @atlas/core && node scripts/verify-location-confidence.mjs",
     "verify:event-image": "npm run build -w @atlas/core && node scripts/verify-event-image.mjs",
     "verify:golden": "npm run build -w @atlas/core && node scripts/verify-golden-events.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden"
+    "verify:festival-group": "npm run build -w @atlas/core && node scripts/verify-festival-group.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden && npm run verify:festival-group"
   },
   "engines": {
     "node": ">=20"

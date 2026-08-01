@@ -56,10 +56,12 @@ export function resolveMapMarkerCoordinates(
   const lng = Number(event.lng);
   const hasDb = Number.isFinite(lat) && Number.isFinite(lng);
 
-  const expectedLat = targetCoords?.lat ?? place.lat;
-  const expectedLng = targetCoords?.lng ?? place.lng;
+  /** Frazione nel testo (es. Bagnaia) ha priorità sul centro del capoluogo in DB. */
+  const frazioneCoords = place.localitaKey ? { lat: place.lat, lng: place.lng } : null;
+  const expectedLat = frazioneCoords?.lat ?? targetCoords?.lat ?? place.lat;
+  const expectedLng = frazioneCoords?.lng ?? targetCoords?.lng ?? place.lng;
   const hasExpected =
-    Boolean(targetKey || place.comuneKey || place.localitaKey) &&
+    Boolean(frazioneCoords || targetKey || place.comuneKey || place.localitaKey) &&
     Number.isFinite(expectedLat) &&
     Number.isFinite(expectedLng);
 
@@ -76,6 +78,19 @@ export function resolveMapMarkerCoordinates(
 
   if (isDefaultViterboCenterCoords(lat, lng) && targetKey && targetKey !== "viterbo") {
     return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "viterbo-fallback" };
+  }
+
+  if (
+    frazioneCoords &&
+    isNearViterboUrbanArea(lat, lng, 6) &&
+    distanceKm(lat, lng, frazioneCoords.lat, frazioneCoords.lng) > 0.5
+  ) {
+    return {
+      lat: frazioneCoords.lat,
+      lng: frazioneCoords.lng,
+      adjusted: true,
+      reason: "misplaced-in-viterbo",
+    };
   }
 
   const dist = distanceKm(lat, lng, expectedLat, expectedLng);

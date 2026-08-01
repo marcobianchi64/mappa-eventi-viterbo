@@ -10,6 +10,7 @@ import {
   isHttpUrl,
   openHttpUrl,
   type AtlasEvent,
+  type FestivalMapGroup,
 } from "@atlas/core";
 
 let onCloseCallback: (() => void) | null = null;
@@ -117,6 +118,74 @@ export function openEventSheet(
   });
   content.querySelector('[data-action="access"]')?.addEventListener("click", () => {
     onToast("Accesso e partecipazione saranno gestiti dal modulo futuro");
+  });
+
+  overlay.classList.add("open");
+  sheet.classList.add("open");
+}
+
+export function openFestivalEventSheet(
+  group: FestivalMapGroup,
+  onOpenEvent: (event: AtlasEvent) => void,
+  onToast: (message: string) => void,
+): void {
+  const content = document.getElementById("stableEventContent");
+  const overlay = document.getElementById("stableEventOverlay");
+  const sheet = document.getElementById("stableEventSheet");
+  if (!content || !overlay || !sheet) return;
+
+  const anchor = group.events[0];
+  const category = getDisplayCategory(anchor);
+  const meta = getCategoryMeta(category);
+  const title = escapeHtml(group.label);
+  const location = assessEventLocation(anchor);
+  const venue = escapeHtml(location.placeLabel);
+
+  const items = group.events
+    .map((event) => {
+      const eventTitle = escapeHtml(getEventDisplayTitle(event));
+      const schedule = escapeHtml(formatEventSchedule(event));
+      const id = escapeHtml(String(event.date_event ?? ""));
+      return `<button type="button" class="stable-festival-item" data-event-id="${id}">
+        <span class="stable-festival-item-title">${eventTitle}</span>
+        <span class="stable-festival-item-date">${schedule}</span>
+      </button>`;
+    })
+    .join("");
+
+  content.innerHTML = `
+    <button class="stable-event-close" type="button" aria-label="Chiudi">×</button>
+    <div class="stable-event-cover ${category}-cover">
+      <div class="stable-event-cover-icon">${meta.icon}</div>
+      <div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>
+    </div>
+    <div class="stable-event-body">
+      <h2 class="stable-event-title">${title}</h2>
+      <div class="stable-event-facts">
+        <div>📅 ${group.events.length} appuntamenti nel programma</div>
+        ${venue ? `<div>📍 ${venue}</div>` : ""}
+      </div>
+      <div class="stable-event-section">
+        <h3>Programma</h3>
+        <div class="stable-festival-list" role="list">${items}</div>
+      </div>
+      <div class="stable-event-actions">
+        <button class="stable-event-action" data-action="festival-info" type="button"><span>ℹ️</span>Pagina ufficiale</button>
+      </div>
+    </div>
+  `;
+
+  content.querySelector(".stable-event-close")?.addEventListener("click", closeEventSheet);
+  content.querySelectorAll<HTMLButtonElement>(".stable-festival-item").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.eventId;
+      const event = group.events.find((e) => String(e.date_event) === id);
+      if (event) onOpenEvent(event);
+    });
+  });
+  content.querySelector('[data-action="festival-info"]')?.addEventListener("click", () => {
+    const url = group.events.find((e) => isHttpUrl(e.event_url))?.event_url;
+    if (!openHttpUrl(url)) onToast("Nessuna pagina ufficiale indicata per questa manifestazione.");
   });
 
   overlay.classList.add("open");

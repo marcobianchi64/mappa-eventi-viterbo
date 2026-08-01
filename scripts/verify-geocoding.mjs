@@ -62,11 +62,28 @@ if (distCastel < 8) {
   errors.push(`Festa della Birra a Castel S. Elia non deve restare su Viterbo (${distCastel.toFixed(1)} km)`);
 }
 
+const bagnaiaPin = resolveMapMarkerCoordinates({
+  lat: viterbo.lat,
+  lng: viterbo.lng,
+  comune: "Viterbo",
+  city: null,
+  title: "Evento a Bagnaia",
+  venue: "Bagnaia",
+  location: null,
+});
+if (!bagnaiaPin.adjusted) {
+  errors.push(`Bagnaia con pin su Viterbo deve essere corretto, got ${JSON.stringify(bagnaiaPin)}`);
+}
+const distBagnaia = distanceKm(bagnaiaPin.lat, bagnaiaPin.lng, viterbo.lat, viterbo.lng);
+if (distBagnaia < 2) {
+  errors.push(`Bagnaia non deve restare sul centro Viterbo (${distBagnaia.toFixed(1)} km)`);
+}
+
 if (errors.length) {
   console.error("verify-geocoding FAILED\n" + errors.map((e) => `  - ${e}`).join("\n"));
   process.exit(1);
 }
 
 console.log(
-  `verify-geocoding OK — Civitella ~${distAfter.toFixed(1)} km, Castel Sant'Elia ~${distCastel.toFixed(1)} km da Viterbo`,
+  `verify-geocoding OK — Civitella ~${distAfter.toFixed(1)} km, Castel Sant'Elia ~${distCastel.toFixed(1)} km, Bagnaia ~${distBagnaia.toFixed(1)} km da Viterbo`,
 );

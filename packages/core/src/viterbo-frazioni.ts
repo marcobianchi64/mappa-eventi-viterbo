@@ -37,7 +37,8 @@ export function normalizeLocalitaName(value: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[''`]/g, "'")
+    .replace(/[\u2018\u2019\u201B\u2032\u00B4`]/g, "'")
+    .replace(/['']/g, "'")
     .replace(/\s+/g, " ")
     .trim();
 }

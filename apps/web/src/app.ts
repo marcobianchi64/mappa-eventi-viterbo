@@ -23,6 +23,7 @@ import {
   assessEventLocation,
   type AtlasEvent,
   type DateRangeKey,
+  type FestivalMapGroup,
   type EventCategory,
   type EventSubmissionInput,
   type NearRadiusPreset,
@@ -31,7 +32,7 @@ import {
 import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
 import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
-import { closeEventSheet, openEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
+import { closeEventSheet, openEventSheet, openFestivalEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
 import { renderShell } from "./ui/shell";
 import {
   bindEventListPage,
@@ -75,7 +76,8 @@ export class AtlasApp {
 
     this.mapService = new MapService(
       (lat: number, lng: number) => this.setDraftPosition(lat, lng),
-      (event: AtlasEvent) => this.handleOpenEvent(event),
+      (event: AtlasEvent, festivalGroup?: FestivalMapGroup) =>
+        this.handleOpenEvent(event, festivalGroup),
     );
 
     this.bindEvents();
@@ -88,7 +90,15 @@ export class AtlasApp {
     this.restoreTopbar();
   }
 
-  private handleOpenEvent(event: AtlasEvent): void {
+  private handleOpenEvent(event: AtlasEvent, festivalGroup?: FestivalMapGroup): void {
+    if (festivalGroup && festivalGroup.events.length > 1) {
+      openFestivalEventSheet(
+        festivalGroup,
+        (selected) => this.handleOpenEvent(selected),
+        showToast,
+      );
+      return;
+    }
     this.syncEventUrlParam(event.date_event ?? null);
     openEventSheet(
       event,

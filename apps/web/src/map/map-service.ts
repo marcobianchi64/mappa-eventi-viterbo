@@ -18,6 +18,7 @@ import {
   createAtlasMapMarkerIcon,
   getMapUiScale,
   type AtlasEvent,
+  type FestivalMapGroup,
 } from "@atlas/core";
 
 function createAtlasMarkerClusterGroup(): L.MarkerClusterGroup {
@@ -53,7 +54,7 @@ export class MapService {
 
   constructor(
     private onDraftPosition: (lat: number, lng: number) => void,
-    private onOpenEvent: (event: AtlasEvent) => void,
+    private onOpenEvent: (event: AtlasEvent, festivalGroup?: FestivalMapGroup) => void,
   ) {
     this.map = L.map("map").setView(DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM);
     L.tileLayer(MAP_TILE_URL, {
@@ -79,8 +80,8 @@ export class MapService {
     });
   }
 
-  private createTooltip(event: AtlasEvent): string {
-    const title = escapeHtml(getEventDisplayTitle(event));
+  private createTooltip(event: AtlasEvent, festivalGroup?: FestivalMapGroup): string {
+    const title = escapeHtml(festivalGroup?.label ?? getEventDisplayTitle(event));
     const location = assessEventLocation(event);
     const venue = escapeHtml(location.placeLabel);
     const image =
@@ -88,11 +89,16 @@ export class MapService {
         ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
         : "";
 
+    const scheduleLine =
+      festivalGroup && festivalGroup.events.length > 1
+        ? `<span class="event-preview-date">${festivalGroup.events.length} appuntamenti nel programma</span>`
+        : `<span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>`;
+
     return `
       <div class="event-preview">
         ${image}
         <strong>${title}</strong>
-        <span class="event-preview-date">${escapeHtml(formatEventSchedule(event))}</span>
+        ${scheduleLine}
         ${venue ? `<span class="event-preview-venue">${venue}</span>` : ""}
         ${
           !location.allowDirections
@@ -123,11 +129,11 @@ export class MapService {
     const placements = buildMapMarkerPlacements(events);
 
     for (const placement of placements) {
-      const { event, lat, lng } = placement;
+      const { event, lat, lng, festivalGroup } = placement;
       const marker = L.marker([lat, lng], {
         icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
-      marker.bindTooltip(this.createTooltip(event), {
+      marker.bindTooltip(this.createTooltip(event, festivalGroup), {
         className: ATLAS_MAP_TOOLTIP_CLASS,
         direction: "top",
         offset: [0, -8],
@@ -137,7 +143,7 @@ export class MapService {
       });
       marker.on("click", (e) => {
         L.DomEvent.stopPropagation(e);
-        this.onOpenEvent(event);
+        this.onOpenEvent(event, festivalGroup);
       });
       this.eventLayer.addLayer(marker);
 

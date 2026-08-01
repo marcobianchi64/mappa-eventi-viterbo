@@ -198,6 +198,16 @@ export {
 } from "./event-page-image.js";
 
 export {
+  MIN_FESTIVAL_MAP_GROUP_SIZE,
+  festivalGroupMembership,
+  festivalSeriesKey,
+  festivalTitleSeriesPrefix,
+  findFestivalMapGroups,
+  getFestivalGroupForEvent,
+  type FestivalMapGroup,
+} from "./event-festival-group.js";
+
+export {
   getCategoryMeta,
   escapeHtml,
   formatDate,
