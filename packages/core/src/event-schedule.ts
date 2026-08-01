@@ -70,3 +70,13 @@ export function formatEventSchedule(event: ScheduleInput, now: Date = new Date()
 
   return `Dal ${startLabel} al ${endLabel}`;
 }
+
+/** Data/ora compatta per elenco festival in tooltip (solo giorno di inizio). */
+export function formatFestivalListDate(value: string | null | undefined): string {
+  const start = parseEventDate(value);
+  if (!start) return "";
+
+  const day = start.toLocaleDateString("it-IT", { day: "numeric", month: "short" });
+  const time = formatEventTimeOnly(value);
+  return time ? `${day}, ${time}` : day;
+}

@@ -131,6 +131,7 @@ export {
   cleanPublishedTitle,
   getEventDisplayTitle,
   getFestivalAppointmentLabel,
+  getFestivalPinTitle,
   refineEventTitle,
   splitGluedWords,
 } from "./title-format.js";
@@ -167,7 +168,7 @@ export {
   type NearRadiusPreset,
 } from "./near-radius.js";
 
-export { formatEventSchedule, isEventOngoing } from "./event-schedule.js";
+export { formatEventSchedule, formatFestivalListDate, isEventOngoing } from "./event-schedule.js";
 
 export {
   formatEventDateTime,

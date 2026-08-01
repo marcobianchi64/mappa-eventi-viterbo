@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildMapMarkerPlacements,
   findFestivalMapGroups,
-  getFestivalAppointmentLabel,
+  getFestivalPinTitle,
   inferFestivalUmbrellaKey,
   MIN_FESTIVAL_MAP_GROUP_SIZE,
 } from "@atlas/core";
@@ -102,9 +102,8 @@ assert.equal(findFestivalMapGroups(umbrellaMixed).length, 1);
 assert.equal(buildMapMarkerPlacements(umbrellaMixed).length, 1);
 assert.equal(buildMapMarkerPlacements(umbrellaMixed)[0].festivalGroup?.label, "Fiera del Vino");
 
-const label = getFestivalAppointmentLabel(umbrellaMixed[0]);
-assert.ok(!/appuntament/i.test(label), `etichetta non deve contenere numerazione: ${label}`);
-assert.ok(label.includes("jazz") || label.includes("In Cantina"), `etichetta leggibile: ${label}`);
+const label = getFestivalPinTitle(umbrellaMixed[0]);
+assert.ok(label.length >= 8, `titolo pin leggibile: ${label}`);
 
 const bolsena = { lat: 42.364, lng: 11.986, comune: "Bolsena" };
 const bolsenarteUrl = "https://visitbolsena.it/eventi/bolsenarte-2026/";

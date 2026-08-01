@@ -1,6 +1,6 @@
 import type { AtlasEvent } from "./types/event.js";
 import { manifestationDedupeKey, titleFingerprint } from "./event-duplicate.js";
-import { getFestivalAppointmentLabel } from "./title-format.js";
+import { getFestivalPinTitle } from "./title-format.js";
 import { normalizeSearchText } from "./utils.js";
 
 /** Minimo appuntamenti per raggruppare in un pin festival (evita cerchi con pochi eventi distinti). */
@@ -127,7 +127,7 @@ function sortFestivalEvents(events: AtlasEvent[]): AtlasEvent[] {
     const ta = new Date(a.start_date).getTime();
     const tb = new Date(b.start_date).getTime();
     if (!Number.isNaN(ta) && !Number.isNaN(tb) && ta !== tb) return ta - tb;
-    return getFestivalAppointmentLabel(a).localeCompare(getFestivalAppointmentLabel(b), "it");
+    return getFestivalPinTitle(a).localeCompare(getFestivalPinTitle(b), "it");
   });
 }
 

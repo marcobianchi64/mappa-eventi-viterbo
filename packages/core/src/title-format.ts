@@ -76,6 +76,13 @@ function stripTrailingComune(title: string, comune?: string | null): string {
   return title.replace(glued, "").trim() || title;
 }
 
+/** Titolo del singolo pin (prima del raggruppamento) — dal campo title, non dalla descrizione. */
+export function getFestivalPinTitle(
+  event: Pick<AtlasEvent, "title" | "description" | "venue" | "comune" | "city">,
+): string {
+  return getEventDisplayTitle(event);
+}
+
 /** Titolo riga programma festival: evita «1° appuntamento» se c'è un nome reale. */
 export function getFestivalAppointmentLabel(
   event: Pick<AtlasEvent, "title" | "description" | "venue">,

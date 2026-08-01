@@ -10,9 +10,10 @@ import {
   assessEventLocation,
   escapeHtml,
   formatEventSchedule,
+  formatFestivalListDate,
   getDisplayCategory,
   getEventDisplayTitle,
-  getFestivalAppointmentLabel,
+  getFestivalPinTitle,
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
@@ -86,30 +87,22 @@ export class MapService {
 
     if (festivalGroup && festivalGroup.events.length > 1) {
       const title = escapeHtml(festivalGroup.label);
-      const venue = escapeHtml(location.placeLabel);
-      const maxItems = 14;
-      const visible = festivalGroup.events.slice(0, maxItems);
-      const programItems = visible
+      const rows = festivalGroup.events
         .map((item) => {
-          const label = escapeHtml(getFestivalAppointmentLabel(item));
-          const date = escapeHtml(formatEventSchedule(item));
-          return `<li class="event-preview-program-item">
-            <span class="event-preview-program-date">${date}</span>
-            <span class="event-preview-program-title">${label}</span>
+          const date = escapeHtml(formatFestivalListDate(item.start_date));
+          const pinTitle = escapeHtml(getFestivalPinTitle(item));
+          return `<li class="event-preview-compact-row">
+            <span class="event-preview-compact-date">${date}</span>
+            <span class="event-preview-compact-title">${pinTitle}</span>
           </li>`;
         })
         .join("");
-      const more =
-        festivalGroup.events.length > maxItems
-          ? `<li class="event-preview-program-more">+ ${festivalGroup.events.length - maxItems} altri appuntamenti</li>`
-          : "";
 
       return `
-        <div class="event-preview event-preview-festival">
+        <div class="event-preview event-preview-festival-compact">
           <strong>${title}</strong>
-          <span class="event-preview-date">${festivalGroup.events.length} appuntamenti</span>
-          ${venue ? `<span class="event-preview-venue">${venue}</span>` : ""}
-          <ul class="event-preview-program">${programItems}${more}</ul>
+          <span class="event-preview-compact-hint">${festivalGroup.events.length} appuntamenti · clicca per dettagli</span>
+          <ul class="event-preview-compact-list">${rows}</ul>
         </div>
       `;
     }
@@ -166,7 +159,7 @@ export class MapService {
         offset: [0, -8],
         opacity: 0.98,
         sticky: true,
-        interactive: Boolean(festivalGroup && festivalGroup.events.length > 1),
+        interactive: false,
       });
       marker.on("click", (e) => {
         L.DomEvent.stopPropagation(e);

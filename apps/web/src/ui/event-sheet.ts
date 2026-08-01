@@ -6,7 +6,7 @@ import {
   formatEventSchedule,
   getDisplayCategory,
   getEventDisplayTitle,
-  getFestivalAppointmentLabel,
+  getFestivalPinTitle,
   getCategoryMeta,
   isHttpUrl,
   openHttpUrl,
@@ -144,7 +144,7 @@ export function openFestivalEventSheet(
 
   const items = group.events
     .map((event) => {
-      const eventTitle = escapeHtml(getFestivalAppointmentLabel(event));
+      const eventTitle = escapeHtml(getFestivalPinTitle(event));
       const schedule = escapeHtml(formatEventSchedule(event));
       const id = escapeHtml(String(event.date_event ?? ""));
       return `<button type="button" class="stable-festival-item" data-event-id="${id}">

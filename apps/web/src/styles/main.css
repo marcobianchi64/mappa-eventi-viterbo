@@ -530,6 +530,46 @@ body:not(.atlas-view-list) .atlas-list-only {
   font-weight: 600;
 }
 
+.event-preview-festival-compact .event-preview-compact-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px !important;
+  color: #64748b !important;
+  font-weight: 600;
+}
+
+.event-preview-compact-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  overflow: visible;
+  max-height: none;
+}
+
+.event-preview-compact-row {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 6px;
+  align-items: baseline;
+  padding: 1px 0;
+  line-height: 1.2;
+}
+
+.event-preview-compact-date {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  white-space: nowrap;
+}
+
+.event-preview-compact-title {
+  font-size: 10px !important;
+  color: #111827 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .event-preview-festival .event-preview-program {
   list-style: none;
   margin: 8px 0 0;
