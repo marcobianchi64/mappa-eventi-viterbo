@@ -4,6 +4,7 @@ import {
   distanceKm,
   geocodeEventPlace,
   getComuneCenterByKey,
+  inferComuneFromText,
   isLegacyViterboCenter,
   isNearViterboUrbanArea,
   resolveComuneKeyFromString,
@@ -88,6 +89,18 @@ export function resolveMapMarkerCoordinates(
     isNearViterboUrbanArea(lat, lng, 6)
   ) {
     return { lat: expectedLat, lng: expectedLng, adjusted: true, reason: "misplaced-in-viterbo" };
+  }
+
+  const looseKey = inferComuneFromText(event.comune, event.city, event.venue, event.title, event.location);
+  if (
+    looseKey &&
+    looseKey !== "viterbo" &&
+    isNearViterboUrbanArea(lat, lng, 6)
+  ) {
+    const looseCoords = getComuneCenterByKey(looseKey);
+    if (looseCoords) {
+      return { lat: looseCoords.lat, lng: looseCoords.lng, adjusted: true, reason: "misplaced-in-viterbo" };
+    }
   }
 
   return { lat, lng, adjusted: false, reason: "ok" };

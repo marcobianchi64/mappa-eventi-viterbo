@@ -45,6 +45,22 @@ export const GOLDEN_EVENT_CASES: GoldenEventCase[] = [
     expect: { allowDirections: false, confidence: "medium" },
   },
   {
+    id: "castel-sant-elia-birra",
+    description: "Comune con apostrofo tipografico e pin legacy su Viterbo",
+    event: {
+      title: "Festa della Birra",
+      start_date: "2026-08-01T19:00:00.000Z",
+      end_date: "2026-08-02T19:00:00.000Z",
+      comune: "Castel Sant\u2019elia",
+      city: null,
+      venue: null,
+      lat: 42.4174,
+      lng: 12.1049,
+      event_url: null,
+    },
+    expect: { minKmFromProvinceCenter: 20 },
+  },
+  {
     id: "cavatello-vitorchiano",
     description: "Sagra con comune e venue — Guidami consentito",
     event: {
