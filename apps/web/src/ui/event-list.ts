@@ -15,8 +15,6 @@ import {
 
 export type EventListCategoryFilter = EventCategory | "all";
 
-const DATE_OPTIONS: DateRangeKey[] = ["today", "tomorrow", "weekend", "7", "15", "30", "60"];
-
 function excerpt(text: string | null | undefined, max = 200): string {
   const t = (text ?? "").replace(/\s+/g, " ").trim();
   if (!t) return "Scopri date, luogo e dettagli aprendo la scheda evento.";
@@ -34,32 +32,16 @@ function listCardMedia(event: AtlasEvent): string {
   return `<div class="list-card-media placeholder" style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span>${meta.icon}</span></div>`;
 }
 
-function sidebarLinks(
-  kind: "cat" | "range",
-  activeCat: EventListCategoryFilter,
+function filterSummary(
+  activeCategory: EventListCategoryFilter,
   activeRange: DateRangeKey,
 ): string {
-  if (kind === "cat") {
-    const items: { key: EventListCategoryFilter; label: string }[] = [
-      { key: "all", label: "Tutte le categorie" },
-      ...(Object.keys(CATEGORY_META) as EventCategory[]).map((key) => ({
-        key,
-        label: CATEGORY_META[key].label,
-      })),
-    ];
-    return items
-      .map((item) => {
-        const active = item.key === activeCat;
-        return `<li><button type="button" class="list-sidebar-link${active ? " active" : ""}" data-list-cat="${item.key}">${escapeHtml(item.label)}</button></li>`;
-      })
-      .join("");
+  const parts: string[] = [];
+  if (activeCategory !== "all") {
+    parts.push(CATEGORY_META[activeCategory].label);
   }
-
-  return DATE_OPTIONS.map((range) => {
-    const label = DATE_RANGE_LABELS[range] ?? range;
-    const active = range === activeRange;
-    return `<li><button type="button" class="list-sidebar-link${active ? " active" : ""}" data-list-range="${range}">${escapeHtml(label)}</button></li>`;
-  }).join("");
+  parts.push(DATE_RANGE_LABELS[activeRange] ?? activeRange);
+  return parts.join(" · ");
 }
 
 export function renderEventListPageHtml(
@@ -67,10 +49,10 @@ export function renderEventListPageHtml(
   activeCategory: EventListCategoryFilter,
   activeRange: DateRangeKey,
 ): string {
-  const rangeLabel = DATE_RANGE_LABELS[activeRange] ?? activeRange;
+  const summary = escapeHtml(filterSummary(activeCategory, activeRange));
   const cards =
     events.length === 0
-      ? `<p class="list-page-empty">Nessun evento per i filtri scelti. Prova ad allargare il periodo o cambiare categoria.</p>`
+      ? `<p class="list-page-empty">Nessun evento per i filtri scelti. Usa <strong>Filtro eventi</strong> in alto per cambiare categoria o periodo.</p>`
       : events
           .map((event) => {
             const id = escapeHtml(event.date_event ?? "");
@@ -101,48 +83,16 @@ export function renderEventListPageHtml(
 
   return `
     <div class="list-page-layout">
-      <div class="list-page-main">
-        <header class="list-page-intro">
-          <h1>Eventi in provincia di Viterbo</h1>
-          <p class="list-page-lead"><strong>${escapeHtml(rangeLabel)}</strong> · ${events.length} eventi in elenco</p>
-        </header>
-        <div class="list-cards">${cards}</div>
-      </div>
-      <aside class="list-page-sidebar" aria-label="Filtra eventi">
-        <h2 class="list-sidebar-heading">Scopri gli eventi in calendario</h2>
-        <div class="list-sidebar-cols">
-          <div class="list-sidebar-col">
-            <h3><span aria-hidden="true">🏷</span> Categoria</h3>
-            <ul class="list-sidebar-list">${sidebarLinks("cat", activeCategory, activeRange)}</ul>
-          </div>
-          <div class="list-sidebar-col">
-            <h3><span aria-hidden="true">📅</span> Quando</h3>
-            <ul class="list-sidebar-list">${sidebarLinks("range", activeCategory, activeRange)}</ul>
-          </div>
-        </div>
-      </aside>
+      <header class="list-page-intro">
+        <h1>Eventi in provincia di Viterbo</h1>
+        <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
+      </header>
+      <div class="list-cards">${cards}</div>
     </div>
   `;
 }
 
-export function bindEventListPage(
-  root: HTMLElement,
-  onCategory: (cat: EventListCategoryFilter) => void,
-  onRange: (range: DateRangeKey) => void,
-  onSelect: (eventId: string) => void,
-): void {
-  root.querySelectorAll("[data-list-cat]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = (btn as HTMLButtonElement).dataset.listCat as EventListCategoryFilter;
-      onCategory(key);
-    });
-  });
-  root.querySelectorAll("[data-list-range]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = (btn as HTMLButtonElement).dataset.listRange as DateRangeKey;
-      onRange(key);
-    });
-  });
+export function bindEventListPage(root: HTMLElement, onSelect: (eventId: string) => void): void {
   root.querySelectorAll("[data-event-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = (btn as HTMLButtonElement).dataset.eventId;

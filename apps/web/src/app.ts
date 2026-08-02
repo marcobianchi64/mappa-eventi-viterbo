@@ -338,26 +338,11 @@ export class AtlasApp {
       this.listCategory,
       this.currentRange,
     );
-    bindEventListPage(
-      root,
-      (category) => {
-        this.listCategory = category;
-        this.syncCategoryFilterUi();
-        this.renderEventList();
-        if (this.viewMode === "map") this.renderMapEvents();
-      },
-      (range) => {
-        this.currentRange = range;
-        this.syncFilterOptionActiveStates();
-        this.renderEventList();
-        if (this.viewMode === "map") this.renderMapEvents();
-      },
-      (eventId) => {
-        const event = this.allEvents.find((e) => String(e.date_event) === eventId);
-        if (!event) return;
-        this.handleOpenEvent(event);
-      },
-    );
+    bindEventListPage(root, (eventId) => {
+      const event = this.allEvents.find((e) => String(e.date_event) === eventId);
+      if (!event) return;
+      this.handleOpenEvent(event);
+    });
   }
 
   private renderMapEvents(): void {
@@ -378,7 +363,7 @@ export class AtlasApp {
     this.listCategory = category;
     this.syncCategoryFilterUi();
     this.renderMapEvents();
-    if (this.viewMode === "list") this.renderEventList();
+    this.renderEventList();
   }
 
   private syncCategoryFilterUi(): void {

@@ -21,7 +21,7 @@ export function renderShell(): string {
         <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 Mappa</button>
         <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 Elenco eventi</button>
       </nav>
-      <div class="filter-menu-wrap atlas-map-only" id="filterMenuWrap">
+      <div class="filter-menu-wrap" id="filterMenuWrap">
         <button
           id="filterEventsButton"
           class="chip chip-tint-blue filter-events-trigger"
