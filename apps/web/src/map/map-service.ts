@@ -14,6 +14,7 @@ import {
   getDisplayCategory,
   getEventDisplayTitle,
   getFestivalPinTitle,
+  FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX,
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
@@ -63,7 +64,9 @@ export class MapService {
 
     if (festivalGroup && festivalGroup.events.length > 1) {
       const title = escapeHtml(festivalGroup.label);
-      const rows = festivalGroup.events
+      const preview = festivalGroup.events.slice(0, FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX);
+      const hidden = festivalGroup.events.length - preview.length;
+      const rows = preview
         .map((item) => {
           const date = escapeHtml(formatFestivalListDate(item.start_date));
           const pinTitle = escapeHtml(getFestivalPinTitle(item));
@@ -73,12 +76,17 @@ export class MapService {
           </li>`;
         })
         .join("");
+      const more =
+        hidden > 0
+          ? `<li class="event-preview-compact-more">+ altri ${hidden} appuntamenti nel programma</li>`
+          : "";
 
       return `
         <div class="event-preview event-preview-festival-compact">
           <strong>${title}</strong>
-          <span class="event-preview-compact-hint">${festivalGroup.events.length} appuntamenti · clicca per dettagli</span>
-          <ul class="event-preview-compact-list">${rows}</ul>
+          <span class="event-preview-compact-hint">${festivalGroup.events.length} appuntamenti nel programma</span>
+          <ul class="event-preview-compact-list">${rows}${more}</ul>
+          <p class="event-preview-compact-cta">Per dettagli clicca sul pin</p>
         </div>
       `;
     }

@@ -65,6 +65,7 @@ export {
   createAtlasMarkerClusterGroupOptions,
   MAP_CLUSTER_DISABLE_AT_ZOOM,
   MAP_CLUSTER_MIN_MARKERS,
+  FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX,
   resolveMaxClusterRadius,
 } from "./map-cluster-config.js";
 
