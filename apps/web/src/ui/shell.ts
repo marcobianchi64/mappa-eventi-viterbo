@@ -28,7 +28,7 @@ export function renderShell(): string {
           type="button"
           aria-expanded="false"
           aria-controls="filterEventsPanel"
-        >🔎 Filtra eventi</button>
+        >🔎 Filtro eventi</button>
         <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
           <div class="filter-events-columns">
             <div class="filter-events-col">
@@ -86,7 +86,7 @@ export function renderShell(): string {
     </main>
 
     <div class="mobile-actions atlas-map-only">
-      <button id="openFilterMobile" class="btn chip-tint-blue-mobile" type="button">🔎 Filtra eventi</button>
+      <button id="openFilterMobile" class="btn chip-tint-blue-mobile" type="button">🔎 Filtro eventi</button>
       <button id="openInsertMobile" class="btn" type="button">＋ Inserisci evento</button>
     </div>
 
@@ -94,7 +94,7 @@ export function renderShell(): string {
       <div class="sheet-handle"></div>
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
       <div id="mobileFilterPanel">
-        <h2>Filtra eventi</h2>
+        <h2>Filtro eventi</h2>
         <div class="filter-events-columns">
           <div class="filter-events-col">
             <h3 class="filter-events-heading">Cosa</h3>

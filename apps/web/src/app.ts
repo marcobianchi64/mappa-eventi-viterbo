@@ -1,5 +1,4 @@
 import {
-  DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
   injectAtlasTypography,
   detectContactType,
@@ -9,7 +8,6 @@ import {
   formatEventSchedule,
   buildMapMarkerPlacements,
   filterEventsWithinRadiusKm,
-  getCategoryMeta,
   getNearRadiusOption,
   isEventVisibleInRange,
   loadNearRadiusPreset,
@@ -83,7 +81,6 @@ export class AtlasApp {
     this.syncNearRadiusUi();
     this.syncCategoryFilterUi();
     this.syncFilterOptionActiveStates();
-    this.updateFilterEventsButtonLabel();
     this.renderPrograms();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
@@ -172,7 +169,6 @@ export class AtlasApp {
       button.addEventListener("click", () => {
         this.currentRange = (button as HTMLButtonElement).dataset.range as DateRangeKey;
         this.syncFilterOptionActiveStates();
-        this.updateFilterEventsButtonLabel();
         this.renderMapEvents();
         this.renderEventList();
         this.closeFilterMenu();
@@ -184,7 +180,6 @@ export class AtlasApp {
         const category = (button as HTMLButtonElement).dataset.category as EventListCategoryFilter;
         if (!category) return;
         this.setCategoryFilter(category);
-        this.updateFilterEventsButtonLabel();
         this.closeFilterMenu();
       });
     });
@@ -348,13 +343,11 @@ export class AtlasApp {
       (category) => {
         this.listCategory = category;
         this.syncCategoryFilterUi();
-        this.updateFilterEventsButtonLabel();
         this.renderEventList();
         if (this.viewMode === "map") this.renderMapEvents();
       },
       (range) => {
         this.currentRange = range;
-        this.updateFilterEventsButtonLabel();
         this.syncFilterOptionActiveStates();
         this.renderEventList();
         if (this.viewMode === "map") this.renderMapEvents();
@@ -401,16 +394,6 @@ export class AtlasApp {
     document.getElementById("filterMenuWrap")?.classList.remove("open");
     document.getElementById("filterEventsButton")?.setAttribute("aria-expanded", "false");
     document.getElementById("filterEventsPanel")?.setAttribute("aria-hidden", "true");
-  }
-
-  private updateFilterEventsButtonLabel(): void {
-    const button = document.getElementById("filterEventsButton");
-    if (!button) return;
-    const cat =
-      this.listCategory === "all" ? null : getCategoryMeta(this.listCategory).label;
-    const when = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
-    const parts = [cat, when].filter(Boolean);
-    button.textContent = parts.length ? `🔎 ${parts.join(" · ")}` : "🔎 Filtra eventi";
   }
 
   private toggleDockFlyout(which: "insert"): void {
