@@ -95,6 +95,14 @@ if (isFestivalAppointmentPast(futureAppt, afterPast)) {
   errors.push("appuntamento del 5 ago non dovrebbe essere passato il 2 ago");
 }
 
+const longSpan = {
+  start_date: "2026-08-01T19:00:00.000Z",
+  end_date: "2026-08-31T22:00:00.000Z",
+};
+if (!isFestivalAppointmentPast(longSpan, afterPast)) {
+  errors.push("appuntamento del 1 ago deve essere passato il 2 ago anche con data fine lunga");
+}
+
 const linkedFb = linkifyPlainText("Fonte: https://www.facebook.com/infopoint.tarquinia");
 if (!linkedFb.includes('<a href="https://www.facebook.com/infopoint.tarquinia"')) {
   errors.push(`linkifyPlainText atteso link Facebook, ottenuto: ${linkedFb}`);

@@ -143,7 +143,7 @@ export class MapService {
       const marker = L.marker([lat, lng], {
         icon: this.createMarkerIcon(getDisplayCategory(event)),
       });
-      marker.bindTooltip(this.createTooltip(event, festivalGroup), {
+      marker.bindTooltip(() => this.createTooltip(event, festivalGroup), {
         className: festivalGroup
           ? `${ATLAS_MAP_TOOLTIP_CLASS} atlas-festival-tooltip`
           : ATLAS_MAP_TOOLTIP_CLASS,

@@ -81,13 +81,20 @@ export function formatFestivalListDate(value: string | null | undefined): string
   return time ? `${day}, ${time}` : day;
 }
 
-/** True se l'appuntamento festival è già concluso (non mostrarlo in anteprima hover). */
+/** True se l'appuntamento festival è in un giorno già trascorso (anteprima hover). */
 export function isFestivalAppointmentPast(
   event: ScheduleInput,
   now: Date = new Date(),
 ): boolean {
   const start = parseEventDate(event.start_date);
   if (!start) return false;
-  const end = parseEventDate(event.end_date) ?? start;
-  return end.getTime() < now.getTime();
+  const today = startOfDay(now);
+  const day = startOfDay(start);
+  return day.getTime() < today.getTime();
+}
+
+function startOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
