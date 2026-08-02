@@ -284,6 +284,7 @@ export class AtlasApp {
       setTimeout(() => this.mapService.invalidateSize(), 80);
       this.renderMapEvents();
     }
+    this.updateActiveFiltersBar();
   }
 
   private syncFilterOptionActiveStates(): void {
