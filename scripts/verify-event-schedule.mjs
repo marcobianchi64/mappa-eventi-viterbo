@@ -95,11 +95,15 @@ if (isFestivalAppointmentPast(futureAppt, afterPast)) {
   errors.push("appuntamento del 5 ago non dovrebbe essere passato il 2 ago");
 }
 
-const linked = linkifyPlainText("Fonte: https://example.com/evento");
-if (!linked.includes('<a href="https://example.com/evento"')) {
-  errors.push(`linkifyPlainText atteso link, ottenuto: ${linked}`);
+const linkedFb = linkifyPlainText("Fonte: https://www.facebook.com/infopoint.tarquinia");
+if (!linkedFb.includes('<a href="https://www.facebook.com/infopoint.tarquinia"')) {
+  errors.push(`linkifyPlainText atteso link Facebook, ottenuto: ${linkedFb}`);
 }
-if (linked.includes("<script")) errors.push("linkifyPlainText deve escapare HTML");
+const linkedOther = linkifyPlainText("Sito: https://example.com/evento");
+if (linkedOther.includes("<a ")) {
+  errors.push("linkifyPlainText non deve linkare URL non Facebook");
+}
+if (linkedFb.includes("<script")) errors.push("linkifyPlainText deve escapare HTML");
 
 if (errors.length) {
   console.error("verify-event-schedule FAILED\n" + errors.map((e) => `  - ${e}`).join("\n"));

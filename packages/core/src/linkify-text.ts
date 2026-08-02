@@ -3,7 +3,23 @@ import { escapeHtml } from "./utils.js";
 
 const URL_IN_TEXT_RE = /https?:\/\/[^\s<>"']+/gi;
 
-/** Testo con URL cliccabili (descrizioni evento, fonti Facebook, ecc.). */
+/** True se l'URL punta a Facebook (pagine, post, eventi). */
+export function isFacebookUrl(value: string | null | undefined): boolean {
+  if (!value?.trim() || !isHttpUrl(value)) return false;
+  try {
+    const host = new URL(value.trim()).hostname.toLowerCase();
+    return (
+      host === "facebook.com" ||
+      host.endsWith(".facebook.com") ||
+      host === "fb.com" ||
+      host === "fb.me"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Testo con link cliccabili solo per pagine Facebook nelle descrizioni. */
 export function linkifyPlainText(text: string | null | undefined): string {
   if (!text?.trim()) return "";
 
@@ -22,13 +38,13 @@ export function linkifyPlainText(text: string | null | undefined): string {
       url = url.slice(0, -1);
     }
 
-    if (isHttpUrl(url)) {
+    if (isFacebookUrl(url)) {
       const safeHref = escapeHtml(url);
       parts.push(
         `<a href="${safeHref}" target="_blank" rel="noopener noreferrer" class="atlas-text-link">${safeHref}</a>${escapeHtml(trailing)}`,
       );
     } else {
-      parts.push(escapeHtml(match[0]));
+      parts.push(escapeHtml(match[0]) + escapeHtml(trailing));
     }
 
     lastIndex = match.index + match[0].length;

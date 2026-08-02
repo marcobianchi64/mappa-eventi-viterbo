@@ -204,7 +204,7 @@ export {
 } from "./event-location-confidence.js";
 
 export { isHttpUrl, openHttpUrl } from "./safe-url.js";
-export { linkifyPlainText } from "./linkify-text.js";
+export { isFacebookUrl, linkifyPlainText } from "./linkify-text.js";
 export {
   extractEventImageFromHtml,
   resolvePageAssetUrl,
