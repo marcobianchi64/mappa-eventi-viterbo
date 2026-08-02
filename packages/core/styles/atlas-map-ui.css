@@ -42,8 +42,8 @@
   font-size: var(--tooltip-font) !important;
 }
 
-.leaflet-tooltip.atlas-event-tooltip strong,
-.leaflet-tooltip.atlas-event-tooltip .event-preview strong {
+.leaflet-tooltip.atlas-event-tooltip .event-preview > strong,
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-festival-compact > strong {
   font-size: var(--tooltip-title-font) !important;
   font-weight: 800 !important;
 }
@@ -53,9 +53,23 @@
   font-weight: 700 !important;
 }
 
-.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date),
-.leaflet-tooltip.atlas-event-tooltip .event-preview span:not(.event-preview-date) {
+.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date):not(.event-preview-compact-date):not(.event-preview-compact-title):not(.event-preview-compact-hint),
+.leaflet-tooltip.atlas-event-tooltip .event-preview > span:not(.event-preview-date) {
   font-size: var(--tooltip-meta-font) !important;
+}
+
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-more {
+  font-size: calc(var(--tooltip-meta-font) * 0.55) !important;
+  font-weight: 500 !important;
+  color: #6b7f9e !important;
+  line-height: 1.35 !important;
+}
+
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-cta {
+  font-size: calc(var(--tooltip-meta-font) * 0.62) !important;
+  font-weight: 500 !important;
+  color: #5a7aab !important;
+  line-height: 1.35 !important;
 }
 
 /* Cluster numerati (leaflet.markercluster) — stile Atlas */

@@ -89,17 +89,29 @@ body {
 .leaflet-tooltip.atlas-event-tooltip {
   font-size: ${s.tooltipFontPx}px !important;
 }
-.leaflet-tooltip.atlas-event-tooltip strong,
-.leaflet-tooltip.atlas-event-tooltip .event-preview strong {
+.leaflet-tooltip.atlas-event-tooltip .event-preview > strong,
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-festival-compact > strong {
   font-size: ${s.tooltipTitleFontPx}px !important;
 }
 .leaflet-tooltip.atlas-event-tooltip .event-preview-date {
   font-size: ${s.tooltipDateFontPx}px !important;
   font-weight: 700 !important;
 }
-.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date),
-.leaflet-tooltip.atlas-event-tooltip .event-preview span:not(.event-preview-date) {
+.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date):not(.event-preview-compact-date):not(.event-preview-compact-title):not(.event-preview-compact-hint),
+.leaflet-tooltip.atlas-event-tooltip .event-preview > span:not(.event-preview-date) {
   font-size: ${s.tooltipMetaFontPx}px !important;
+}
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-more {
+  font-size: ${Math.max(11, Math.round(s.tooltipMetaFontPx * 0.55))}px !important;
+  font-weight: 500 !important;
+  color: #6b7f9e !important;
+  line-height: 1.35 !important;
+}
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-cta {
+  font-size: ${Math.max(12, Math.round(s.tooltipMetaFontPx * 0.62))}px !important;
+  font-weight: 500 !important;
+  color: #5a7aab !important;
+  line-height: 1.35 !important;
 }
 .atlas-marker {
   width: ${s.markerSizePx}px !important;

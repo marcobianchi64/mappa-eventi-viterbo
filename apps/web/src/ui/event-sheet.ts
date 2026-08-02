@@ -8,6 +8,7 @@ import {
   getEventDisplayTitle,
   getFestivalPinTitle,
   getCategoryMeta,
+  isFestivalAppointmentPast,
   isHttpUrl,
   linkifyPlainText,
   openHttpUrl,
@@ -143,7 +144,11 @@ export function openFestivalEventSheet(
   const location = assessEventLocation(anchor);
   const venue = escapeHtml(location.placeLabel);
 
-  const items = group.events
+  const upcoming = group.events
+    .filter((event) => !isFestivalAppointmentPast(event))
+    .sort((a, b) => (a.start_date ?? "").localeCompare(b.start_date ?? ""));
+
+  const items = upcoming
     .map((event) => {
       const eventTitle = escapeHtml(getFestivalPinTitle(event));
       const schedule = escapeHtml(formatEventSchedule(event));
@@ -164,7 +169,7 @@ export function openFestivalEventSheet(
     <div class="stable-event-body">
       <h2 class="stable-event-title">${title}</h2>
       <div class="stable-event-facts">
-        <div>📅 ${group.events.length} appuntamenti nel programma</div>
+        <div>📅 ${upcoming.length} appuntamenti in programma</div>
         ${venue ? `<div>📍 ${venue}</div>` : ""}
       </div>
       <div class="stable-event-section">
@@ -181,7 +186,7 @@ export function openFestivalEventSheet(
   content.querySelectorAll<HTMLButtonElement>(".stable-festival-item").forEach((button) => {
     button.addEventListener("click", () => {
       const id = button.dataset.eventId;
-      const event = group.events.find((e) => String(e.date_event) === id);
+      const event = upcoming.find((e) => String(e.date_event) === id);
       if (event) onOpenEvent(event);
     });
   });

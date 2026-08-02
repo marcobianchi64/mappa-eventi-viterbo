@@ -65,7 +65,9 @@ export class MapService {
 
     if (festivalGroup && festivalGroup.events.length > 1) {
       const title = escapeHtml(festivalGroup.label);
-      const upcoming = festivalGroup.events.filter((item) => !isFestivalAppointmentPast(item));
+      const upcoming = festivalGroup.events
+        .filter((item) => !isFestivalAppointmentPast(item))
+        .sort((a, b) => (a.start_date ?? "").localeCompare(b.start_date ?? ""));
       const preview = upcoming.slice(0, FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX);
       const hidden = upcoming.length - preview.length;
       const rows = preview
@@ -80,7 +82,7 @@ export class MapService {
         .join("");
       const more =
         hidden > 0
-          ? `<li class="event-preview-compact-more"><strong>+ altri ${hidden} appuntamenti in programma</strong></li>`
+          ? `<li class="event-preview-compact-more">+ altri ${hidden} appuntamenti in programma</li>`
           : "";
       const emptyUpcoming =
         preview.length === 0
@@ -92,7 +94,7 @@ export class MapService {
           <strong>${title}</strong>
           <span class="event-preview-compact-hint">${upcoming.length} appuntamenti in programma</span>
           <ul class="event-preview-compact-list">${rows || emptyUpcoming}${more}</ul>
-          <p class="event-preview-compact-cta"><strong>Per dettagli clicca sul pin</strong></p>
+          <p class="event-preview-compact-cta">Per dettagli clicca sul pin</p>
         </div>
       `;
     }
