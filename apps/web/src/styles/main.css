@@ -688,9 +688,38 @@ body:not(.atlas-view-list) .atlas-list-only {
   color: #444;
 }
 
-.legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-.legend-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+button.legend-filter {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  color: #444;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+button.legend-filter:hover {
+  background: #f1f5f9;
+}
+
+button.legend-filter.active {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e3a5f;
+  font-weight: 700;
+}
 
 .program-item {
   border: 1px solid #e5e7eb;

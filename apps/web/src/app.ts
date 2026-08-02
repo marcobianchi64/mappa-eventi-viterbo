@@ -10,6 +10,7 @@ import {
   formatEventSchedule,
   buildMapMarkerPlacements,
   filterEventsWithinRadiusKm,
+  getCategoryMeta,
   getNearRadiusOption,
   hasValidEventCoords,
   isEventVisibleInRange,
@@ -82,6 +83,7 @@ export class AtlasApp {
 
     this.bindEvents();
     this.syncNearRadiusUi();
+    this.syncCategoryFilterUi();
     this.renderPrograms();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
@@ -195,6 +197,14 @@ export class AtlasApp {
       });
     });
 
+    document.querySelectorAll(".legend-filter").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const category = (btn as HTMLButtonElement).dataset.category as EventCategory;
+        if (!category) return;
+        this.toggleCategoryFilter(category);
+      });
+    });
+
     window.addEventListener("pageshow", () => this.restoreTopbar());
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
@@ -285,12 +295,16 @@ export class AtlasApp {
     return this.allEvents.filter((event) => isEventVisibleInRange(event, this.currentRange));
   }
 
-  private getListEvents(): AtlasEvent[] {
+  private getFilteredEvents(): AtlasEvent[] {
     let events = this.getVisibleEvents();
     if (this.listCategory !== "all") {
       events = events.filter((event) => getDisplayCategory(event) === this.listCategory);
     }
-    return events.sort(
+    return events;
+  }
+
+  private getListEvents(): AtlasEvent[] {
+    return this.getFilteredEvents().sort(
       (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
     );
   }
@@ -307,7 +321,9 @@ export class AtlasApp {
       root,
       (category) => {
         this.listCategory = category;
+        this.syncCategoryFilterUi();
         this.renderEventList();
+        if (this.viewMode === "map") this.renderMapEvents();
       },
       (range) => {
         this.currentRange = range;
@@ -326,10 +342,11 @@ export class AtlasApp {
 
   private renderMapEvents(): void {
     const deepLink = new URLSearchParams(window.location.search).get("event");
-    const visible = this.getVisibleEvents();
+    const visible = this.getFilteredEvents();
     const pinCount = this.mapService.renderEvents(visible, deepLink);
     const withCoords = visible.filter(hasValidEventCoords).length;
-    this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length);
+    const inRange = this.getVisibleEvents().length;
+    this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length, inRange);
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
       const coords = buildMapMarkerPlacements(visible).map(
@@ -342,14 +359,36 @@ export class AtlasApp {
 
   private updateMapEventCount(
     pins: number,
-    inRange: number,
+    shown: number,
     withCoords: number,
     loaded: number,
+    inRange?: number,
   ): void {
     const el = document.getElementById("mapEventCount");
     if (!el) return;
-    const skipped = inRange - withCoords;
-    el.textContent = `📍 ${pins} pin · ${inRange} nel periodo · ${loaded} caricati · v${ATLAS_VERSION}${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
+    const skipped = shown - withCoords;
+    const periodCount = inRange ?? shown;
+    const categoryNote =
+      this.listCategory !== "all"
+        ? ` · ${getCategoryMeta(this.listCategory).label}`
+        : "";
+    el.textContent = `📍 ${pins} pin · ${shown} visibili${categoryNote} · ${periodCount} nel periodo · ${loaded} caricati · v${ATLAS_VERSION}${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
+  }
+
+  private toggleCategoryFilter(category: EventCategory): void {
+    this.listCategory = this.listCategory === category ? "all" : category;
+    this.syncCategoryFilterUi();
+    this.renderMapEvents();
+    if (this.viewMode === "list") this.renderEventList();
+  }
+
+  private syncCategoryFilterUi(): void {
+    document.querySelectorAll(".legend-filter").forEach((btn) => {
+      const cat = (btn as HTMLButtonElement).dataset.category;
+      const active = cat === this.listCategory;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
   }
 
   private toggleDockFlyout(which: "near" | "insert"): void {
@@ -529,7 +568,7 @@ export class AtlasApp {
       return;
     }
 
-    const activeEvents = this.getVisibleEvents();
+    const activeEvents = this.getFilteredEvents();
     const matches = activeEvents
       .filter((event) => searchableEventText(event).includes(query))
       .sort((a, b) => this.searchScore(query, a) - this.searchScore(query, b));
@@ -639,7 +678,7 @@ export class AtlasApp {
 
   private applyNearMe(lat: number, lng: number, closePanels: boolean): void {
     const opt = getNearRadiusOption(this.nearRadiusPreset);
-    const nearby = filterEventsWithinRadiusKm(this.getVisibleEvents(), lat, lng, opt.radiusKm);
+    const nearby = filterEventsWithinRadiusKm(this.getFilteredEvents(), lat, lng, opt.radiusKm);
 
     if (closePanels) {
       document.getElementById("mobileSheet")?.classList.remove("open");

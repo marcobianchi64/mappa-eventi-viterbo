@@ -1,10 +1,12 @@
 import {
   ATLAS_VERSION,
+  CATEGORY_META,
   DEFAULT_DATE_RANGE,
   DATE_RANGE_LABELS,
   loadNearRadiusPreset,
   renderNearRadiusChips,
   type DateRangeKey,
+  type EventCategory,
 } from "@atlas/core";
 
 export function renderShell(): string {
@@ -45,14 +47,7 @@ export function renderShell(): string {
       </div>
       <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
       <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
-      <div class="legend">
-        <div class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Musica</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#ea580c"></span>Enogastronomia</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span>Cultura</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>Sport</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#0891b2"></span>Famiglie</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span>Altri</div>
-      </div>
+      <div class="legend" role="group" aria-label="Filtra per categoria">${renderCategoryLegend()}</div>
     </div>
 
     <div id="dockInsertFlyout" class="dock-flyout" aria-hidden="true">
@@ -106,6 +101,7 @@ export function renderShell(): string {
         </div>
         <button id="nearMeButtonMobile" class="btn full" type="button">📍 Cerca vicino a me</button>
         <div class="search-note">La ricerca non sposta la mappa verso località senza eventi attivi.</div>
+        <div class="legend" role="group" aria-label="Filtra per categoria">${renderCategoryLegend()}</div>
       </div>
       <div id="mobileInsertPanel" class="hidden">
         <h2>Inserisci un evento</h2>
@@ -125,6 +121,19 @@ export function renderShell(): string {
     </section>
     <div id="stableToast" class="stable-toast"></div>
   `;
+}
+
+function renderCategoryLegend(): string {
+  const order: EventCategory[] = ["music", "food", "culture", "sport", "families", "other"];
+  return order
+    .map((key) => {
+      const meta = CATEGORY_META[key];
+      const label = key === "other" ? "Altri" : meta.label;
+      return `<button type="button" class="legend-item legend-filter" data-category="${key}" aria-pressed="false">
+        <span class="legend-dot" style="background:${meta.color}"></span>${label}
+      </button>`;
+    })
+    .join("");
 }
 
 function filterButtons(active: DateRangeKey): string {
