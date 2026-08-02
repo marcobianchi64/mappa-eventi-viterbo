@@ -19,12 +19,32 @@ if (!url || !serviceRoleKey) {
 console.log("Atlas Collector — sincronizzazione fonti Viterbo (AUTO-1 + AUTO-2)");
 
 runCollector({ supabaseUrl: url, serviceRoleKey, sourceIds: sourceFilter })
-  .then((reports) => {
+  .then(async (reports) => {
     console.log("\n=== Riepilogo ===");
     for (const r of reports) {
       console.log(`${r.name}: trovati ${r.found}, inseriti ${r.inserted}, aggiornati ${r.updated}`);
       if (r.errors.length) console.log(`  errori: ${r.errors.join(" | ")}`);
     }
+
+    if (process.env.ATLAS_SKIP_IMAGE_ENRICH === "1") {
+      console.log("\nArricchimento immagini saltato (ATLAS_SKIP_IMAGE_ENRICH=1).");
+      return;
+    }
+
+    const { createClient } = await import("@supabase/supabase-js");
+    const { enrichPublishedEventImages } = await import("./enrich-event-images.js");
+    console.log("\n→ Locandine automatiche (eventi in pubblicazione)…");
+    const enrich = await enrichPublishedEventImages(createClient(url, serviceRoleKey), {
+      delayMs: 350,
+      onProgress: (event, outcome) => {
+        if (outcome === "ok") {
+          console.log(`  ✓ ${event.title.slice(0, 48)}`);
+        }
+      },
+    });
+    console.log(
+      `  Locandine: ${enrich.updated} aggiornate su ${enrich.candidates} senza immagine (${enrich.failed} senza risultato).`,
+    );
   })
   .catch((error) => {
     console.error("Errore fatale:", error);

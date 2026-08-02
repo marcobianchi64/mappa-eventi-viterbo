@@ -246,7 +246,7 @@ export function formatPublishResultHtml(result: PublishDiscoveryResult): string 
     html += `<p class="error">Nessuna riga «pronta». Controlla duplicati o date.</p>`;
   }
   html += `<p class="small">Apri <strong>Registro</strong> (filtra per comune, es. Bolsena) e <strong>Mappa gestore</strong> per i pin.</p>`;
-  html += `<p class="small">Per le locandine: in finestra progetto <code>npm run fix:images</code> (eventi con URL ma senza foto).</p>`;
+  html += `<p class="small">Le locandine si aggiornano automaticamente dopo la raccolta (og:image dalla pagina ufficiale).</p>`;
   if (result.published > 0) {
     html += `<p class="success"><strong>Fatto.</strong> Clicca il tab <strong>Registro</strong> in alto per vedere gli eventi (il tab non si aggiorna da solo).</p>`;
   }

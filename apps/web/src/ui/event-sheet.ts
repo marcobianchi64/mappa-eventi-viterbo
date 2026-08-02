@@ -15,6 +15,7 @@ import {
   type AtlasEvent,
   type FestivalMapGroup,
 } from "@atlas/core";
+import { bindEventMediaImages, renderEventSheetCover } from "./event-media.js";
 
 let onCloseCallback: (() => void) | null = null;
 
@@ -39,13 +40,11 @@ export function openEventSheet(
   const sheet = document.getElementById("stableEventSheet");
   if (!content || !overlay || !sheet) return;
 
-  const category = getDisplayCategory(event);
-  const meta = getCategoryMeta(category);
   const title = escapeHtml(getEventDisplayTitle(event));
   const location = assessEventLocation(event);
   const venue = escapeHtml(location.placeLabel);
   const description = linkifyPlainText(event.description);
-  const imageUrl = isHttpUrl(event.image_url) ? escapeHtml(event.image_url) : "";
+  const { coverHtml } = renderEventSheetCover(event);
 
   const locationNotice =
     location.warnings.length > 0
@@ -56,11 +55,6 @@ export function openEventSheet(
     ? `<button class="stable-event-action" data-action="directions" type="button"><span>📍</span>Guidami</button>`
     : `<button class="stable-event-action" data-action="no-directions" type="button" title="Posizione non verificata con sufficiente certezza"><span>📍</span>Guidami</button>`;
 
-  const coverStyle = imageUrl
-    ? `background-image: linear-gradient(to top, rgba(0,0,0,.35), transparent 60%), url('${imageUrl}')`
-    : "";
-  const coverClass = imageUrl ? "" : `${category}-cover`;
-
   const shareUrl = createEventShareUrl(event, window.location.origin + window.location.pathname);
   const hasOfficialUrl = isHttpUrl(event.event_url);
   const officialAction = hasOfficialUrl
@@ -69,10 +63,7 @@ export function openEventSheet(
 
   content.innerHTML = `
     <button class="stable-event-close" type="button" aria-label="Chiudi">×</button>
-    <div class="stable-event-cover ${coverClass}" style="${coverStyle}">
-      ${imageUrl ? "" : `<div class="stable-event-cover-icon">${meta.icon}</div>`}
-      <div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>
-    </div>
+    ${coverHtml}
     <div class="stable-event-body">
       <h2 class="stable-event-title">${title}</h2>
       <div class="stable-event-facts">
@@ -123,6 +114,7 @@ export function openEventSheet(
     onToast("Accesso e partecipazione saranno gestiti dal modulo futuro");
   });
 
+  bindEventMediaImages(content);
   overlay.classList.add("open");
   sheet.classList.add("open");
 }

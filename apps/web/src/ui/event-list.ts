@@ -7,11 +7,11 @@ import {
   getEventComuneDisplayLabel,
   getEventDisplayTitle,
   getCategoryMeta,
-  isHttpUrl,
   type AtlasEvent,
   type DateRangeKey,
   type EventCategory,
 } from "@atlas/core";
+import { bindEventMediaImages, renderListCardMedia } from "./event-media.js";
 
 export type EventListCategoryFilter = EventCategory | "all";
 
@@ -20,16 +20,6 @@ function excerpt(text: string | null | undefined, max = 200): string {
   if (!t) return "Scopri date, luogo e dettagli aprendo la scheda evento.";
   if (t.length <= max) return t;
   return `${t.slice(0, max - 1).trim()}…`;
-}
-
-function listCardMedia(event: AtlasEvent): string {
-  const category = getDisplayCategory(event);
-  const meta = getCategoryMeta(category);
-  if (isHttpUrl(event.image_url)) {
-    const src = escapeHtml(event.image_url!);
-    return `<div class="list-card-media has-img"><img src="${src}" alt="" loading="lazy" /></div>`;
-  }
-  return `<div class="list-card-media placeholder" style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span>${meta.icon}</span></div>`;
 }
 
 function filterSummary(
@@ -65,7 +55,7 @@ export function renderEventListPageHtml(
             return `
         <article class="list-card">
           <button type="button" class="list-card-hit" data-event-id="${id}">
-            ${listCardMedia(event)}
+            ${renderListCardMedia(event)}
             <div class="list-card-body">
               <h2 class="list-card-title">${title}</h2>
               <p class="list-card-excerpt">${desc}</p>
@@ -93,6 +83,7 @@ export function renderEventListPageHtml(
 }
 
 export function bindEventListPage(root: HTMLElement, onSelect: (eventId: string) => void): void {
+  bindEventMediaImages(root);
   root.querySelectorAll("[data-event-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = (btn as HTMLButtonElement).dataset.eventId;

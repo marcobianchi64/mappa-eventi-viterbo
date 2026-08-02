@@ -3,9 +3,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { isHttpUrl, type AtlasEvent } from "@atlas/core";
 import { runCli } from "./cli-exit.js";
-import { resolveEventImageFromUrlThrottled } from "./resolve-event-image.js";
+import { enrichPublishedEventImages } from "./enrich-event-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../.env") });
@@ -23,49 +22,29 @@ if (!url || !serviceRoleKey) {
 
 runCli(async () => {
   const client = createClient(url, serviceRoleKey);
-  const { data, error } = await client
-    .from("events")
-    .select("date_event,title,event_url,image_url,archived,verified")
-    .eq("archived", false)
-    .order("start_date", { ascending: true });
-  if (error) throw new Error(error.message);
-
-  const candidates = ((data ?? []) as AtlasEvent[]).filter(
-    (e) => e.verified === true && isHttpUrl(e.event_url) && !isHttpUrl(e.image_url),
+  console.log(
+    dryRun
+      ? "Modalità dry-run — solo eventi in pubblicazione senza locandina"
+      : "Arricchimento locandine — solo eventi in pubblicazione",
   );
 
-  const toProcess = limit > 0 ? candidates.slice(0, limit) : candidates;
-  console.log(`Eventi senza immagine ma con URL: ${candidates.length} (elaboro ${toProcess.length})`);
+  const result = await enrichPublishedEventImages(client, {
+    dryRun,
+    limit,
+    delayMs: 350,
+    onProgress: (event, outcome, detail) => {
+      const label = event.title.slice(0, 56);
+      if (outcome === "ok") {
+        console.log(`• ${label}… ${dryRun ? `[dry-run] ${detail}` : "ok"}`);
+      } else if (outcome === "miss") {
+        console.log(`• ${label}… nessuna immagine`);
+      } else {
+        console.log(`• ${label}… errore${detail ? `: ${detail}` : ""}`);
+      }
+    },
+  });
 
-  let updated = 0;
-  let failed = 0;
-
-  for (const event of toProcess) {
-    const pageUrl = event.event_url!.trim();
-    process.stdout.write(`• ${event.title.slice(0, 56)}… `);
-    const imageUrl = await resolveEventImageFromUrlThrottled(pageUrl, 350);
-    if (!imageUrl) {
-      failed += 1;
-      console.log("nessuna immagine");
-      continue;
-    }
-    if (dryRun) {
-      updated += 1;
-      console.log(`[dry-run] ${imageUrl}`);
-      continue;
-    }
-    const { error: upErr } = await client
-      .from("events")
-      .update({ image_url: imageUrl })
-      .eq("date_event", event.date_event);
-    if (upErr) {
-      failed += 1;
-      console.log(`errore DB: ${upErr.message}`);
-      continue;
-    }
-    updated += 1;
-    console.log("ok");
-  }
-
-  console.log(`\nCompletato: ${updated} aggiornati, ${failed} senza immagine o errore.`);
+  console.log(
+    `\nCompletato: ${result.candidates} candidati, ${result.updated} aggiornati, ${result.failed} senza immagine o errore.`,
+  );
 });

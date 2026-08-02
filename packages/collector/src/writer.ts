@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
-import { eventsLookSimilar, type AtlasEvent } from "@atlas/core";
+import { eventsLookSimilar, isHttpUrl, type AtlasEvent } from "@atlas/core";
 import type { CollectedEvent, SourceConnectorConfig, SyncStats } from "./types.js";
 import { geocodeEvent } from "./geocode.js";
 import { shouldAutoPublish, validateCollectedEvent } from "./quality.js";
+import { resolveEventImageFromUrlThrottled } from "./resolve-event-image.js";
 
 export interface WriterConfig {
   url: string;
@@ -69,6 +70,12 @@ export class SupabaseEventWriter {
       }
 
       const autoPublish = shouldAutoPublish(source.reliability, quality, true);
+
+      let imageUrl = item.image_url ?? null;
+      if (!isHttpUrl(imageUrl) && isHttpUrl(item.event_url)) {
+        imageUrl = await resolveEventImageFromUrlThrottled(item.event_url, 250);
+      }
+
       const payload = {
         title: item.title,
         category: item.category,
@@ -77,7 +84,7 @@ export class SupabaseEventWriter {
         venue: item.venue ?? null,
         event_url: item.event_url,
         external_id: item.external_id,
-        image_url: item.image_url ?? null,
+        image_url: imageUrl,
         description: item.description ?? null,
         lat,
         lng,
