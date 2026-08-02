@@ -52,7 +52,7 @@ export function renderEventListPageHtml(
   const summary = escapeHtml(filterSummary(activeCategory, activeRange));
   const cards =
     events.length === 0
-      ? `<p class="list-page-empty">Nessun evento per i filtri scelti. Usa <strong>Filtro eventi</strong> in alto per cambiare categoria o periodo.</p>`
+      ? `<p class="list-page-empty">Nessun evento per i filtri scelti. Usa <strong>Filtra</strong> in alto per cambiare categoria o periodo.</p>`
       : events
           .map((event) => {
             const id = escapeHtml(event.date_event ?? "");

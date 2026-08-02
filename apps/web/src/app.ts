@@ -1,4 +1,5 @@
 import {
+  DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
   injectAtlasTypography,
   detectContactType,
@@ -8,6 +9,7 @@ import {
   formatEventSchedule,
   buildMapMarkerPlacements,
   filterEventsWithinRadiusKm,
+  getCategoryMeta,
   getNearRadiusOption,
   isEventVisibleInRange,
   loadNearRadiusPreset,
@@ -81,6 +83,7 @@ export class AtlasApp {
     this.syncNearRadiusUi();
     this.syncCategoryFilterUi();
     this.syncFilterOptionActiveStates();
+    this.updateActiveFiltersBar();
     this.renderPrograms();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
@@ -158,7 +161,7 @@ export class AtlasApp {
       document.getElementById("programsPanel")?.classList.toggle("open");
     });
 
-    document.getElementById("dockInsertBtn")?.addEventListener("click", () => {
+    document.getElementById("topInsertBtn")?.addEventListener("click", () => {
       this.toggleDockFlyout("insert");
     });
     document.getElementById("closeInsertFlyout")?.addEventListener("click", () => {
@@ -169,6 +172,7 @@ export class AtlasApp {
       button.addEventListener("click", () => {
         this.currentRange = (button as HTMLButtonElement).dataset.range as DateRangeKey;
         this.syncFilterOptionActiveStates();
+        this.updateActiveFiltersBar();
         this.renderMapEvents();
         this.renderEventList();
         this.closeFilterMenu();
@@ -238,6 +242,7 @@ export class AtlasApp {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         injectAtlasTypography();
+        this.updateActiveFiltersBar();
         this.renderMapEvents();
       }, 150);
     });
@@ -362,6 +367,7 @@ export class AtlasApp {
   private setCategoryFilter(category: EventListCategoryFilter): void {
     this.listCategory = category;
     this.syncCategoryFilterUi();
+    this.updateActiveFiltersBar();
     this.renderMapEvents();
     this.renderEventList();
   }
@@ -383,7 +389,7 @@ export class AtlasApp {
 
   private toggleDockFlyout(which: "insert"): void {
     const insert = document.getElementById("dockInsertFlyout");
-    const insertBtn = document.getElementById("dockInsertBtn");
+    const insertBtn = document.getElementById("topInsertBtn");
     document.getElementById("programsPanel")?.classList.remove("open");
     this.closeFilterMenu();
 
@@ -398,7 +404,27 @@ export class AtlasApp {
     const insert = document.getElementById("dockInsertFlyout");
     insert?.classList.remove("open");
     insert?.setAttribute("aria-hidden", "true");
-    document.getElementById("dockInsertBtn")?.classList.remove("active");
+    document.getElementById("topInsertBtn")?.classList.remove("active");
+  }
+
+  private updateActiveFiltersBar(): void {
+    const el = document.getElementById("activeFiltersBar");
+    if (!el) return;
+    const category =
+      this.listCategory === "all"
+        ? "tutti gli eventi"
+        : getCategoryMeta(this.listCategory).label.toLowerCase();
+    const time = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
+    el.textContent = `Filtri in atto: categoria: ${category} · time: ${time}`;
+    this.syncHeaderLayout();
+  }
+
+  private syncHeaderLayout(): void {
+    const header = document.querySelector(".atlas-header");
+    if (!header) return;
+    const top = 12;
+    const height = header.getBoundingClientRect().height + top;
+    document.documentElement.style.setProperty("--atlas-header-stack", `${Math.ceil(height)}px`);
   }
 
   private openMobileSheet(which: "filter" | "insert"): void {
@@ -585,7 +611,7 @@ export class AtlasApp {
     const button = document.getElementById("programsButton");
 
     if (button) {
-      button.textContent = interests.length ? `🔖 Eventi salvati (${interests.length})` : "🔖 Eventi salvati";
+      button.textContent = interests.length ? `🔖 Salvati (${interests.length})` : "🔖 Salvati";
     }
     if (!list) return;
 
@@ -735,10 +761,11 @@ export class AtlasApp {
   }
 
   private restoreTopbar(): void {
-    const topbar = document.querySelector(".topbar") as HTMLElement | null;
-    if (!topbar) return;
-    topbar.style.display = "flex";
-    topbar.style.visibility = "visible";
-    topbar.style.opacity = "1";
+    const header = document.querySelector(".atlas-header") as HTMLElement | null;
+    if (!header) return;
+    header.style.display = "block";
+    header.style.visibility = "visible";
+    header.style.opacity = "1";
+    this.syncHeaderLayout();
   }
 }

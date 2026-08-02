@@ -15,52 +15,52 @@ export function renderShell(): string {
   return `
     <div class="atlas-version-check">v${ATLAS_VERSION}</div>
 
-    <div class="topbar">
-      <div class="brand-pill chip-tint-neutral">Project Atlas</div>
-      <nav class="view-switch" aria-label="Vista">
-        <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 Mappa</button>
-        <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 Elenco eventi</button>
-      </nav>
-      <div class="filter-menu-wrap" id="filterMenuWrap">
-        <button
-          id="filterEventsButton"
-          class="chip chip-tint-blue filter-events-trigger"
-          type="button"
-          aria-expanded="false"
-          aria-controls="filterEventsPanel"
-        >🔎 Filtro eventi</button>
-        <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
-          <div class="filter-events-columns">
-            <div class="filter-events-col">
-              <h3 class="filter-events-heading">Cosa</h3>
-              <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+    <header class="atlas-header">
+      <div class="topbar">
+        <div class="brand-pill chip-tint-neutral">Project Atlas</div>
+        <nav class="view-switch" aria-label="Vista">
+          <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 Mappa eventi</button>
+          <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 Elenco eventi</button>
+        </nav>
+        <div class="filter-menu-wrap" id="filterMenuWrap">
+          <button
+            id="filterEventsButton"
+            class="chip chip-tint-blue filter-events-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="filterEventsPanel"
+          >🔎 Filtra</button>
+          <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
+            <div class="filter-events-columns">
+              <div class="filter-events-col">
+                <h3 class="filter-events-heading">Cosa</h3>
+                <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+              </div>
+              <div class="filter-events-col">
+                <h3 class="filter-events-heading">Quando</h3>
+                <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+              </div>
             </div>
-            <div class="filter-events-col">
-              <h3 class="filter-events-heading">Quando</h3>
-              <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+            <div class="filter-events-search atlas-map-only">
+              <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
+              <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+              <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
+              <div class="search-box">
+                <input id="searchPlace" placeholder="Cerca evento o località" />
+                <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
+              </div>
+              <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
+              <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
             </div>
-          </div>
-          <div class="filter-events-search">
-            <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
-            <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
-            <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
-            <div class="search-box">
-              <input id="searchPlace" placeholder="Cerca evento o località" />
-              <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
-            </div>
-            <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
-            <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
           </div>
         </div>
+        <button id="programsButton" class="chip chip-tint-amber" type="button">🔖 Salvati</button>
+        <button id="topInsertBtn" class="chip chip-tint-mint atlas-map-only" type="button">＋ Inserisci evento</button>
       </div>
-      <button id="programsButton" class="chip chip-tint-amber" type="button">🔖 Eventi salvati</button>
-    </div>
+      <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
+    </header>
 
-    <aside class="dock-panel atlas-map-only" id="desktopDock" aria-label="Azioni rapide">
-      <button id="dockInsertBtn" class="dock-btn secondary" type="button">＋ Inserisci un evento</button>
-    </aside>
-
-    <div id="dockInsertFlyout" class="dock-flyout" aria-hidden="true">
+    <div id="dockInsertFlyout" class="dock-flyout atlas-map-only" aria-hidden="true">
       <div class="dock-flyout-header">
         <h2>Inserisci un evento</h2>
         <button id="closeInsertFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
@@ -75,7 +75,7 @@ export function renderShell(): string {
     </div>
 
     <div id="programsPanel" class="programs-panel">
-      <h3>🔖 Eventi salvati</h3>
+      <h3>🔖 Salvati</h3>
       <div id="programsList">Nessun evento salvato.</div>
     </div>
 
@@ -86,15 +86,15 @@ export function renderShell(): string {
     </main>
 
     <div class="mobile-actions atlas-map-only">
-      <button id="openFilterMobile" class="btn chip-tint-blue-mobile" type="button">🔎 Filtro eventi</button>
-      <button id="openInsertMobile" class="btn" type="button">＋ Inserisci evento</button>
+      <button id="openFilterMobile" class="btn chip-tint-blue-mobile" type="button">🔎 Filtra</button>
+      <button id="openInsertMobile" class="btn chip-tint-mint-mobile" type="button">＋ Inserisci evento</button>
     </div>
 
     <div id="mobileSheet" class="bottom-sheet atlas-map-only">
       <div class="sheet-handle"></div>
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
       <div id="mobileFilterPanel">
-        <h2>Filtro eventi</h2>
+        <h2>Filtra</h2>
         <div class="filter-events-columns">
           <div class="filter-events-col">
             <h3 class="filter-events-heading">Cosa</h3>
