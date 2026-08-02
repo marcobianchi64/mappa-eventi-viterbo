@@ -27,6 +27,7 @@
     "fix:categories": "node dist/fix-categories-cli.js",
     "fix:titles": "node dist/fix-titles-cli.js",
     "fix:images": "node dist/fix-images-cli.js",
+    "report:images": "node dist/report-images-cli.js",
     "report:categories": "node dist/report-categories-cli.js"
   },
   "dependencies": {

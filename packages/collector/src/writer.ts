@@ -75,6 +75,9 @@ export class SupabaseEventWriter {
       if (!isHttpUrl(imageUrl) && isHttpUrl(item.event_url)) {
         imageUrl = await resolveEventImageFromUrlThrottled(item.event_url, 250);
       }
+      if (!isHttpUrl(imageUrl) && isHttpUrl(duplicateSameSource?.image_url)) {
+        imageUrl = duplicateSameSource!.image_url!;
+      }
 
       const payload = {
         title: item.title,

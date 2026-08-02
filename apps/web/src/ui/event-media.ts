@@ -63,7 +63,6 @@ export function bindEventMediaImages(root: ParentNode): void {
     if (!container) return;
 
     const onLoaded = () => {
-      img.classList.add("is-loaded");
       container.classList.add("is-loaded");
     };
 
@@ -83,9 +82,13 @@ export function bindEventMediaImages(root: ParentNode): void {
       container.innerHTML = `<span>${meta.icon}</span>`;
     };
 
-    if (img.complete) {
-      if (img.naturalWidth > 0) onLoaded();
-      else onError();
+    if (img.complete && img.naturalWidth > 0) {
+      onLoaded();
+      return;
+    }
+
+    if (img.complete && img.naturalWidth === 0 && img.currentSrc) {
+      onError();
       return;
     }
 
