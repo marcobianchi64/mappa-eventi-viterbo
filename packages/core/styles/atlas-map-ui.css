@@ -2,7 +2,7 @@
  * Token in packages/core/src/map-ui-scale.ts · verifica: npm run verify:ui-scale */
 
 .atlas-marker {
-  width: var(--marker-size);
+  width: var(--marker-width, var(--marker-size));
   height: var(--marker-size);
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
@@ -23,7 +23,7 @@
 
 .draft-marker {
   background: #2563eb;
-  width: var(--marker-size);
+  width: var(--marker-width, var(--marker-size));
   height: var(--marker-size);
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
@@ -77,21 +77,21 @@
 }
 
 .atlas-cluster-sm {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.atlas-cluster-md {
   width: 40px;
   height: 40px;
   font-size: 15px;
 }
 
-.atlas-cluster-md {
-  width: 48px;
-  height: 48px;
-  font-size: 17px;
-}
-
 .atlas-cluster-lg {
-  width: 56px;
-  height: 56px;
-  font-size: 19px;
+  width: 46px;
+  height: 46px;
+  font-size: 16px;
 }
 
 .marker-cluster-spider-leg {

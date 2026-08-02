@@ -14,6 +14,7 @@ import {
   MAP_UI_SCALE_DESKTOP_LARGE,
   MAP_UI_SCALE_MOBILE,
   getMapMarkerIconLayout,
+  getMapMarkerWidthPx,
 } from "@atlas/core";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -48,8 +49,11 @@ for (const [label, scale] of [
     errors.push(`${label}: font ${scale.baseFontPx}px < minimo ${ATLAS_UI_MIN_BODY_FONT_PX}px`);
   }
   const layout = getMapMarkerIconLayout(scale.markerSizePx);
-  if (layout.iconSize[0] !== scale.markerSizePx) {
-    errors.push(`${label}: layout pin disallineato`);
+  if (layout.iconSize[1] !== scale.markerSizePx) {
+    errors.push(`${label}: layout pin disallineato (altezza)`);
+  }
+  if (layout.iconSize[0] !== getMapMarkerWidthPx(scale.markerSizePx)) {
+    errors.push(`${label}: layout pin disallineato (larghezza)`);
   }
 }
 
@@ -66,10 +70,11 @@ if (!sharedCss.includes(".atlas-marker")) {
 
 // --- Web: usa API condivise ---
 const mapService = read("apps/web/src/map/map-service.ts");
+const markerCluster = read("apps/web/src/map/marker-cluster.ts");
 if (!mapService.includes("createAtlasMapMarkerIcon")) {
   errors.push("map-service.ts deve usare createAtlasMapMarkerIcon()");
 }
-if (!mapService.includes("markerClusterGroup")) {
+if (!mapService.includes("createAtlasMarkerClusterGroup") || !markerCluster.includes("markerClusterGroup")) {
   errors.push("map-service.ts deve usare markerClusterGroup per i pin evento");
 }
 if (mapService.match(/iconSize:\s*\[\d+/)) {

@@ -1,5 +1,5 @@
 /** Versione contratto UI — incrementare solo con revisione esplicita delle dimensioni. */
-export const ATLAS_UI_SCALE_CONTRACT_VERSION = 5;
+export const ATLAS_UI_SCALE_CONTRACT_VERSION = 6;
 
 /** Minimi accessibilità (Material / WCAG 2.5.5). Non scendere sotto questi valori. */
 export const ATLAS_UI_MIN_TOUCH_PX = 48;
@@ -137,6 +137,9 @@ export const MAP_UI_SCALE_MOBILE: MapUiScaleTokens = {
 /** @deprecated Usare getMapUiScale() — alias desktop per compatibilità script. */
 export const MAP_UI_SCALE = MAP_UI_SCALE_DESKTOP;
 
+/** Rapporto larghezza/altezza pin (più stretto, meno invasivo sulla mappa). */
+export const MAP_MARKER_WIDTH_RATIO = 0.82;
+
 export type MapMarkerIconLayout = {
   iconSize: [number, number];
   iconAnchor: [number, number];
@@ -165,14 +168,23 @@ export function getMapUiScale(viewportWidth?: number): MapUiScaleTokens {
   return MAP_UI_SCALE_DESKTOP;
 }
 
+export function getMapMarkerWidthPx(markerSizePx: number = getMapUiScale().markerSizePx): number {
+  return Math.max(
+    Math.round(markerSizePx * MAP_MARKER_WIDTH_RATIO),
+    Math.round(ATLAS_UI_MIN_TOUCH_PX * MAP_MARKER_WIDTH_RATIO),
+  );
+}
+
 export function getMapMarkerIconLayout(
   markerSizePx: number = getMapUiScale().markerSizePx,
 ): MapMarkerIconLayout {
-  const half = markerSizePx / 2;
-  const tipOffset = Math.round(markerSizePx * 0.85);
+  const height = markerSizePx;
+  const width = getMapMarkerWidthPx(markerSizePx);
+  const half = width / 2;
+  const tipOffset = Math.round(height * 0.85);
   return {
-    iconSize: [markerSizePx, markerSizePx],
-    iconAnchor: [half, markerSizePx],
+    iconSize: [width, height],
+    iconAnchor: [half, height],
     popupAnchor: [0, -tipOffset],
     tooltipAnchor: [0, -tipOffset],
   };
@@ -180,6 +192,7 @@ export function getMapMarkerIconLayout(
 
 function applyScaleTokens(root: HTMLElement, s: MapUiScaleTokens): void {
   root.style.setProperty("--marker-size", `${s.markerSizePx}px`);
+  root.style.setProperty("--marker-width", `${getMapMarkerWidthPx(s.markerSizePx)}px`);
   root.style.setProperty("--marker-border", `${s.markerBorderPx}px`);
   root.style.setProperty("--marker-icon-font", `${s.markerIconFontPx}px`);
   root.style.setProperty("--tooltip-width", `${s.tooltipWidthPx}px`);

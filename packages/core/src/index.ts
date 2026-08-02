@@ -52,12 +52,21 @@ export {
   ATLAS_UI_MIN_BODY_FONT_PX,
   applyMapUiScale,
   getMapMarkerIconLayout,
+  getMapMarkerWidthPx,
   getMapUiScale,
   isMobileMapViewport,
   isLargeDesktopMapViewport,
+  MAP_MARKER_WIDTH_RATIO,
   type MapMarkerIconLayout,
   type MapUiScaleTokens,
 } from "./map-ui-scale.js";
+
+export {
+  createAtlasMarkerClusterGroupOptions,
+  MAP_CLUSTER_DISABLE_AT_ZOOM,
+  MAP_CLUSTER_MIN_MARKERS,
+  resolveMaxClusterRadius,
+} from "./map-cluster-config.js";
 
 export {
   buildAtlasTypographyLockCss,
