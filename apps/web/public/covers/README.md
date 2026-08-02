@@ -1,14 +1,8 @@
 # Cover segnaposto
 
-## Categorie con **foto** (duotone evanescente)
+Tutte le categorie usano **icona** (gradiente + emoji) quando manca la locandina reale.
 
-- **food** — sagre, cene all'aperto, mercati serali
-- **culture** — palco visto dalla platea, relatore/conferenza
-- **music** — gruppi musicali dal vivo
-
-## Categorie con **icona** (gradiente + emoji)
-
-- **sport**, **families**, **other**
+Gli asset in `food/`, `culture/`, `music/` restano per eventuale riuso futuro; l'app non li carica.
 
 ## Scaricare / aggiornare le foto
 

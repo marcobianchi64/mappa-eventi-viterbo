@@ -1,7 +1,7 @@
 import { getCategoryMeta, type EventCategory } from "@atlas/core";
 
-/** Solo queste categorie usano foto stock; le altre usano icona categoria. */
-export const PHOTO_COVER_CATEGORIES = ["food", "culture", "music"] as const;
+/** Nessuna categoria usa foto stock: tutte usano icona (gradiente + emoji). */
+export const PHOTO_COVER_CATEGORIES = [] as const;
 export type PhotoCoverCategory = (typeof PHOTO_COVER_CATEGORIES)[number];
 
 export const COVER_VARIANTS_PER_CATEGORY = 10;
@@ -49,7 +49,7 @@ function coverImgTag(category: PhotoCoverCategory, seed: string): string {
   return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-cover-variant="${variant}" aria-hidden="true" onerror="this.closest('.category-cover')?.classList.add('category-cover-missing')" />`;
 }
 
-/** Gradiente + icona categoria (sport, famiglie, altri eventi). */
+/** Gradiente + icona categoria. */
 export function renderListCategoryIconCover(category: EventCategory, seed: string): string {
   const meta = getCategoryMeta(category);
   const variant = getCategoryCoverVariant(category, seed);
