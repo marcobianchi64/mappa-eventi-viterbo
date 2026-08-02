@@ -586,11 +586,16 @@ body:not(.atlas-view-list) .atlas-list-only {
 
 .event-preview-compact-more {
   padding: 8px 0 2px;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #64748b !important;
-  font-style: italic;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #2563eb !important;
+  font-style: normal;
   list-style: none;
+}
+
+.event-preview-compact-more strong {
+  font-weight: 800 !important;
+  color: #2563eb !important;
 }
 
 .event-preview-compact-cta {
@@ -598,8 +603,8 @@ body:not(.atlas-view-list) .atlas-list-only {
   padding: 0;
   background: none;
   border: none;
-  color: #111827 !important;
-  font-size: 15px !important;
+  color: #2563eb !important;
+  font-size: 16px !important;
   font-weight: 400 !important;
   text-align: center;
   line-height: 1.35 !important;
@@ -607,7 +612,19 @@ body:not(.atlas-view-list) .atlas-list-only {
 
 .event-preview-compact-cta strong {
   font-weight: 800 !important;
-  color: #111827 !important;
+  color: #2563eb !important;
+}
+
+.stable-event-section .atlas-text-link {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+
+.stable-event-section .atlas-text-link:hover {
+  color: #1d4ed8;
 }
 
 .leaflet-tooltip.atlas-festival-tooltip {

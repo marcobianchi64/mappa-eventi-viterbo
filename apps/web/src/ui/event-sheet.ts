@@ -9,6 +9,7 @@ import {
   getFestivalPinTitle,
   getCategoryMeta,
   isHttpUrl,
+  linkifyPlainText,
   openHttpUrl,
   type AtlasEvent,
   type FestivalMapGroup,
@@ -42,7 +43,7 @@ export function openEventSheet(
   const title = escapeHtml(getEventDisplayTitle(event));
   const location = assessEventLocation(event);
   const venue = escapeHtml(location.placeLabel);
-  const description = escapeHtml(event.description);
+  const description = linkifyPlainText(event.description);
   const imageUrl = isHttpUrl(event.image_url) ? escapeHtml(event.image_url) : "";
 
   const locationNotice =

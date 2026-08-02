@@ -80,7 +80,7 @@ export class MapService {
         .join("");
       const more =
         hidden > 0
-          ? `<li class="event-preview-compact-more">+ altri ${hidden} appuntamenti in programma</li>`
+          ? `<li class="event-preview-compact-more"><strong>+ altri ${hidden} appuntamenti in programma</strong></li>`
           : "";
       const emptyUpcoming =
         preview.length === 0
