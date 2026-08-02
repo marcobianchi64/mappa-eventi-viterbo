@@ -2,6 +2,7 @@
 import {
   formatEventSchedule,
   isEventOngoing,
+  isFestivalAppointmentPast,
   formatEventDateTime,
   getEventVenueDisplay,
   isHttpUrl,
@@ -75,6 +76,22 @@ if (!isHttpUrl("https://example.com")) errors.push("https deve essere valido");
 const onlyDate = formatEventDateTime("2026-09-01");
 if (onlyDate.includes(":")) {
   errors.push(`YYYY-MM-DD non deve mostrare orario: ${onlyDate}`);
+}
+
+const pastAppt = {
+  start_date: "2026-08-01T19:00:00.000Z",
+  end_date: null,
+};
+const afterPast = new Date("2026-08-02T10:00:00.000Z");
+if (!isFestivalAppointmentPast(pastAppt, afterPast)) {
+  errors.push("appuntamento del 1 ago dovrebbe essere passato il 2 ago");
+}
+const futureAppt = {
+  start_date: "2026-08-05T19:00:00.000Z",
+  end_date: null,
+};
+if (isFestivalAppointmentPast(futureAppt, afterPast)) {
+  errors.push("appuntamento del 5 ago non dovrebbe essere passato il 2 ago");
 }
 
 if (errors.length) {

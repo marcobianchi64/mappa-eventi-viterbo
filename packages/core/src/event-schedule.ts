@@ -80,3 +80,14 @@ export function formatFestivalListDate(value: string | null | undefined): string
   const time = formatEventTimeOnly(value);
   return time ? `${day}, ${time}` : day;
 }
+
+/** True se l'appuntamento festival è già concluso (non mostrarlo in anteprima hover). */
+export function isFestivalAppointmentPast(
+  event: ScheduleInput,
+  now: Date = new Date(),
+): boolean {
+  const start = parseEventDate(event.start_date);
+  if (!start) return false;
+  const end = parseEventDate(event.end_date) ?? start;
+  return end.getTime() < now.getTime();
+}

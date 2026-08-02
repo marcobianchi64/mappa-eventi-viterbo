@@ -178,7 +178,7 @@ export {
   type NearRadiusPreset,
 } from "./near-radius.js";
 
-export { formatEventSchedule, formatFestivalListDate, isEventOngoing } from "./event-schedule.js";
+export { formatEventSchedule, formatFestivalListDate, isEventOngoing, isFestivalAppointmentPast } from "./event-schedule.js";
 
 export {
   formatEventDateTime,

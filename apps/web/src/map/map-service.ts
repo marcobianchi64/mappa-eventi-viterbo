@@ -15,6 +15,7 @@ import {
   getEventDisplayTitle,
   getFestivalPinTitle,
   FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX,
+  isFestivalAppointmentPast,
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
@@ -64,8 +65,9 @@ export class MapService {
 
     if (festivalGroup && festivalGroup.events.length > 1) {
       const title = escapeHtml(festivalGroup.label);
-      const preview = festivalGroup.events.slice(0, FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX);
-      const hidden = festivalGroup.events.length - preview.length;
+      const upcoming = festivalGroup.events.filter((item) => !isFestivalAppointmentPast(item));
+      const preview = upcoming.slice(0, FESTIVAL_MAP_TOOLTIP_PREVIEW_MAX);
+      const hidden = upcoming.length - preview.length;
       const rows = preview
         .map((item) => {
           const date = escapeHtml(formatFestivalListDate(item.start_date));
@@ -78,15 +80,19 @@ export class MapService {
         .join("");
       const more =
         hidden > 0
-          ? `<li class="event-preview-compact-more">+ altri ${hidden} appuntamenti nel programma</li>`
+          ? `<li class="event-preview-compact-more">+ altri ${hidden} appuntamenti in programma</li>`
+          : "";
+      const emptyUpcoming =
+        preview.length === 0
+          ? `<li class="event-preview-compact-more">Nessun appuntamento in arrivo</li>`
           : "";
 
       return `
         <div class="event-preview event-preview-festival-compact">
           <strong>${title}</strong>
-          <span class="event-preview-compact-hint">${festivalGroup.events.length} appuntamenti nel programma</span>
-          <ul class="event-preview-compact-list">${rows}${more}</ul>
-          <p class="event-preview-compact-cta">Per dettagli clicca sul pin</p>
+          <span class="event-preview-compact-hint">${upcoming.length} appuntamenti in programma</span>
+          <ul class="event-preview-compact-list">${rows || emptyUpcoming}${more}</ul>
+          <p class="event-preview-compact-cta"><strong>Per dettagli clicca sul pin</strong></p>
         </div>
       `;
     }
