@@ -24,44 +24,29 @@ const MAX_RETRIES = 4;
 
 config({ path: join(ROOT, "packages/collector/.env") });
 
-/** Ricerche orientate a scene evocative (festival, piazza, luci), non prodotti singoli. */
+/** Solo food, culture, music — le altre categorie usano icona in app. */
 const CATEGORIES = {
   music: [
-    "outdoor concert evening lights crowd",
-    "live music festival stage night",
-    "jazz festival audience terrace",
-    "acoustic concert piazza evening",
+    "live band group on stage concert",
+    "musical group performance outdoor",
+    "rock band concert stage lights",
+    "jazz band live performance",
   ],
   food: [
-    "village festival dinner tables outdoor evening",
-    "italian piazza food festival lights",
-    "outdoor wine dinner gathering terrace",
-    "street food festival crowd evening",
-    "sagra italiana tavolate",
+    "outdoor food festival evening crowd",
+    "street food market night",
+    "wine festival tables outdoor",
+    "food fair outdoor gathering",
+    "night market food stalls",
   ],
   culture: [
-    "historic square evening festival culture",
-    "outdoor theater performance audience",
-    "art exhibition opening reception",
-    "church square cultural event lights",
-  ],
-  sport: [
-    "marathon runners outdoor race",
-    "cycling race road landscape",
-    "stadium crowd sport event",
-    "running race finish line outdoor",
-  ],
-  families: [
-    "family picnic park golden hour",
-    "children festival outdoor family",
-    "family gathering garden party",
-    "parents kids outdoor event park",
-  ],
-  other: [
-    "village festival bunting lights evening",
-    "town fair market square crowd",
-    "community festival outdoor lights",
-    "street parade festival celebration",
+    "theatre interior audience performance",
+    "lecture hall audience speaker",
+    "conference speaker audience podium",
+    "amphitheater lecture crowd",
+    "cultural event stage audience",
+    "university lecture audience",
+    "auditorium evening speaker audience",
   ],
 };
 
@@ -69,21 +54,17 @@ const GLOBAL_EXCLUDE =
   /memorial|crush|tragedy|disaster|death|funeral|accident|war|protest riot/i;
 
 const CATEGORY_EXCLUDE = {
-  food: /fish|seafood|pesce|salmone|tuna|sushi|dessert|cake|sweet|dolce|gelato|pastry|biscuit|cookie|couscous|pizza close|macro food/i,
-  music: /museum gallery painting|marathon|football stadium only/i,
-  culture: /marathon|football|recipe|dessert/i,
-  sport: /dessert|museum|recipe/i,
-  families: /memorial|marathon finish/i,
-  other: /memorial|crush|astroworld/i,
+  food: /fish|seafood|pesce|salmone|tuna|sushi|dessert|cake|sweet|dolce|gelato|pastry|biscuit|cookie|couscous|pizza close|macro food|menu of a restaurant|food menu/i,
+  music: /museum gallery painting|marathon|audience only|empty stage/i,
+  culture:
+    /marathon|football|recipe|dessert|museum exterior only|painting only|sculpture only|stage actor \(sayre|mardi gras press|contact sheet|ford a10|bundesarchiv bild 183-j|cruikshank|king john at drury|bolshoi theatre\.jpg|globe theatre - geograph|marquee - ellen|presenter targus|news presenter|secretary of defense|secretary of the navy|rumsfeld|nancy pelosi/i,
 };
 
 const PREFER_HINTS = {
-  music: /concert|festival|stage|live|music|orchestra|jazz|crowd|evening|lights|piazza/i,
+  music: /band|group|musician|ensemble|orchestra|jazz|rock|live|concert|stage/i,
   food: /festival|dinner|table|wine|outdoor|terrace|gathering|piazza|market|evening|lights|crowd|sagra/i,
-  culture: /theater|theatre|museum|art|church|square|piazza|exhibition|festival|evening|historic/i,
-  sport: /marathon|run|race|cycling|stadium|sport|athlete|track|outdoor/i,
-  families: /family|picnic|park|children|kids|gathering|outdoor|playground/i,
-  other: /festival|fair|market|crowd|parade|square|village|community|lights|bunting/i,
+  culture:
+    /audience|theater|theatre|lecture|speaker|presenter|podium|stage|conference|platea|conferenza|performance|interior|publik|hörsaal|hoersaal|amphitheater/i,
 };
 
 const pexelsKey = process.env.PEXELS_API_KEY?.trim();
@@ -141,6 +122,12 @@ function scoreCandidate(category, title) {
   let score = 0;
   if (PREFER_HINTS[category]?.test(t)) score += 3;
   if (/evening|night|lights|festival|crowd|outdoor|piazza|gathering|terrace/.test(t)) score += 2;
+  if (category === "culture" && /audience|speaker|lecture|publik|presenter|conferenza/.test(t)) score += 2;
+  if (category === "culture" && !/audience|speaker|lecture|publik|presenter|conferenza|interior/.test(t)) {
+    score = Math.min(score, 2);
+  }
+  if (category === "culture" && /plate 0|microcosm|engraving|illustration|\.png$/.test(t)) score -= 4;
+  if (category === "food" && /menu|sign|text only/.test(t)) score -= 3;
   if (/portrait|logo|diagram|map|chart|icon|screenshot/.test(t)) score -= 3;
   return score;
 }
@@ -252,7 +239,7 @@ async function main() {
     console.log(`\n→ ${category}`);
 
     const candidates = await collectCandidates(category, queries);
-    const minScore = category === "food" || category === "music" ? 2 : 1;
+    const minScore = category === "food" || category === "music" ? 2 : 3;
     const ranked = candidates.filter((c) => (c.score ?? 0) >= minScore);
     if (ranked.length < PER_CATEGORY) {
       console.warn(
@@ -267,9 +254,7 @@ async function main() {
     for (let i = 0; i < PER_CATEGORY; i++) {
       const num = String(i + 1).padStart(2, "0");
       const dest = join(dir, `${num}.jpg`);
-      if (force && (await exists(dest))) {
-        await unlink(dest).catch(() => {});
-      }
+      const tmpDest = join(dir, `${num}.tmp.jpg`);
       if (await exists(dest) && !force) {
         console.log(`  ${num}.jpg già presente, salto`);
         manifest.categories[category].push({ file: `${category}/${num}.jpg`, skipped: true });
@@ -282,7 +267,10 @@ async function main() {
         if (usedTitles.has(titleKey)) continue;
         if ((item.score ?? 0) < minScore) continue;
         try {
-          await download(item.url, dest);
+          await download(item.url, tmpDest);
+          if (force && (await exists(dest))) await unlink(dest).catch(() => {});
+          const { rename } = await import("node:fs/promises");
+          await rename(tmpDest, dest);
           manifest.categories[category].push({
             file: `${category}/${num}.jpg`,
             source: item.source,
@@ -296,6 +284,7 @@ async function main() {
           usedTitles.add(titleKey);
           saved = true;
         } catch (e) {
+          await unlink(tmpDest).catch(() => {});
           console.warn(`  ${num}.jpg tentativo fallito: ${e.message}`);
         }
         await sleep(DELAY_MS);

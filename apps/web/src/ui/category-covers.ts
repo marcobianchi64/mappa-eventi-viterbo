@@ -1,8 +1,10 @@
 import { getCategoryMeta, type EventCategory } from "@atlas/core";
 
-/** Foto segnaposto per categoria (in public/covers/{category}/01.jpg …). */
-export const COVER_VARIANTS_PER_CATEGORY = 10;
+/** Solo queste categorie usano foto stock; le altre usano icona categoria. */
+export const PHOTO_COVER_CATEGORIES = ["food", "culture", "music"] as const;
+export type PhotoCoverCategory = (typeof PHOTO_COVER_CATEGORIES)[number];
 
+export const COVER_VARIANTS_PER_CATEGORY = 10;
 const COVER_BASE = "./covers";
 
 function hashSeed(seed: string): number {
@@ -14,14 +16,16 @@ function hashSeed(seed: string): number {
   return h >>> 0;
 }
 
-/** Indice variante stabile per evento (stesso evento → stessa cover). */
+export function usesCategoryPhotoCover(category: EventCategory): category is PhotoCoverCategory {
+  return (PHOTO_COVER_CATEGORIES as readonly string[]).includes(category);
+}
+
 export function getCategoryCoverVariant(category: EventCategory, seed: string): number {
   const key = `${category}:${seed || "atlas"}`;
   return hashSeed(key) % COVER_VARIANTS_PER_CATEGORY;
 }
 
-/** Percorso foto locale (generata da npm run fetch:covers). */
-export function getCategoryCoverImageSrc(category: EventCategory, seed: string): string {
+export function getCategoryCoverImageSrc(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
   const num = String(variant + 1).padStart(2, "0");
   return `${COVER_BASE}/${category}/${num}.jpg`;
@@ -39,13 +43,36 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
-function coverImgTag(category: EventCategory, seed: string): string {
+function coverImgTag(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
   const src = escapeAttr(getCategoryCoverImageSrc(category, seed));
   return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-cover-variant="${variant}" aria-hidden="true" onerror="this.closest('.category-cover')?.classList.add('category-cover-missing')" />`;
 }
 
+/** Gradiente + icona categoria (sport, famiglie, altri eventi). */
+export function renderListCategoryIconCover(category: EventCategory, seed: string): string {
+  const meta = getCategoryMeta(category);
+  const variant = getCategoryCoverVariant(category, seed);
+  return `<div class="list-card-media placeholder category-cover category-cover-icon"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}" style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span class="category-cover-emoji">${meta.icon}</span></div>`;
+}
+
+export function renderSheetCategoryIconCover(
+  category: EventCategory,
+  seed: string,
+  badgeHtml: string,
+): string {
+  const meta = getCategoryMeta(category);
+  const variant = getCategoryCoverVariant(category, seed);
+  return `<div class="stable-event-cover ${category}-cover category-cover category-cover-icon"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
+    <div class="stable-event-cover-icon">${meta.icon}</div>
+    ${badgeHtml}
+  </div>`;
+}
+
 export function renderListCategoryCover(category: EventCategory, seed: string): string {
+  if (!usesCategoryPhotoCover(category)) {
+    return renderListCategoryIconCover(category, seed);
+  }
   const variant = getCategoryCoverVariant(category, seed);
   return `<div class="list-card-media category-cover category-cover-photo"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
     ${coverImgTag(category, seed)}
@@ -57,6 +84,9 @@ export function renderSheetCategoryCover(
   seed: string,
   badgeHtml: string,
 ): string {
+  if (!usesCategoryPhotoCover(category)) {
+    return renderSheetCategoryIconCover(category, seed, badgeHtml);
+  }
   const variant = getCategoryCoverVariant(category, seed);
   return `<div class="stable-event-cover category-cover category-cover-photo"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
     ${coverImgTag(category, seed)}
@@ -64,27 +94,44 @@ export function renderSheetCategoryCover(
   </div>`;
 }
 
-/** @deprecated Usare getCategoryCoverImageSrc — mantenuto per compatibilità tooltip. */
 export function renderCategoryCoverSvg(category: EventCategory, seed: string): string {
+  if (!usesCategoryPhotoCover(category)) {
+    const meta = getCategoryMeta(category);
+    return `<span class="category-cover-emoji">${meta.icon}</span>`;
+  }
   const src = escapeAttr(getCategoryCoverImageSrc(category, seed));
   return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" aria-hidden="true" />`;
 }
 
-/** Ripristina cover segnaposto dopo errore caricamento foto reale. */
 export function applyCategoryCoverFallback(
   container: HTMLElement,
   category: EventCategory,
   seed: string,
   badgeHtml = "",
 ): void {
-  const variant = getCategoryCoverVariant(category, seed);
   const isSheet = container.classList.contains("stable-event-cover");
-  container.classList.remove("has-img", "is-loaded", "img-error");
-  container.classList.add("category-cover", "category-cover-photo");
+  container.classList.remove("has-img", "is-loaded", "img-error", "category-cover-photo", "category-cover-icon");
+  container.classList.add("category-cover");
   container.dataset.coverSeed = seed;
-  container.dataset.coverVariant = String(variant);
+  container.dataset.coverVariant = String(getCategoryCoverVariant(category, seed));
   container.style.background = "";
-  container.innerHTML = `${coverImgTag(category, seed)}${badgeHtml}`;
+
+  if (usesCategoryPhotoCover(category)) {
+    container.classList.add("category-cover-photo");
+    container.innerHTML = `${coverImgTag(category, seed)}${badgeHtml}`;
+  } else {
+    const meta = getCategoryMeta(category);
+    container.classList.add("category-cover-icon", "placeholder");
+    if (isSheet) {
+      container.classList.add(`${category}-cover`);
+      container.innerHTML = `<div class="stable-event-cover-icon">${meta.icon}</div>${badgeHtml}`;
+    } else {
+      container.style.background = `linear-gradient(135deg, ${meta.color}, ${meta.color}99)`;
+      container.innerHTML = `<span class="category-cover-emoji">${meta.icon}</span>`;
+      container.classList.add("list-card-media");
+    }
+    return;
+  }
   if (!isSheet) container.classList.add("list-card-media");
 }
 

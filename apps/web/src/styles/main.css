@@ -702,7 +702,19 @@ body:not(.atlas-view-list) .atlas-list-only {
   opacity: 0.68;
 }
 
-.event-preview-category-cover.category-cover-photo::before,
+.list-card-media.placeholder .category-cover-emoji,
+.category-cover-icon .category-cover-emoji {
+  font-size: 42px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.event-preview-category-cover.category-cover-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
 .event-preview-category-cover.category-cover-photo::after {
   content: "";
   position: absolute;

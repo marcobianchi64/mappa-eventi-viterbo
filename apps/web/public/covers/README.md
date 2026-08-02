@@ -1,29 +1,22 @@
-# Cover segnaposto (fonti libere)
+# Cover segnaposto
 
-Immagini in `/{categoria}/01.jpg` … `10.jpg`, usate quando l'evento non ha `image_url`.
+## Categorie con **foto** (duotone evanescente)
 
-## Scaricare / aggiornare
+- **food** — sagre, cene all'aperto, mercati serali
+- **culture** — palco visto dalla platea, relatore/conferenza
+- **music** — gruppi musicali dal vivo
+
+## Categorie con **icona** (gradiente + emoji)
+
+- **sport**, **families**, **other**
+
+## Scaricare / aggiornare le foto
 
 ```bash
 npm run fetch:covers
+npm run fetch:covers -- --force --only=culture,music
 ```
 
-Opzionale: `PEXELS_API_KEY` in `packages/collector/.env` (gratis su https://www.pexels.com/api/).
+Opzionale: `PEXELS_API_KEY` in `packages/collector/.env`.
 
-Senza chiave Pexels lo script usa **Wikimedia Commons** (licenze libere).
-
-## Licenze
-
-Dettaglio file per file in `manifest.json` (titolo, fonte, licenza, URL pagina).
-
-## UI
-
-Le foto sono mostrate in **duotone evanescente** via CSS: bianco e nero con tinta colorata (senape, verde salvia, azzurro…) per variante `data-cover-variant` 0–9.
-
-Rigenerare con filtri tematici migliorati:
-
-```bash
-npm run fetch:covers -- --force --only=food,culture,other,families,music
-```
-
-(sport: lasciare o `--only=sport` se serve)
+Licenze in `manifest.json`.

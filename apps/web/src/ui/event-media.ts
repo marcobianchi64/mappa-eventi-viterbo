@@ -13,6 +13,7 @@ import {
   renderListCategoryCover,
   renderSheetCategoryCover,
   renderCategoryCoverSvg,
+  usesCategoryPhotoCover,
 } from "./category-covers.js";
 
 /** Attributi img per locandine esterne (evita blocchi hotlink). */
@@ -107,7 +108,12 @@ export function renderMapTooltipCategoryCover(event: AtlasEvent): string {
   const category = getDisplayCategory(event);
   if (isHttpUrl(event.image_url)) return "";
   const seed = categoryCoverSeed(event);
-  return `<div class="event-preview-category-cover category-cover category-cover-photo" data-category="${category}" data-cover-variant="${getCategoryCoverVariant(category, seed)}">
+  if (!usesCategoryPhotoCover(category)) {
+    const meta = getCategoryMeta(category);
+    return `<div class="event-preview-category-cover category-cover-icon placeholder" data-category="${category}" style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span class="category-cover-emoji">${meta.icon}</span></div>`;
+  }
+  const variant = getCategoryCoverVariant(category, seed);
+  return `<div class="event-preview-category-cover category-cover category-cover-photo" data-category="${category}" data-cover-variant="${variant}">
     ${renderCategoryCoverSvg(category, seed)}
   </div>`;
 }
