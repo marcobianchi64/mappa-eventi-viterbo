@@ -12,6 +12,7 @@ config({ path: resolve(__dirname, "../.env") });
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const dryRun = process.argv.includes("--dry-run");
+const repair = process.argv.includes("--repair");
 const limitArg = process.argv.find((a) => a.startsWith("--limit="));
 const limit = limitArg ? Number(limitArg.split("=")[1]) : 0;
 
@@ -24,12 +25,15 @@ runCli(async () => {
   const client = createClient(url, serviceRoleKey);
   console.log(
     dryRun
-      ? "Modalità dry-run — solo eventi in pubblicazione senza locandina"
-      : "Arricchimento locandine — solo eventi in pubblicazione",
+      ? "Modalità dry-run — eventi in pubblicazione senza locandina valida"
+      : repair
+        ? "Riparazione locandine — ricerca immagini per URL non raggiungibili"
+        : "Arricchimento locandine — solo eventi in pubblicazione",
   );
 
   const result = await enrichPublishedEventImages(client, {
     dryRun,
+    repair,
     limit,
     delayMs: 350,
     onProgress: (event, outcome, detail) => {

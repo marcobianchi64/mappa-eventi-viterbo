@@ -103,7 +103,7 @@ export class MapService {
     const venue = escapeHtml(location.placeLabel);
     const image =
       isHttpUrl(event.image_url)
-        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" onerror="this.remove()">`
+        ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`
         : "";
 
     return `

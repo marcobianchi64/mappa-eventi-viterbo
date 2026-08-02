@@ -7,6 +7,11 @@ import {
   type EventCategory,
 } from "@atlas/core";
 
+/** Attributi img per locandine esterne (evita blocchi hotlink). */
+export const EVENT_MEDIA_IMG_ATTRS =
+  'loading="lazy" decoding="async" referrerpolicy="no-referrer"';
+
+
 function categoryDataAttr(category: EventCategory): string {
   return ` data-category="${category}"`;
 }
@@ -19,7 +24,7 @@ export function renderListCardMedia(event: AtlasEvent): string {
     const src = escapeHtml(event.image_url!);
     return `<div class="list-card-media has-img"${categoryDataAttr(category)} data-event-media>
       <div class="event-media-skeleton" aria-hidden="true"></div>
-      <img class="event-media-img" src="${src}" alt="" loading="lazy" decoding="async" />
+      <img class="event-media-img" src="${src}" alt="" ${EVENT_MEDIA_IMG_ATTRS} />
     </div>`;
   }
   return `<div class="list-card-media placeholder"${categoryDataAttr(category)} style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span>${meta.icon}</span></div>`;
@@ -41,7 +46,7 @@ export function renderEventSheetCover(event: AtlasEvent): EventSheetCoverParts {
       category,
       coverHtml: `<div class="stable-event-cover has-img"${categoryDataAttr(category)} data-event-media>
         <div class="event-media-skeleton" aria-hidden="true"></div>
-        <img class="event-media-img" src="${imageUrl}" alt="" decoding="async" />
+        <img class="event-media-img" src="${imageUrl}" alt="" decoding="async" referrerpolicy="no-referrer" />
         <div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>
       </div>`,
     };

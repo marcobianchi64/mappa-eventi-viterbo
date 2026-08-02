@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isHttpUrl, isRegistryInPubblicazione, type AtlasEvent } from "@atlas/core";
 import { resolveEventImageFromUrlThrottled } from "./resolve-event-image.js";
+import { isReachableImageUrl } from "./image-url.js";
 
 export interface EnrichEventImagesResult {
   candidates: number;
@@ -13,6 +14,8 @@ export interface EnrichEventImagesOptions {
   dryRun?: boolean;
   limit?: number;
   delayMs?: number;
+  /** Riprova eventi con image_url non raggiungibile dal browser. */
+  repair?: boolean;
   onProgress?: (event: AtlasEvent, outcome: "ok" | "miss" | "error", detail?: string) => void;
 }
 
@@ -30,7 +33,7 @@ export async function enrichPublishedEventImages(
   client: SupabaseClient,
   options: EnrichEventImagesOptions = {},
 ): Promise<EnrichEventImagesResult> {
-  const { dryRun = false, limit = 0, delayMs = 350, onProgress } = options;
+  const { dryRun = false, limit = 0, delayMs = 350, repair = false, onProgress } = options;
 
   const { data, error } = await client
     .from("events")
@@ -41,7 +44,20 @@ export async function enrichPublishedEventImages(
 
   if (error) throw new Error(error.message);
 
-  const candidates = ((data ?? []) as AtlasEvent[]).filter(needsEventImageEnrichment);
+  const published = ((data ?? []) as AtlasEvent[]).filter(isRegistryInPubblicazione);
+  const candidates: AtlasEvent[] = [];
+
+  for (const event of published) {
+    if (!isHttpUrl(event.event_url)) continue;
+    if (!isHttpUrl(event.image_url)) {
+      candidates.push(event);
+      continue;
+    }
+    if (repair && !(await isReachableImageUrl(event.image_url!))) {
+      candidates.push(event);
+    }
+  }
+
   const toProcess = limit > 0 ? candidates.slice(0, limit) : candidates;
 
   const result: EnrichEventImagesResult = {
