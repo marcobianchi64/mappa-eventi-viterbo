@@ -499,6 +499,11 @@ button {
   pointer-events: auto;
 }
 
+.view-switch-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
 .view-switch-btn.active {
   border-color: #db2777 !important;
   background: #fdf2f8 !important;

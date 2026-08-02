@@ -19,8 +19,8 @@ export function renderShell(): string {
       <div class="topbar">
         <div class="brand-pill chip-tint-neutral">Project Atlas</div>
         <nav class="view-switch" aria-label="Vista">
-          <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 Mappa eventi</button>
-          <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 Elenco eventi</button>
+          <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 MAPPA EVENTI</button>
+          <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 ELENCO EVENTI</button>
         </nav>
         <div class="filter-menu-wrap" id="filterMenuWrap">
           <button
