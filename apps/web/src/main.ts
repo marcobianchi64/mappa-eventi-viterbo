@@ -4,9 +4,8 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "../../../packages/core/styles/atlas-map-ui.css";
 import "./styles/main.css";
 
-import { escapeHtml, injectAtlasTypography } from "@atlas/core";
+import { ATLAS_VERSION, escapeHtml, injectAtlasTypography } from "@atlas/core";
 import { initSupabaseClient } from "@atlas/supabase-client";
-import { AtlasApp } from "./app";
 
 function showBootError(message: string): void {
   const root = document.getElementById("app");
@@ -18,18 +17,27 @@ function showBootError(message: string): void {
         Controlla che la <strong>finestra 2</strong> abbia <code>npm run dev</code> in esecuzione
         e apri l’URL indicato nel terminale (es. <code>http://localhost:5173</code>).
       </p>
+      <p style="color:#555;font-size:0.95rem">
+        Se vedi ancora la vecchia interfaccia (es. «Cerca entro» o «Eventi vicino a te» nel dock),
+        sei probabilmente sul branch sbagliato: usa
+        <code>git checkout cursor/map-pins-cluster-d162</code> e poi <code>git pull</code>.
+      </p>
     </div>
   `;
   if (root) root.innerHTML = html;
   else document.body.innerHTML = html;
 }
 
-function boot(): void {
+async function boot(): Promise<void> {
+  console.info(`[Project Atlas] v${ATLAS_VERSION}`);
+
   try {
     injectAtlasTypography();
   } catch (error) {
     console.error("injectAtlasTypography:", error);
   }
+
+  const { AtlasApp } = await import("./app");
 
   const url = import.meta.env.VITE_SUPABASE_URL;
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;

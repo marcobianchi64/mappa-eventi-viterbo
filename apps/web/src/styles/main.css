@@ -1194,10 +1194,11 @@ button.legend-filter.active {
   right: 8px;
   bottom: 8px;
   z-index: 3000;
-  background: rgba(17, 24, 39, 0.85);
+  background: rgba(17, 24, 39, 0.92);
   color: #fff;
-  font-size: 10px;
-  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 8px;
   border-radius: 999px;
   pointer-events: none;
   opacity: 0.75;
