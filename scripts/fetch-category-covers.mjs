@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 /**
- * Scarica cover segnaposto da fonti libere (Wikimedia Commons; opzionale Pexels).
- * Uso: npm run fetch:covers
- * Opzionale: PEXELS_API_KEY in packages/collector/.env o env
+ * Scarica cover segnaposto atmosferiche da fonti libere (Pexels + Wikimedia).
+ * Cerca scene tipo festa di paese / cena all'aperto — non foto letterali (pesce, dolci…).
+ *
+ * Uso:
+ *   npm run fetch:covers
+ *   npm run fetch:covers -- --force
+ *   npm run fetch:covers -- --force --only=food,culture
+ *
+ * Opzionale: PEXELS_API_KEY in packages/collector/.env
  */
-import { mkdir, writeFile, access, readFile } from "node:fs/promises";
+import { mkdir, writeFile, access, readFile, copyFile, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
@@ -18,16 +24,78 @@ const MAX_RETRIES = 4;
 
 config({ path: join(ROOT, "packages/collector/.env") });
 
+/** Ricerche orientate a scene evocative (festival, piazza, luci), non prodotti singoli. */
 const CATEGORIES = {
-  music: ["live concert festival", "orchestra performance", "jazz club", "outdoor music stage"],
-  food: ["italian food table", "wine tasting", "farmers market food", "pasta restaurant"],
-  culture: ["art museum gallery", "theater stage", "historic church interior", "book reading"],
-  sport: ["marathon running", "cycling race", "football stadium", "tennis court"],
-  families: ["family picnic park", "children playground", "family beach", "parents children park"],
-  other: ["street festival celebration", "outdoor market square", "town fair lights", "community parade"],
+  music: [
+    "outdoor concert evening lights crowd",
+    "live music festival stage night",
+    "jazz festival audience terrace",
+    "acoustic concert piazza evening",
+  ],
+  food: [
+    "village festival dinner tables outdoor evening",
+    "italian piazza food festival lights",
+    "outdoor wine dinner gathering terrace",
+    "street food festival crowd evening",
+    "sagra italiana tavolate",
+  ],
+  culture: [
+    "historic square evening festival culture",
+    "outdoor theater performance audience",
+    "art exhibition opening reception",
+    "church square cultural event lights",
+  ],
+  sport: [
+    "marathon runners outdoor race",
+    "cycling race road landscape",
+    "stadium crowd sport event",
+    "running race finish line outdoor",
+  ],
+  families: [
+    "family picnic park golden hour",
+    "children festival outdoor family",
+    "family gathering garden party",
+    "parents kids outdoor event park",
+  ],
+  other: [
+    "village festival bunting lights evening",
+    "town fair market square crowd",
+    "community festival outdoor lights",
+    "street parade festival celebration",
+  ],
+};
+
+const GLOBAL_EXCLUDE =
+  /memorial|crush|tragedy|disaster|death|funeral|accident|war|protest riot/i;
+
+const CATEGORY_EXCLUDE = {
+  food: /fish|seafood|pesce|salmone|tuna|sushi|dessert|cake|sweet|dolce|gelato|pastry|biscuit|cookie|couscous|pizza close|macro food/i,
+  music: /museum gallery painting|marathon|football stadium only/i,
+  culture: /marathon|football|recipe|dessert/i,
+  sport: /dessert|museum|recipe/i,
+  families: /memorial|marathon finish/i,
+  other: /memorial|crush|astroworld/i,
+};
+
+const PREFER_HINTS = {
+  music: /concert|festival|stage|live|music|orchestra|jazz|crowd|evening|lights|piazza/i,
+  food: /festival|dinner|table|wine|outdoor|terrace|gathering|piazza|market|evening|lights|crowd|sagra/i,
+  culture: /theater|theatre|museum|art|church|square|piazza|exhibition|festival|evening|historic/i,
+  sport: /marathon|run|race|cycling|stadium|sport|athlete|track|outdoor/i,
+  families: /family|picnic|park|children|kids|gathering|outdoor|playground/i,
+  other: /festival|fair|market|crowd|parade|square|village|community|lights|bunting/i,
 };
 
 const pexelsKey = process.env.PEXELS_API_KEY?.trim();
+const force = process.argv.includes("--force");
+const onlyArg = process.argv.find((a) => a.startsWith("--only="));
+const onlyCats = onlyArg
+  ? onlyArg
+      .split("=")[1]
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  : null;
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -47,14 +115,14 @@ async function download(url, dest) {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
       const res = await fetch(url, {
-        headers: { "User-Agent": "ProjectAtlas/1.0 (cover-placeholder-fetch; educational)" },
+        headers: { "User-Agent": "ProjectAtlas/1.0 (cover-placeholder-fetch)" },
         redirect: "follow",
       });
       if (res.status === 429) {
         await sleep(DELAY_MS * (attempt + 2));
         continue;
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = Buffer.from(await res.arrayBuffer());
       await writeFile(dest, buf);
       return;
@@ -66,13 +134,24 @@ async function download(url, dest) {
   throw lastErr ?? new Error(`Download fallito: ${url}`);
 }
 
+function scoreCandidate(category, title) {
+  const t = (title ?? "").toLowerCase();
+  if (GLOBAL_EXCLUDE.test(t)) return -1;
+  if (CATEGORY_EXCLUDE[category]?.test(t)) return -1;
+  let score = 0;
+  if (PREFER_HINTS[category]?.test(t)) score += 3;
+  if (/evening|night|lights|festival|crowd|outdoor|piazza|gathering|terrace/.test(t)) score += 2;
+  if (/portrait|logo|diagram|map|chart|icon|screenshot/.test(t)) score -= 3;
+  return score;
+}
+
 async function searchWikimedia(query) {
   const params = new URLSearchParams({
     action: "query",
     generator: "search",
     gsrsearch: `filetype:bitmap ${query}`,
     gsrnamespace: "6",
-    gsrlimit: "30",
+    gsrlimit: "40",
     prop: "imageinfo",
     iiprop: "url|extmetadata",
     iiurlwidth: "960",
@@ -87,6 +166,7 @@ async function searchWikimedia(query) {
   for (const page of Object.values(pages)) {
     const info = page.imageinfo?.[0];
     if (!info?.thumburl && !info?.url) continue;
+    const title = page.title?.replace(/^File:/, "") ?? query;
     const license =
       info.extmetadata?.LicenseShortName?.value ??
       info.extmetadata?.UsageTerms?.value ??
@@ -94,7 +174,7 @@ async function searchWikimedia(query) {
     out.push({
       source: "wikimedia",
       url: info.thumburl || info.url,
-      title: page.title?.replace(/^File:/, "") ?? query,
+      title,
       license: license.replace(/<[^>]+>/g, "").trim(),
       pageUrl: info.descriptionurl ?? "",
     });
@@ -102,36 +182,52 @@ async function searchWikimedia(query) {
   return out;
 }
 
-async function searchPexels(query) {
+async function searchWikimediaForCategory(category, query) {
+  const batch = await searchWikimedia(query);
+  return batch
+    .map((item) => ({ ...item, score: scoreCandidate(category, item.title) }))
+    .filter((item) => item.score >= 0);
+}
+
+async function searchPexels(query, category) {
   if (!pexelsKey) return [];
-  const params = new URLSearchParams({ query, per_page: "15", orientation: "landscape" });
+  const params = new URLSearchParams({ query, per_page: "20", orientation: "landscape" });
   const res = await fetch(`https://api.pexels.com/v1/search?${params}`, {
     headers: { Authorization: pexelsKey },
   });
   if (!res.ok) throw new Error(`Pexels API ${res.status}`);
   const data = await res.json();
-  return (data.photos ?? []).map((p) => ({
-    source: "pexels",
-    url: p.src?.large || p.src?.medium,
-    title: p.alt || query,
-    license: "Pexels License",
-    pageUrl: p.url ?? "",
-    photographer: p.photographer ?? "",
-  }));
+  return (data.photos ?? [])
+    .map((p) => {
+      const title = p.alt || query;
+      const score = scoreCandidate(category, title);
+      if (score < 0) return null;
+      return {
+        source: "pexels",
+        url: p.src?.large || p.src?.medium,
+        title,
+        license: "Pexels License",
+        pageUrl: p.url ?? "",
+        photographer: p.photographer ?? "",
+        score: score + 1,
+      };
+    })
+    .filter(Boolean);
 }
 
 async function collectCandidates(category, queries) {
   const seen = new Set();
   const all = [];
   for (const q of queries) {
-    for (const src of [() => searchPexels(q), () => searchWikimedia(q)]) {
+    for (const src of [
+      () => searchPexels(q, category),
+      () => searchWikimediaForCategory(category, q),
+    ]) {
       try {
         const batch = await src();
         for (const item of batch) {
-          if (!item.url || seen.has(item.url)) continue;
-        const titleLower = (item.title ?? "").toLowerCase();
-        if (/memorial|crush|tragedy|disaster|death|funeral/.test(titleLower)) continue;
-        seen.add(item.url);
+          if (!item?.url || seen.has(item.url)) continue;
+          seen.add(item.url);
           all.push({ ...item, category, query: q });
         }
       } catch (e) {
@@ -139,47 +235,65 @@ async function collectCandidates(category, queries) {
       }
       await sleep(DELAY_MS);
     }
-    if (all.length >= PER_CATEGORY * 2) break;
   }
+  all.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   return all;
 }
 
 async function main() {
   const manifest = { fetchedAt: new Date().toISOString(), categories: {} };
+  const entries = Object.entries(CATEGORIES).filter(
+    ([cat]) => !onlyCats || onlyCats.includes(cat),
+  );
 
-  for (const [category, queries] of Object.entries(CATEGORIES)) {
+  for (const [category, queries] of entries) {
     const dir = join(OUT_DIR, category);
     await mkdir(dir, { recursive: true });
     console.log(`\n→ ${category}`);
 
     const candidates = await collectCandidates(category, queries);
-    const picked = candidates.slice(0, PER_CATEGORY * 3);
+    const minScore = category === "food" || category === "music" ? 2 : 1;
+    const ranked = candidates.filter((c) => (c.score ?? 0) >= minScore);
+    if (ranked.length < PER_CATEGORY) {
+      console.warn(
+        `  ${ranked.length} candidati con score≥${minScore} — considera PEXELS_API_KEY o rilancia`,
+      );
+    }
     manifest.categories[category] = [];
 
+    const usedTitles = new Set();
     let pickIndex = 0;
+    const pool = ranked;
     for (let i = 0; i < PER_CATEGORY; i++) {
       const num = String(i + 1).padStart(2, "0");
       const dest = join(dir, `${num}.jpg`);
-      if (await exists(dest) && !process.argv.includes("--force")) {
+      if (force && (await exists(dest))) {
+        await unlink(dest).catch(() => {});
+      }
+      if (await exists(dest) && !force) {
         console.log(`  ${num}.jpg già presente, salto`);
         manifest.categories[category].push({ file: `${category}/${num}.jpg`, skipped: true });
         continue;
       }
       let saved = false;
-      while (pickIndex < picked.length && !saved) {
-        const item = picked[pickIndex++];
-        if (!item) break;
+      while (pickIndex < pool.length && !saved) {
+        const item = pool[pickIndex++];
+        const titleKey = item.title.slice(0, 28).toLowerCase();
+        if (usedTitles.has(titleKey)) continue;
+        if ((item.score ?? 0) < minScore) continue;
         try {
           await download(item.url, dest);
           manifest.categories[category].push({
             file: `${category}/${num}.jpg`,
             source: item.source,
             title: item.title,
+            score: item.score,
             license: item.license,
             pageUrl: item.pageUrl,
             photographer: item.photographer ?? null,
           });
-          console.log(`  ${num}.jpg ← ${item.source}: ${item.title.slice(0, 48)}…`);
+          console.log(`  ${num}.jpg ← ${item.source} [${item.score}]: ${item.title.slice(0, 44)}…`);
+          usedTitles.add(titleKey);
           saved = true;
         } catch (e) {
           console.warn(`  ${num}.jpg tentativo fallito: ${e.message}`);
@@ -187,25 +301,34 @@ async function main() {
         await sleep(DELAY_MS);
       }
       if (!saved) {
-        console.warn(`  ${num}.jpg — nessun candidato riuscito`);
+        const fallback = join(dir, "01.jpg");
+        if (await exists(fallback)) {
+          await copyFile(fallback, dest);
+          console.log(`  ${num}.jpg ← copia variante da 01.jpg (pool esaurito)`);
+          manifest.categories[category].push({ file: `${category}/${num}.jpg`, copiedFrom: "01.jpg" });
+        } else {
+          console.warn(`  ${num}.jpg — nessun candidato riuscito`);
+        }
       }
     }
   }
 
   const manifestPath = join(OUT_DIR, "manifest.json");
-  let prev = {};
-  try {
-    prev = JSON.parse(await readFile(manifestPath, "utf8"));
-  } catch {
-    /* primo run */
-  }
   await writeFile(
     manifestPath,
-    JSON.stringify({ ...prev, ...manifest, note: "Cover segnaposto — licenze in categories[].license" }, null, 2),
+    JSON.stringify(
+      {
+        fetchedAt: new Date().toISOString(),
+        categories: manifest.categories,
+        note: "Scene evocative; tinta CSS in app (duotone evanescente)",
+      },
+      null,
+      2,
+    ),
   );
   console.log(`\nCompletato. Manifest: apps/web/public/covers/manifest.json`);
   if (!pexelsKey) {
-    console.log("Suggerimento: imposta PEXELS_API_KEY per più scelta (gratis su pexels.com/api)");
+    console.log("Suggerimento: PEXELS_API_KEY migliora molto la coerenza tematica");
   }
 }
 

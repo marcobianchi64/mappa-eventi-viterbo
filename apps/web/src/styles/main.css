@@ -609,32 +609,62 @@ body:not(.atlas-view-list) .atlas-list-only {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(0.82) brightness(1.14) contrast(0.88) saturate(0.75);
-  opacity: 0.9;
-  transform: scale(1.02);
+  filter: grayscale(1) contrast(0.78) brightness(1.42);
+  opacity: 0.68;
+  transform: scale(1.03);
 }
 
-.category-cover-photo::after {
+/* Duotone: ombre colorate al posto del nero, luci quasi bianche */
+.category-cover-photo::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    165deg,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.12) 45%,
-    rgba(255, 255, 255, 0.28) 100%
-  );
+  mix-blend-mode: multiply;
+  opacity: 0.44;
 }
 
-.stable-event-cover.category-cover-photo .stable-event-badge {
+.category-cover-photo[data-cover-variant="0"]::before { background: #d4a84b; }
+.category-cover-photo[data-cover-variant="1"]::before { background: #9cb89a; }
+.category-cover-photo[data-cover-variant="2"]::before { background: #8aafd4; }
+.category-cover-photo[data-cover-variant="3"]::before { background: #c4785a; }
+.category-cover-photo[data-cover-variant="4"]::before { background: #a89cc4; }
+.category-cover-photo[data-cover-variant="5"]::before { background: #c4b59a; }
+.category-cover-photo[data-cover-variant="6"]::before { background: #7eb8b0; }
+.category-cover-photo[data-cover-variant="7"]::before { background: #c9a0a0; }
+.category-cover-photo[data-cover-variant="8"]::before { background: #9aa67a; }
+.category-cover-photo[data-cover-variant="9"]::before { background: #8a9aad; }
+
+.category-cover-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.18) 42%,
+    rgba(255, 255, 255, 0.52) 100%
+  );
+  opacity: 0.88;
 }
 
 .stable-event-cover.category-cover::after {
-  z-index: 1;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.38), rgba(255, 255, 255, 0.08) 55%, transparent 80%);
+  z-index: 3;
+  mix-blend-mode: normal;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.32) 0%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(255, 255, 255, 0.48) 100%
+  );
+  opacity: 0.85;
+}
+
+.stable-event-cover.category-cover-photo .stable-event-badge {
+  z-index: 4;
 }
 
 .category-cover-missing {
@@ -668,6 +698,28 @@ body:not(.atlas-view-list) .atlas-list-only {
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: grayscale(1) contrast(0.78) brightness(1.42);
+  opacity: 0.68;
+}
+
+.event-preview-category-cover.category-cover-photo::before,
+.event-preview-category-cover.category-cover-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.event-preview-category-cover.category-cover-photo::before {
+  z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.44;
+}
+
+.event-preview-category-cover.category-cover-photo::after {
+  z-index: 2;
+  background: linear-gradient(155deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
+  opacity: 0.88;
 }
 
 .list-card-media.has-img .event-media-img {

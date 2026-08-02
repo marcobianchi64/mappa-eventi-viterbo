@@ -18,4 +18,12 @@ Dettaglio file per file in `manifest.json` (titolo, fonte, licenza, URL pagina).
 
 ## UI
 
-Le foto sono mostrate **desaturate e schiarite** via CSS (`category-cover-photo`) per indicare che sono segnaposto, non locandine ufficiali.
+Le foto sono mostrate in **duotone evanescente** via CSS: bianco e nero con tinta colorata (senape, verde salvia, azzurro…) per variante `data-cover-variant` 0–9.
+
+Rigenerare con filtri tematici migliorati:
+
+```bash
+npm run fetch:covers -- --force --only=food,culture,other,families,music
+```
+
+(sport: lasciare o `--only=sport` se serve)

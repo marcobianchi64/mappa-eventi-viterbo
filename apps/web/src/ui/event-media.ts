@@ -9,6 +9,7 @@ import {
 import {
   applyCategoryCoverFallback,
   categoryCoverSeed,
+  getCategoryCoverVariant,
   renderListCategoryCover,
   renderSheetCategoryCover,
   renderCategoryCoverSvg,
@@ -106,7 +107,7 @@ export function renderMapTooltipCategoryCover(event: AtlasEvent): string {
   const category = getDisplayCategory(event);
   if (isHttpUrl(event.image_url)) return "";
   const seed = categoryCoverSeed(event);
-  return `<div class="event-preview-category-cover category-cover category-cover-photo" data-category="${category}">
+  return `<div class="event-preview-category-cover category-cover category-cover-photo" data-category="${category}" data-cover-variant="${getCategoryCoverVariant(category, seed)}">
     ${renderCategoryCoverSvg(category, seed)}
   </div>`;
 }
