@@ -596,6 +596,40 @@ body:not(.atlas-view-list) .atlas-list-only {
   min-height: 0;
 }
 
+.category-cover {
+  position: relative;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.category-cover .category-cover-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.stable-event-cover.category-cover::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.38), transparent 62%);
+}
+
+.event-preview-category-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+  background: #0f172a;
+}
+
+.event-preview-category-cover .category-cover-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .list-card-media.has-img .event-media-img {
   position: absolute;
   inset: 0;

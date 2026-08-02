@@ -16,6 +16,7 @@ import {
   type FestivalMapGroup,
 } from "@atlas/core";
 import { bindEventMediaImages, renderEventSheetCover } from "./event-media.js";
+import { categoryCoverSeed, renderSheetCategoryCover } from "./category-covers.js";
 
 let onCloseCallback: (() => void) | null = null;
 
@@ -152,12 +153,11 @@ export function openFestivalEventSheet(
     })
     .join("");
 
+  const festivalBadge = `<div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>`;
+
   content.innerHTML = `
     <button class="stable-event-close" type="button" aria-label="Chiudi">×</button>
-    <div class="stable-event-cover ${category}-cover">
-      <div class="stable-event-cover-icon">${meta.icon}</div>
-      <div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>
-    </div>
+    ${renderSheetCategoryCover(category, categoryCoverSeed(anchor), festivalBadge)}
     <div class="stable-event-body">
       <h2 class="stable-event-title">${title}</h2>
       <div class="stable-event-facts">

@@ -25,6 +25,7 @@ import {
   type FestivalMapGroup,
 } from "@atlas/core";
 import { createAtlasMarkerClusterGroup } from "./marker-cluster.js";
+import { renderMapTooltipCategoryCover } from "../ui/event-media.js";
 
 export class MapService {
   private map: L.Map;
@@ -101,10 +102,11 @@ export class MapService {
 
     const title = escapeHtml(getEventDisplayTitle(event));
     const venue = escapeHtml(location.placeLabel);
+    const categoryCover = renderMapTooltipCategoryCover(event);
     const image =
       isHttpUrl(event.image_url)
         ? `<img src="${escapeHtml(event.image_url)}" alt="${title}" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`
-        : "";
+        : categoryCover;
 
     return `
       <div class="event-preview">
