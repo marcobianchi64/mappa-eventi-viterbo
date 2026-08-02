@@ -4,6 +4,17 @@
   --atlas-text: #1f2937;
   --atlas-border: #e5e7eb;
   --shadow: 0 8px 28px rgba(15, 23, 42, 0.2);
+  --atlas-pantone-rose-bg: #fdf2f8;
+  --atlas-pantone-rose-border: #fbcfe8;
+  --atlas-pantone-rose-text: #be185d;
+  --atlas-pantone-blue-bg: #eff6ff;
+  --atlas-pantone-blue-border: #bfdbfe;
+  --atlas-pantone-blue-text: #1d4ed8;
+  --atlas-pantone-amber-bg: #fff7ed;
+  --atlas-pantone-amber-border: #fed7aa;
+  --atlas-pantone-amber-text: #c2410c;
+  --atlas-pantone-neutral-bg: #f8fafc;
+  --atlas-pantone-neutral-border: #e2e8f0;
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
   --font-base: 22px;
   --dock-width: 260px;
@@ -96,6 +107,128 @@ body {
 .chip.muted { background: rgba(255, 255, 255, 0.92); color: #374151; border: 1px solid #e5e7eb; }
 .chip.blue { background: var(--atlas-blue); color: #fff; }
 .chip:disabled { opacity: 0.7; cursor: wait; }
+
+.chip-tint-neutral {
+  background: var(--atlas-pantone-neutral-bg) !important;
+  border-color: var(--atlas-pantone-neutral-border) !important;
+  color: var(--atlas-dark) !important;
+}
+
+.chip-tint-rose {
+  background: var(--atlas-pantone-rose-bg) !important;
+  border-color: var(--atlas-pantone-rose-border) !important;
+  color: var(--atlas-pantone-rose-text) !important;
+}
+
+.chip-tint-blue {
+  background: var(--atlas-pantone-blue-bg) !important;
+  border-color: var(--atlas-pantone-blue-border) !important;
+  color: var(--atlas-pantone-blue-text) !important;
+}
+
+.chip-tint-amber {
+  background: var(--atlas-pantone-amber-bg) !important;
+  border-color: var(--atlas-pantone-amber-border) !important;
+  color: var(--atlas-pantone-amber-text) !important;
+}
+
+.filter-menu-wrap {
+  position: relative;
+  pointer-events: auto;
+}
+
+.filter-events-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 2600;
+  width: min(560px, calc(100vw - 24px));
+  background: #fff;
+  border: 1px solid var(--atlas-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.filter-menu-wrap.open .filter-events-panel,
+.filter-menu-wrap:hover .filter-events-panel {
+  display: block;
+}
+
+.filter-events-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filter-events-heading {
+  margin: 0 0 8px;
+  font-size: calc(var(--panel-label-font) * 0.82);
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-events-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: calc(var(--filter-option-font) * 0.9);
+  font-weight: 700;
+  color: var(--atlas-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.filter-events-option:hover {
+  background: #f8fafc;
+}
+
+.filter-events-option.active {
+  border-color: var(--atlas-pantone-blue-border);
+  background: var(--atlas-pantone-blue-bg);
+  color: var(--atlas-pantone-blue-text);
+}
+
+.filter-category-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filter-events-search {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #eef2f6;
+}
+
+.filter-events-search-lead {
+  margin: 0 0 8px;
+  font-size: calc(var(--legend-font) * 0.9);
+  font-weight: 700;
+  color: #64748b;
+}
+
+.chip-tint-blue-mobile {
+  background: var(--atlas-pantone-blue-bg) !important;
+  border: 1px solid var(--atlas-pantone-blue-border) !important;
+  color: var(--atlas-pantone-blue-text) !important;
+}
 
 .hidden { display: none !important; }
 
@@ -309,9 +442,10 @@ button {
 }
 
 .view-switch-btn.active {
-  border-color: #db2777;
-  background: #fdf2f8;
-  color: #be185d;
+  border-color: #db2777 !important;
+  background: #fdf2f8 !important;
+  color: #be185d !important;
+  box-shadow: inset 0 0 0 1px #fbcfe8;
 }
 
 body.atlas-view-list .atlas-map-only {
@@ -1085,7 +1219,19 @@ button.legend-filter.active {
   .dock-panel,
   .dock-flyout { display: none !important; }
   .mobile-actions { display: grid; grid-template-columns: 1fr 1fr; }
-  .filter-panel { left: 10px; right: 10px; top: 56px; width: auto; }
+  .filter-events-panel {
+    position: fixed;
+    top: 56px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+  .filter-menu-wrap:hover .filter-events-panel {
+    display: none;
+  }
+  .filter-menu-wrap.open .filter-events-panel {
+    display: block;
+  }
   .list-page-layout {
     grid-template-columns: 1fr;
   }

@@ -1,5 +1,4 @@
 import {
-  ATLAS_VERSION,
   DATE_RANGE_LABELS,
   DEFAULT_DATE_RANGE,
   injectAtlasTypography,
@@ -12,7 +11,6 @@ import {
   filterEventsWithinRadiusKm,
   getCategoryMeta,
   getNearRadiusOption,
-  hasValidEventCoords,
   isEventVisibleInRange,
   loadNearRadiusPreset,
   normalizeSearchText,
@@ -84,6 +82,8 @@ export class AtlasApp {
     this.bindEvents();
     this.syncNearRadiusUi();
     this.syncCategoryFilterUi();
+    this.syncFilterOptionActiveStates();
+    this.updateFilterEventsButtonLabel();
     this.renderPrograms();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
@@ -114,45 +114,78 @@ export class AtlasApp {
   }
 
   private bindEvents(): void {
-    document.getElementById("whenButton")?.addEventListener("click", () => {
-      this.closeDockFlyouts();
-      document.getElementById("filterPanel")?.classList.toggle("open");
+    const filterMenuWrap = document.getElementById("filterMenuWrap");
+    const filterEventsButton = document.getElementById("filterEventsButton");
+    const filterEventsPanel = document.getElementById("filterEventsPanel");
+
+    filterEventsButton?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = filterMenuWrap?.classList.toggle("open");
+      filterEventsButton.setAttribute("aria-expanded", open ? "true" : "false");
+      filterEventsPanel?.setAttribute("aria-hidden", open ? "false" : "true");
       document.getElementById("programsPanel")?.classList.remove("open");
+      this.closeDockFlyouts();
+    });
+
+    filterMenuWrap?.addEventListener("mouseenter", () => {
+      if (window.matchMedia("(hover: hover)").matches) {
+        filterMenuWrap.classList.add("open");
+        filterEventsButton?.setAttribute("aria-expanded", "true");
+        filterEventsPanel?.setAttribute("aria-hidden", "false");
+      }
+    });
+
+    filterMenuWrap?.addEventListener("mouseleave", () => {
+      if (window.matchMedia("(hover: hover)").matches) {
+        filterMenuWrap.classList.remove("open");
+        filterEventsButton?.setAttribute("aria-expanded", "false");
+        filterEventsPanel?.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!filterMenuWrap?.contains(e.target as Node)) {
+        filterMenuWrap?.classList.remove("open");
+        filterEventsButton?.setAttribute("aria-expanded", "false");
+        filterEventsPanel?.setAttribute("aria-hidden", "true");
+      }
     });
 
     document.getElementById("viewMapBtn")?.addEventListener("click", () => this.setViewMode("map"));
     document.getElementById("viewListBtn")?.addEventListener("click", () => this.setViewMode("list"));
 
     document.getElementById("programsButton")?.addEventListener("click", () => {
+      this.closeFilterMenu();
       this.closeDockFlyouts();
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
-      document.getElementById("filterPanel")?.classList.remove("open");
     });
 
-    document.getElementById("dockNearBtn")?.addEventListener("click", () => {
-      this.toggleDockFlyout("near");
-    });
     document.getElementById("dockInsertBtn")?.addEventListener("click", () => {
       this.toggleDockFlyout("insert");
-    });
-    document.getElementById("closeNearFlyout")?.addEventListener("click", () => {
-      this.closeDockFlyouts();
     });
     document.getElementById("closeInsertFlyout")?.addEventListener("click", () => {
       this.closeDockFlyouts();
     });
 
-    document.querySelectorAll(".filter-option").forEach((button) => {
+    document.querySelectorAll(".filter-when-option").forEach((button) => {
       button.addEventListener("click", () => {
         this.currentRange = (button as HTMLButtonElement).dataset.range as DateRangeKey;
-        document.querySelectorAll(".filter-option").forEach((b) => b.classList.remove("active"));
-        button.classList.add("active");
-        this.updateWhenButtonLabel();
         this.syncFilterOptionActiveStates();
+        this.updateFilterEventsButtonLabel();
         this.renderMapEvents();
-        document.getElementById("filterPanel")?.classList.remove("open");
         this.renderEventList();
+        this.closeFilterMenu();
+      });
+    });
+
+    document.querySelectorAll(".filter-category-option").forEach((button) => {
+      button.addEventListener("click", () => {
+        const category = (button as HTMLButtonElement).dataset.category as EventListCategoryFilter;
+        if (!category) return;
+        this.setCategoryFilter(category);
+        this.updateFilterEventsButtonLabel();
+        this.closeFilterMenu();
       });
     });
 
@@ -168,8 +201,8 @@ export class AtlasApp {
     document.getElementById("saveButton")?.addEventListener("click", () => void this.addEvent("desktop"));
     document.getElementById("saveButtonMobile")?.addEventListener("click", () => void this.addEvent("mobile"));
 
-    document.getElementById("openSearchMobile")?.addEventListener("click", () => {
-      this.openMobileSheet("near");
+    document.getElementById("openFilterMobile")?.addEventListener("click", () => {
+      this.openMobileSheet("filter");
     });
 
     document.getElementById("openInsertMobile")?.addEventListener("click", () => {
@@ -194,14 +227,6 @@ export class AtlasApp {
         if (this.lastUserPosition) {
           this.applyNearMe(this.lastUserPosition.lat, this.lastUserPosition.lng, false);
         }
-      });
-    });
-
-    document.querySelectorAll(".legend-filter").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const category = (btn as HTMLButtonElement).dataset.category as EventCategory;
-        if (!category) return;
-        this.toggleCategoryFilter(category);
       });
     });
 
@@ -246,7 +271,8 @@ export class AtlasApp {
     document.getElementById("viewMapBtn")?.classList.toggle("active", mode === "map");
     document.getElementById("viewListBtn")?.classList.toggle("active", mode === "list");
 
-    document.getElementById("filterPanel")?.classList.remove("open");
+    document.getElementById("programsPanel")?.classList.remove("open");
+    this.closeFilterMenu();
     this.closeDockFlyouts();
 
     if (!options?.skipUrl) this.syncViewUrlParam();
@@ -261,7 +287,7 @@ export class AtlasApp {
   }
 
   private syncFilterOptionActiveStates(): void {
-    document.querySelectorAll(".filter-option").forEach((b) => {
+    document.querySelectorAll(".filter-when-option").forEach((b) => {
       const range = (b as HTMLButtonElement).dataset.range;
       b.classList.toggle("active", range === this.currentRange);
     });
@@ -322,12 +348,13 @@ export class AtlasApp {
       (category) => {
         this.listCategory = category;
         this.syncCategoryFilterUi();
+        this.updateFilterEventsButtonLabel();
         this.renderEventList();
         if (this.viewMode === "map") this.renderMapEvents();
       },
       (range) => {
         this.currentRange = range;
-        this.updateWhenButtonLabel();
+        this.updateFilterEventsButtonLabel();
         this.syncFilterOptionActiveStates();
         this.renderEventList();
         if (this.viewMode === "map") this.renderMapEvents();
@@ -343,10 +370,7 @@ export class AtlasApp {
   private renderMapEvents(): void {
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getFilteredEvents();
-    const pinCount = this.mapService.renderEvents(visible, deepLink);
-    const withCoords = visible.filter(hasValidEventCoords).length;
-    const inRange = this.getVisibleEvents().length;
-    this.updateMapEventCount(pinCount, visible.length, withCoords, this.allEvents.length, inRange);
+    this.mapService.renderEvents(visible, deepLink);
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
       const coords = buildMapMarkerPlacements(visible).map(
@@ -357,33 +381,15 @@ export class AtlasApp {
     }
   }
 
-  private updateMapEventCount(
-    pins: number,
-    shown: number,
-    withCoords: number,
-    loaded: number,
-    inRange?: number,
-  ): void {
-    const el = document.getElementById("mapEventCount");
-    if (!el) return;
-    const skipped = shown - withCoords;
-    const periodCount = inRange ?? shown;
-    const categoryNote =
-      this.listCategory !== "all"
-        ? ` · ${getCategoryMeta(this.listCategory).label}`
-        : "";
-    el.textContent = `📍 ${pins} pin · ${shown} visibili${categoryNote} · ${periodCount} nel periodo · ${loaded} caricati · v${ATLAS_VERSION}${skipped > 0 ? ` · ${skipped} senza coordinate` : ""}`;
-  }
-
-  private toggleCategoryFilter(category: EventCategory): void {
-    this.listCategory = this.listCategory === category ? "all" : category;
+  private setCategoryFilter(category: EventListCategoryFilter): void {
+    this.listCategory = category;
     this.syncCategoryFilterUi();
     this.renderMapEvents();
     if (this.viewMode === "list") this.renderEventList();
   }
 
   private syncCategoryFilterUi(): void {
-    document.querySelectorAll(".legend-filter").forEach((btn) => {
+    document.querySelectorAll(".filter-category-option").forEach((btn) => {
       const cat = (btn as HTMLButtonElement).dataset.category;
       const active = cat === this.listCategory;
       btn.classList.toggle("active", active);
@@ -391,49 +397,49 @@ export class AtlasApp {
     });
   }
 
-  private toggleDockFlyout(which: "near" | "insert"): void {
-    const near = document.getElementById("dockNearFlyout");
-    const insert = document.getElementById("dockInsertFlyout");
-    const nearBtn = document.getElementById("dockNearBtn");
-    const insertBtn = document.getElementById("dockInsertBtn");
-    document.getElementById("filterPanel")?.classList.remove("open");
-    document.getElementById("programsPanel")?.classList.remove("open");
+  private closeFilterMenu(): void {
+    document.getElementById("filterMenuWrap")?.classList.remove("open");
+    document.getElementById("filterEventsButton")?.setAttribute("aria-expanded", "false");
+    document.getElementById("filterEventsPanel")?.setAttribute("aria-hidden", "true");
+  }
 
-    const nearOpen = which === "near" && !near?.classList.contains("open");
+  private updateFilterEventsButtonLabel(): void {
+    const button = document.getElementById("filterEventsButton");
+    if (!button) return;
+    const cat =
+      this.listCategory === "all" ? null : getCategoryMeta(this.listCategory).label;
+    const when = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
+    const parts = [cat, when].filter(Boolean);
+    button.textContent = parts.length ? `🔎 ${parts.join(" · ")}` : "🔎 Filtra eventi";
+  }
+
+  private toggleDockFlyout(which: "insert"): void {
+    const insert = document.getElementById("dockInsertFlyout");
+    const insertBtn = document.getElementById("dockInsertBtn");
+    document.getElementById("programsPanel")?.classList.remove("open");
+    this.closeFilterMenu();
+
     const insertOpen = which === "insert" && !insert?.classList.contains("open");
 
-    near?.classList.toggle("open", nearOpen);
     insert?.classList.toggle("open", insertOpen);
-    near?.setAttribute("aria-hidden", nearOpen ? "false" : "true");
     insert?.setAttribute("aria-hidden", insertOpen ? "false" : "true");
-    nearBtn?.classList.toggle("active", nearOpen);
     insertBtn?.classList.toggle("active", insertOpen);
   }
 
   private closeDockFlyouts(): void {
-    ["dockNearFlyout", "dockInsertFlyout"].forEach((id) => {
-      const el = document.getElementById(id);
-      el?.classList.remove("open");
-      el?.setAttribute("aria-hidden", "true");
-    });
-    document.getElementById("dockNearBtn")?.classList.remove("active");
+    const insert = document.getElementById("dockInsertFlyout");
+    insert?.classList.remove("open");
+    insert?.setAttribute("aria-hidden", "true");
     document.getElementById("dockInsertBtn")?.classList.remove("active");
   }
 
-  private openMobileSheet(which: "near" | "insert"): void {
+  private openMobileSheet(which: "filter" | "insert"): void {
     const sheet = document.getElementById("mobileSheet");
-    const nearPanel = document.getElementById("mobileNearPanel");
+    const filterPanel = document.getElementById("mobileFilterPanel");
     const insertPanel = document.getElementById("mobileInsertPanel");
     sheet?.classList.add("open");
-    nearPanel?.classList.toggle("hidden", which !== "near");
+    filterPanel?.classList.toggle("hidden", which !== "filter");
     insertPanel?.classList.toggle("hidden", which !== "insert");
-  }
-
-  private updateWhenButtonLabel(): void {
-    const button = document.getElementById("whenButton");
-    if (button) {
-      button.textContent = `🗓 Cerca entro: ${DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni"}`;
-    }
   }
 
   private setDraftPosition(lat: number, lng: number): void {

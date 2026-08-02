@@ -2,7 +2,6 @@ import {
   ATLAS_VERSION,
   CATEGORY_META,
   DEFAULT_DATE_RANGE,
-  DATE_RANGE_LABELS,
   loadNearRadiusPreset,
   renderNearRadiusChips,
   type DateRangeKey,
@@ -10,7 +9,6 @@ import {
 } from "@atlas/core";
 
 export function renderShell(): string {
-  const rangeLabel = DATE_RANGE_LABELS[DEFAULT_DATE_RANGE] ?? "15 giorni";
   const nearRadius = loadNearRadiusPreset();
   const nearRadiusChips = renderNearRadiusChips(nearRadius);
 
@@ -18,37 +16,49 @@ export function renderShell(): string {
     <div class="atlas-version-check">v${ATLAS_VERSION}</div>
 
     <div class="topbar">
-      <div class="brand-pill">Project Atlas</div>
+      <div class="brand-pill chip-tint-neutral">Project Atlas</div>
       <nav class="view-switch" aria-label="Vista">
-        <button id="viewMapBtn" class="chip view-switch-btn active" type="button">🗺 Mappa</button>
-        <button id="viewListBtn" class="chip view-switch-btn" type="button">📋 Calendario</button>
+        <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 Mappa</button>
+        <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 Elenco eventi</button>
       </nav>
-      <button id="whenButton" class="chip primary atlas-map-only" type="button">🗓 Cerca entro: ${rangeLabel}</button>
-      <span id="mapEventCount" class="chip muted atlas-map-only" aria-live="polite"></span>
-      <button id="programsButton" class="chip" type="button">🔖 Eventi salvati</button>
+      <div class="filter-menu-wrap atlas-map-only" id="filterMenuWrap">
+        <button
+          id="filterEventsButton"
+          class="chip chip-tint-blue filter-events-trigger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="filterEventsPanel"
+        >🔎 Filtra eventi</button>
+        <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
+          <div class="filter-events-columns">
+            <div class="filter-events-col">
+              <h3 class="filter-events-heading">Cosa</h3>
+              <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+            </div>
+            <div class="filter-events-col">
+              <h3 class="filter-events-heading">Quando</h3>
+              <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+            </div>
+          </div>
+          <div class="filter-events-search">
+            <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
+            <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+            <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
+            <div class="search-box">
+              <input id="searchPlace" placeholder="Cerca evento o località" />
+              <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
+            </div>
+            <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
+            <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
+          </div>
+        </div>
+      </div>
+      <button id="programsButton" class="chip chip-tint-amber" type="button">🔖 Eventi salvati</button>
     </div>
 
     <aside class="dock-panel atlas-map-only" id="desktopDock" aria-label="Azioni rapide">
-      <button id="dockNearBtn" class="dock-btn" type="button">📍 Eventi vicino a te</button>
       <button id="dockInsertBtn" class="dock-btn secondary" type="button">＋ Inserisci un evento</button>
     </aside>
-
-    <div id="dockNearFlyout" class="dock-flyout" aria-hidden="true">
-      <div class="dock-flyout-header">
-        <h2>Eventi vicino a te</h2>
-        <button id="closeNearFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
-      </div>
-      <p class="dock-flyout-lead">Scegli quanto lontano cercare, poi centrati sulla mappa o cerca per nome.</p>
-      <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
-      <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
-      <div class="search-box">
-        <input id="searchPlace" placeholder="Cerca evento o località" />
-        <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
-      </div>
-      <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
-      <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
-      <div class="legend" role="group" aria-label="Filtra per categoria">${renderCategoryLegend()}</div>
-    </div>
 
     <div id="dockInsertFlyout" class="dock-flyout" aria-hidden="true">
       <div class="dock-flyout-header">
@@ -64,13 +74,6 @@ export function renderShell(): string {
       </div>
     </div>
 
-    <div id="filterPanel" class="filter-panel atlas-map-only">
-      <h3>Quando vuoi uscire?</h3>
-      <div class="filter-grid">
-        ${filterButtons(DEFAULT_DATE_RANGE)}
-      </div>
-    </div>
-
     <div id="programsPanel" class="programs-panel">
       <h3>🔖 Eventi salvati</h3>
       <div id="programsList">Nessun evento salvato.</div>
@@ -83,25 +86,36 @@ export function renderShell(): string {
     </main>
 
     <div class="mobile-actions atlas-map-only">
-      <button id="openSearchMobile" class="btn dark" type="button">📍 Eventi vicino a te</button>
+      <button id="openFilterMobile" class="btn chip-tint-blue-mobile" type="button">🔎 Filtra eventi</button>
       <button id="openInsertMobile" class="btn" type="button">＋ Inserisci evento</button>
     </div>
 
     <div id="mobileSheet" class="bottom-sheet atlas-map-only">
       <div class="sheet-handle"></div>
       <button id="closeSheet" class="close-sheet" type="button">Chiudi</button>
-      <div id="mobileNearPanel">
-        <h2>Eventi vicino a te</h2>
-        <p class="dock-flyout-lead">Distanza di ricerca e posizione sulla mappa.</p>
-        <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
-        <p id="nearRadiusHintMobile" class="near-radius-hint small"></p>
-        <div class="search-box">
-          <input id="searchPlaceMobile" placeholder="Cerca evento o località" />
-          <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>
+      <div id="mobileFilterPanel">
+        <h2>Filtra eventi</h2>
+        <div class="filter-events-columns">
+          <div class="filter-events-col">
+            <h3 class="filter-events-heading">Cosa</h3>
+            <div class="filter-events-list filter-events-list-mobile" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+          </div>
+          <div class="filter-events-col">
+            <h3 class="filter-events-heading">Quando</h3>
+            <div class="filter-events-list filter-events-list-mobile" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+          </div>
         </div>
-        <button id="nearMeButtonMobile" class="btn full" type="button">📍 Cerca vicino a me</button>
-        <div class="search-note">La ricerca non sposta la mappa verso località senza eventi attivi.</div>
-        <div class="legend" role="group" aria-label="Filtra per categoria">${renderCategoryLegend()}</div>
+        <div class="filter-events-search">
+          <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
+          <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+          <p id="nearRadiusHintMobile" class="near-radius-hint small"></p>
+          <div class="search-box">
+            <input id="searchPlaceMobile" placeholder="Cerca evento o località" />
+            <button id="searchPlaceButtonMobile" class="btn dark" type="button">Cerca</button>
+          </div>
+          <button id="nearMeButtonMobile" class="btn full" type="button">📍 Cerca vicino a me</button>
+          <div class="search-note">La ricerca non sposta la mappa verso località senza eventi attivi.</div>
+        </div>
       </div>
       <div id="mobileInsertPanel" class="hidden">
         <h2>Inserisci un evento</h2>
@@ -123,20 +137,31 @@ export function renderShell(): string {
   `;
 }
 
-function renderCategoryLegend(): string {
-  const order: EventCategory[] = ["music", "food", "culture", "sport", "families", "other"];
+function renderFilterCategoryOptions(): string {
+  const order: (EventCategory | "all")[] = [
+    "all",
+    "culture",
+    "food",
+    "music",
+    "sport",
+    "families",
+    "other",
+  ];
   return order
     .map((key) => {
+      if (key === "all") {
+        return `<button type="button" class="filter-events-option filter-category-option active" data-category="all">Tutti gli eventi</button>`;
+      }
       const meta = CATEGORY_META[key];
       const label = key === "other" ? "Altri" : meta.label;
-      return `<button type="button" class="legend-item legend-filter" data-category="${key}" aria-pressed="false">
-        <span class="legend-dot" style="background:${meta.color}"></span>${label}
+      return `<button type="button" class="filter-events-option filter-category-option" data-category="${key}">
+        <span class="filter-category-dot" style="background:${meta.color}"></span>${label}
       </button>`;
     })
     .join("");
 }
 
-function filterButtons(active: DateRangeKey): string {
+function renderFilterWhenOptions(active: DateRangeKey): string {
   const options: DateRangeKey[] = ["today", "tomorrow", "weekend", "7", "15", "30", "60"];
   const labels: Record<DateRangeKey, string> = {
     today: "Oggi",
@@ -151,7 +176,7 @@ function filterButtons(active: DateRangeKey): string {
   return options
     .map(
       (range) =>
-        `<button class="filter-option${range === active ? " active" : ""}" data-range="${range}" type="button">${labels[range]}</button>`,
+        `<button class="filter-events-option filter-when-option${range === active ? " active" : ""}" data-range="${range}" type="button">${labels[range]}</button>`,
     )
     .join("");
 }
