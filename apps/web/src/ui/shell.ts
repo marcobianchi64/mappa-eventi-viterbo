@@ -2,6 +2,8 @@ import {
   ATLAS_VERSION,
   CATEGORY_META,
   DEFAULT_DATE_RANGE,
+  getEditionListTitle,
+  getEditionTerritoryLabel,
   loadNearRadiusPreset,
   renderNearRadiusChips,
   type DateRangeKey,
@@ -11,53 +13,63 @@ import {
 export function renderShell(): string {
   const nearRadius = loadNearRadiusPreset();
   const nearRadiusChips = renderNearRadiusChips(nearRadius);
+  const territory = getEditionTerritoryLabel();
+  const listTitle = getEditionListTitle();
 
   return `
     <div class="atlas-version-check">v${ATLAS_VERSION}</div>
 
     <header class="atlas-header">
-      <div class="topbar">
-        <div class="brand-pill chip-tint-neutral">Project Atlas</div>
-        <nav class="view-switch" aria-label="Vista">
-          <button id="viewMapBtn" class="chip chip-tint-rose view-switch-btn active" type="button">🗺 MAPPA EVENTI</button>
-          <button id="viewListBtn" class="chip chip-tint-rose view-switch-btn" type="button">📋 ELENCO EVENTI</button>
-        </nav>
-        <div class="filter-menu-wrap" id="filterMenuWrap">
-          <button
-            id="filterEventsButton"
-            class="chip chip-tint-blue filter-events-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="filterEventsPanel"
-          >🔎 Filtra</button>
-          <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
-            <div class="filter-events-columns">
-              <div class="filter-events-col">
-                <h3 class="filter-events-heading">Cosa</h3>
-                <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
-              </div>
-              <div class="filter-events-col">
-                <h3 class="filter-events-heading">Quando</h3>
-                <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+      <div class="atlas-header-inner">
+        <div class="topbar">
+          <div class="brand-mark" title="${listTitle}">
+            <span class="brand-name">Atlas</span>
+            <span class="brand-territory">${territory}</span>
+          </div>
+          <nav class="view-switch" aria-label="Vista">
+            <button id="viewMapBtn" class="view-switch-btn active" type="button" title="Mappa eventi"><span class="view-switch-icon">🗺</span><span class="view-switch-label">Mappa</span></button>
+            <button id="viewListBtn" class="view-switch-btn" type="button" title="Elenco eventi"><span class="view-switch-icon">📋</span><span class="view-switch-label">Elenco</span></button>
+          </nav>
+          <div class="topbar-actions">
+            <div class="filter-menu-wrap" id="filterMenuWrap">
+              <button
+                id="filterEventsButton"
+                class="topbar-btn topbar-btn-filter filter-events-trigger"
+                type="button"
+                aria-expanded="false"
+                aria-controls="filterEventsPanel"
+              ><span>🔎</span><span class="topbar-btn-label">Filtra</span></button>
+              <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
+                <div class="filter-events-columns">
+                  <div class="filter-events-col">
+                    <h3 class="filter-events-heading">Cosa</h3>
+                    <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+                  </div>
+                  <div class="filter-events-col">
+                    <h3 class="filter-events-heading">Quando</h3>
+                    <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+                  </div>
+                </div>
+                <div class="filter-events-search atlas-map-only">
+                  <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
+                  <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+                  <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
+                  <div class="search-box">
+                    <input id="searchPlace" placeholder="Cerca evento o località" />
+                    <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
+                  </div>
+                  <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
+                  <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
+                </div>
               </div>
             </div>
-            <div class="filter-events-search atlas-map-only">
-              <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
-              <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
-              <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
-              <div class="search-box">
-                <input id="searchPlace" placeholder="Cerca evento o località" />
-                <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
-              </div>
-              <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
-              <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
-            </div>
+            <button id="programsButton" class="topbar-btn topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
+            <button id="topInsertBtn" class="topbar-btn topbar-btn-insert atlas-map-only" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
           </div>
         </div>
-        <button id="programsButton" class="chip chip-tint-amber" type="button">🔖 Salvati</button>
-        <button id="topInsertBtn" class="chip chip-tint-mint atlas-map-only" type="button">＋ Inserisci evento</button>
+        <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
       </div>
-      <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
+      <div id="atlasPromoSlot" class="atlas-promo-slot atlas-map-only" hidden aria-hidden="true"></div>
     </header>
 
     <div id="dockInsertFlyout" class="dock-flyout atlas-map-only" aria-hidden="true">

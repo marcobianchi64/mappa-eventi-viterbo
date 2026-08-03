@@ -18,7 +18,12 @@
   --atlas-pantone-mint-bg: #ecfdf5;
   --atlas-pantone-mint-border: #a7f3d0;
   --atlas-pantone-mint-text: #047857;
-  --atlas-header-stack: 96px;
+  --atlas-header-stack: 72px;
+  --atlas-promo-height: 0px;
+  --atlas-rose: #db2777;
+  --atlas-rose-soft: #fdf2f8;
+  --atlas-indigo-soft: #eef2ff;
+  --atlas-surface: #f8fafc;
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
   --font-base: 22px;
   --dock-width: 260px;
@@ -62,15 +67,28 @@ body {
   color: var(--atlas-text);
 }
 
-#map { height: 100vh; width: 100%; }
+#map {
+  height: 100vh;
+  width: 100%;
+  background: #e8eef4;
+}
 
 .atlas-header {
   position: fixed;
-  top: 12px;
-  left: 12px;
-  right: 12px;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 2500;
   pointer-events: none;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom: 1px solid rgba(219, 39, 119, 0.1);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.atlas-header-inner {
+  pointer-events: auto;
+  padding: 6px 10px 4px;
 }
 
 .topbar {
@@ -78,20 +96,99 @@ body {
   display: flex;
   gap: 8px;
   align-items: center;
-  pointer-events: none;
-  visibility: visible;
-  opacity: 1;
-  transform: translateZ(0);
+  min-height: 44px;
+}
+
+.brand-mark {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 2px 4px 2px 2px;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: calc(var(--chip-font) * 0.78);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--atlas-rose);
+  line-height: 1.05;
+}
+
+.brand-territory {
+  font-size: calc(var(--legend-font) * 0.72);
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 11rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  font-size: calc(var(--chip-font) * 0.82);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.topbar-btn-filter {
+  border-color: #bfdbfe;
+  background: var(--atlas-pantone-blue-bg);
+  color: var(--atlas-pantone-blue-text);
+}
+
+.topbar-btn-saved {
+  border-color: #fed7aa;
+  background: var(--atlas-pantone-amber-bg);
+  color: var(--atlas-pantone-amber-text);
+}
+
+.topbar-btn-insert {
+  border-color: #a7f3d0;
+  background: var(--atlas-pantone-mint-bg);
+  color: var(--atlas-pantone-mint-text);
 }
 
 .active-filters-bar {
-  margin: 5px 0 0 2px;
-  padding: 0 6px;
-  font-size: calc(var(--legend-font) * 0.82);
+  margin: 0;
+  padding: 0 4px 4px;
+  font-size: calc(var(--legend-font) * 0.76);
   font-weight: 600;
   color: #64748b;
-  line-height: 1.35;
-  pointer-events: none;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.atlas-view-list .active-filters-bar {
+  display: none;
+}
+
+.atlas-promo-slot {
+  height: var(--atlas-promo-height);
+  overflow: hidden;
+  pointer-events: auto;
 }
 
 .brand-pill,
@@ -495,20 +592,39 @@ button {
 
 .view-switch {
   display: flex;
-  gap: 4px;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 11px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .view-switch-btn {
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: calc(var(--chip-font) * 0.78);
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-switch-icon {
+  font-size: 1.05em;
+  line-height: 1;
 }
 
 .view-switch-btn.active {
-  border-color: #db2777 !important;
-  background: #fdf2f8 !important;
-  color: #be185d !important;
-  box-shadow: inset 0 0 0 1px #fbcfe8;
+  background: #fff !important;
+  color: var(--atlas-rose) !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
 }
 
 body.atlas-view-list .atlas-map-only {
@@ -537,36 +653,35 @@ body:not(.atlas-view-list) .atlas-list-only {
 }
 
 .list-page-hero {
-  margin: 0 0 18px;
-  padding: 22px 16px 20px;
-  background: linear-gradient(155deg, #14181f 0%, #1f2937 58%, #111827 100%);
-  color: #f9fafb;
-  border-bottom: 4px solid #fbbf24;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  margin: 0 0 14px;
+  padding: 14px 16px 12px;
+  background: linear-gradient(118deg, var(--atlas-rose-soft) 0%, #f5f3ff 42%, #ecfeff 100%);
+  border-bottom: 3px solid var(--atlas-rose);
+  color: #0f172a;
 }
 
 .list-page-kicker {
-  margin: 0 0 8px;
-  font-size: calc(var(--legend-font) * 0.88);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+  font-size: calc(var(--legend-font) * 0.75);
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #fbbf24;
+  color: var(--atlas-rose);
 }
 
 .list-page-hero h1 {
-  margin: 0 0 10px;
-  font-size: clamp(1.35rem, 4.8vw, 2rem);
+  margin: 0 0 6px;
+  font-size: clamp(1.2rem, 4.2vw, 1.75rem);
   line-height: 1.15;
   font-weight: 800;
-  color: #fef3c7;
+  color: #1e1b4b;
 }
 
 .list-page-lead {
   margin: 0;
-  color: #d1d5db;
-  font-size: var(--legend-font);
-  font-weight: 500;
+  color: #475569;
+  font-size: calc(var(--legend-font) * 0.9);
+  font-weight: 600;
 }
 
 .list-cards {
@@ -1225,13 +1340,14 @@ button.legend-filter.active {
   right: 0;
   bottom: 0;
   z-index: 1800;
-  max-height: 72vh;
+  max-height: 78vh;
   overflow-y: auto;
   background: #fff;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -12px 38px rgba(15, 23, 42, 0.26);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.2);
   transform: translateY(110%);
   transition: transform 0.25s ease;
+  border: 1px solid rgba(219, 39, 119, 0.08);
 }
 
 .stable-event-sheet.open { transform: translateY(0); }
@@ -1455,22 +1571,51 @@ button.legend-filter.active {
   opacity: 0.75;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 900px) {
   .stable-event-sheet {
     left: auto;
-    right: 24px;
-    bottom: 24px;
-    width: var(--flyout-panel-width);
-    border-radius: 24px;
-    max-height: 86vh;
+    right: 10px;
+    bottom: 10px;
+    width: min(400px, 36vw);
+    border-radius: 18px;
+    max-height: calc(100vh - var(--atlas-header-stack) - 20px);
+  }
+
+  body.atlas-view-list .stable-event-sheet.open {
+    top: calc(var(--atlas-header-stack) + 6px);
+    bottom: 8px;
+    max-height: none;
+  }
+
+  body.atlas-view-list .stable-event-overlay.open {
+    background: transparent;
+    pointer-events: none;
+  }
+
+  body.atlas-view-list .list-page-layout {
+    padding-right: min(420px, 38vw);
+  }
+
+  body.atlas-view-list .stable-event-close {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media (min-width: 760px) and (max-width: 899px) {
+  .stable-event-sheet {
+    left: auto;
+    right: 16px;
+    bottom: 16px;
+    width: min(420px, 92vw);
+    border-radius: 18px;
+    max-height: calc(100vh - var(--atlas-header-stack) - 24px);
   }
 }
 
 @media (max-width: 760px) {
-  .atlas-header {
-    top: 8px;
-    left: 8px;
-    right: 8px;
+  .atlas-header-inner {
+    padding: 5px 8px 3px;
   }
 
   .topbar {
@@ -1478,19 +1623,34 @@ button.legend-filter.active {
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    gap: 6px;
   }
 
   .topbar::-webkit-scrollbar { display: none; }
-  .brand-pill { font-size: var(--chip-font); padding: 10px 12px; }
-  .chip { font-size: var(--chip-font); padding: 10px 12px; white-space: nowrap; }
+
+  .brand-territory {
+    max-width: 7.5rem;
+    font-size: calc(var(--legend-font) * 0.68);
+  }
+
+  .view-switch-label,
+  .topbar-btn-label {
+    display: none;
+  }
+
+  .view-switch-btn,
+  .topbar-btn {
+    padding: 8px 10px;
+  }
+
   .dock-panel,
   .dock-flyout { display: none !important; }
   .mobile-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .filter-events-panel {
     position: fixed;
-    top: 56px;
-    left: 10px;
-    right: 10px;
+    top: var(--atlas-header-stack);
+    left: 8px;
+    right: 8px;
     width: auto;
   }
   .filter-menu-wrap:hover .filter-events-panel {

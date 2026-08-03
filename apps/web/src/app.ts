@@ -425,8 +425,7 @@ export class AtlasApp {
   private syncHeaderLayout(): void {
     const header = document.querySelector(".atlas-header");
     if (!header) return;
-    const top = 12;
-    const height = header.getBoundingClientRect().height + top;
+    const height = header.getBoundingClientRect().height;
     document.documentElement.style.setProperty("--atlas-header-stack", `${Math.ceil(height)}px`);
   }
 
@@ -614,7 +613,10 @@ export class AtlasApp {
     const button = document.getElementById("programsButton");
 
     if (button) {
-      button.textContent = interests.length ? `🔖 Salvati (${interests.length})` : "🔖 Salvati";
+      const label = button.querySelector(".topbar-btn-label");
+      const text = interests.length ? `Salvati (${interests.length})` : "Salvati";
+      if (label) label.textContent = text;
+      else button.textContent = interests.length ? `🔖 Salvati (${interests.length})` : "🔖 Salvati";
     }
     if (!list) return;
 
