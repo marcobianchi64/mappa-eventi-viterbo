@@ -26,6 +26,7 @@
     "fix:titles": "npm run build -w @atlas/collector && npm run fix:titles -w @atlas/collector",
     "fix:images": "npm run build -w @atlas/collector && npm run fix:images -w @atlas/collector",
     "fetch:covers": "node scripts/fetch-category-covers.mjs",
+    "prepare:food-covers": "node scripts/prepare-food-covers.mjs",
     "report:images": "npm run build -w @atlas/collector && npm run report:images -w @atlas/collector",
     "report:categories": "npm run build -w @atlas/collector && npm run report:categories -w @atlas/collector",
     "typecheck": "npm run typecheck -w @atlas/core && npm run typecheck -w @atlas/supabase-client && npm run typecheck -w @atlas/collector && npm run typecheck -w @atlas/web && npm run typecheck -w @atlas/admin",

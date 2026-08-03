@@ -614,6 +614,43 @@ body:not(.atlas-view-list) .atlas-list-only {
   transform: scale(1.03);
 }
 
+/* Foto enogastronomia fornite dall'utente: niente filtro duotone */
+.category-cover-custom .category-cover-img {
+  filter: none;
+  opacity: 1;
+  transform: none;
+}
+
+.category-cover-custom::before,
+.category-cover-custom::after {
+  display: none;
+}
+
+.category-cover-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+}
+
+.stable-event-cover.category-cover-custom .stable-event-badge {
+  z-index: 6;
+}
+
+.event-preview-category-cover .category-cover-caption {
+  font-size: 8px;
+  padding: 3px 4px;
+}
+
 /* Duotone: ombre colorate al posto del nero, luci quasi bianche */
 .category-cover-photo::before {
   content: "";

@@ -113,7 +113,8 @@ export function renderMapTooltipCategoryCover(event: AtlasEvent): string {
     return `<div class="event-preview-category-cover category-cover-icon placeholder" data-category="${category}" style="background:linear-gradient(135deg, ${meta.color}, ${meta.color}99)"><span class="category-cover-emoji">${meta.icon}</span></div>`;
   }
   const variant = getCategoryCoverVariant(category, seed);
-  return `<div class="event-preview-category-cover category-cover category-cover-photo" data-category="${category}" data-cover-variant="${variant}">
+  return `<div class="event-preview-category-cover category-cover category-cover-photo category-cover-custom" data-category="${category}" data-cover-variant="${variant}">
     ${renderCategoryCoverSvg(category, seed)}
+    <span class="category-cover-caption">foto sostitutiva provvisoria</span>
   </div>`;
 }

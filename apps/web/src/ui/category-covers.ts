@@ -1,8 +1,11 @@
 import { getCategoryMeta, type EventCategory } from "@atlas/core";
 
-/** Nessuna categoria usa foto stock: tutte usano icona (gradiente + emoji). */
-export const PHOTO_COVER_CATEGORIES = [] as const;
+/** Solo enogastronomia: foto locali a rotazione. Altre categorie: icona. */
+export const PHOTO_COVER_CATEGORIES = ["food"] as const;
 export type PhotoCoverCategory = (typeof PHOTO_COVER_CATEGORIES)[number];
+
+export const FOOD_COVER_COUNT = 7;
+export const PLACEHOLDER_COVER_CAPTION = "foto sostitutiva provvisoria";
 
 export const COVER_VARIANTS_PER_CATEGORY = 10;
 const COVER_BASE = "./covers";
@@ -16,17 +19,25 @@ function hashSeed(seed: string): number {
   return h >>> 0;
 }
 
+function coverVariantCount(category: EventCategory): number {
+  if (category === "food") return FOOD_COVER_COUNT;
+  return COVER_VARIANTS_PER_CATEGORY;
+}
+
 export function usesCategoryPhotoCover(category: EventCategory): category is PhotoCoverCategory {
   return (PHOTO_COVER_CATEGORIES as readonly string[]).includes(category);
 }
 
 export function getCategoryCoverVariant(category: EventCategory, seed: string): number {
   const key = `${category}:${seed || "atlas"}`;
-  return hashSeed(key) % COVER_VARIANTS_PER_CATEGORY;
+  return hashSeed(key) % coverVariantCount(category);
 }
 
 export function getCategoryCoverImageSrc(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
+  if (category === "food") {
+    return `${COVER_BASE}/food/foto${variant + 1}.jpg`;
+  }
   const num = String(variant + 1).padStart(2, "0");
   return `${COVER_BASE}/${category}/${num}.jpg`;
 }
@@ -43,10 +54,18 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
+function coverCaptionHtml(): string {
+  return `<span class="category-cover-caption">${PLACEHOLDER_COVER_CAPTION}</span>`;
+}
+
 function coverImgTag(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
   const src = escapeAttr(getCategoryCoverImageSrc(category, seed));
   return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-cover-variant="${variant}" aria-hidden="true" onerror="this.closest('.category-cover')?.classList.add('category-cover-missing')" />`;
+}
+
+function renderPhotoCoverInner(category: PhotoCoverCategory, seed: string, badgeHtml = ""): string {
+  return `${coverImgTag(category, seed)}${coverCaptionHtml()}${badgeHtml}`;
 }
 
 /** Gradiente + icona categoria. */
@@ -74,8 +93,8 @@ export function renderListCategoryCover(category: EventCategory, seed: string): 
     return renderListCategoryIconCover(category, seed);
   }
   const variant = getCategoryCoverVariant(category, seed);
-  return `<div class="list-card-media category-cover category-cover-photo"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
-    ${coverImgTag(category, seed)}
+  return `<div class="list-card-media category-cover category-cover-photo category-cover-custom"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
+    ${renderPhotoCoverInner(category, seed)}
   </div>`;
 }
 
@@ -88,9 +107,8 @@ export function renderSheetCategoryCover(
     return renderSheetCategoryIconCover(category, seed, badgeHtml);
   }
   const variant = getCategoryCoverVariant(category, seed);
-  return `<div class="stable-event-cover category-cover category-cover-photo"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
-    ${coverImgTag(category, seed)}
-    ${badgeHtml}
+  return `<div class="stable-event-cover category-cover category-cover-photo category-cover-custom"${categoryDataAttr(category)} data-cover-seed="${escapeAttr(seed)}" data-cover-variant="${variant}">
+    ${renderPhotoCoverInner(category, seed, badgeHtml)}
   </div>`;
 }
 
@@ -110,15 +128,22 @@ export function applyCategoryCoverFallback(
   badgeHtml = "",
 ): void {
   const isSheet = container.classList.contains("stable-event-cover");
-  container.classList.remove("has-img", "is-loaded", "img-error", "category-cover-photo", "category-cover-icon");
+  container.classList.remove(
+    "has-img",
+    "is-loaded",
+    "img-error",
+    "category-cover-photo",
+    "category-cover-icon",
+    "category-cover-custom",
+  );
   container.classList.add("category-cover");
   container.dataset.coverSeed = seed;
   container.dataset.coverVariant = String(getCategoryCoverVariant(category, seed));
   container.style.background = "";
 
   if (usesCategoryPhotoCover(category)) {
-    container.classList.add("category-cover-photo");
-    container.innerHTML = `${coverImgTag(category, seed)}${badgeHtml}`;
+    container.classList.add("category-cover-photo", "category-cover-custom");
+    container.innerHTML = renderPhotoCoverInner(category, seed, badgeHtml);
   } else {
     const meta = getCategoryMeta(category);
     container.classList.add("category-cover-icon", "placeholder");
