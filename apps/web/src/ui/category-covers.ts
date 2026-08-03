@@ -8,7 +8,12 @@ export const FOOD_COVER_COUNT = 7;
 export const PLACEHOLDER_COVER_CAPTION = "foto sostitutiva provvisoria";
 
 export const COVER_VARIANTS_PER_CATEGORY = 10;
-const COVER_BASE = "./covers";
+
+function coversBaseUrl(): string {
+  const base = typeof import.meta !== "undefined" && import.meta.env?.BASE_URL ? import.meta.env.BASE_URL : "./";
+  const normalized = base.endsWith("/") ? base : `${base}/`;
+  return `${normalized}covers`;
+}
 
 function hashSeed(seed: string): number {
   let h = 2166136261;
@@ -36,10 +41,10 @@ export function getCategoryCoverVariant(category: EventCategory, seed: string): 
 export function getCategoryCoverImageSrc(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
   if (category === "food") {
-    return `${COVER_BASE}/food/foto${variant + 1}.jpg`;
+    return `${coversBaseUrl()}/food/foto${variant + 1}.jpg`;
   }
   const num = String(variant + 1).padStart(2, "0");
-  return `${COVER_BASE}/${category}/${num}.jpg`;
+  return `${coversBaseUrl()}/${category}/${num}.jpg`;
 }
 
 export function categoryCoverSeed(event: { date_event?: string | null; title?: string | null }): string {
