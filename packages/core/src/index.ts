@@ -42,7 +42,6 @@ export {
 
 export {
   ATLAS_EDITION,
-  ATLAS_TAGLINE,
   getEditionListTitle,
   getEditionTerritoryLabel,
   type AtlasEdition,

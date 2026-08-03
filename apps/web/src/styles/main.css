@@ -23,9 +23,6 @@
   --atlas-rose: #db2777;
   --atlas-rose-soft: #fdf2f8;
   --atlas-indigo-soft: #eef2ff;
-  --atlas-hero-indigo: #312e81;
-  --atlas-hero-indigo-accent: #6366f1;
-  --atlas-hero-gold: #fcd34d;
   --atlas-surface: #f8fafc;
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
   --font-base: 22px;
@@ -95,21 +92,28 @@ body:not(.atlas-view-list) .atlas-header {
 }
 
 body:not(.atlas-view-list) .atlas-header::after {
-  display: none;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--atlas-rose) 0%, #6366f1 52%, #06b6d4 100%);
+  opacity: 0.88;
+  pointer-events: none;
 }
 
 .atlas-header-inner {
   pointer-events: auto;
-  padding: 6px 12px 4px;
+  padding: 6px 10px 4px;
 }
 
 .topbar {
   position: static;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   min-height: 44px;
-  flex-wrap: nowrap;
 }
 
 .brand-mark {
@@ -145,7 +149,7 @@ body:not(.atlas-view-list) .atlas-header::after {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: 2px;
+  margin-left: auto;
   flex-shrink: 0;
 }
 
@@ -153,16 +157,15 @@ body:not(.atlas-view-list) .atlas-header::after {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 8px 12px;
+  padding: 8px 11px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   background: #fff;
   color: #334155;
   font-size: calc(var(--chip-font) * 0.82);
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .topbar-btn-filter {
@@ -185,80 +188,28 @@ body:not(.atlas-view-list) .atlas-header::after {
 
 .active-filters-bar {
   margin: 0;
-  padding: 0;
+  padding: 0 4px 4px;
   font-size: calc(var(--legend-font) * 0.76);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: #64748b;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-body.atlas-view-list .atlas-hero-band {
+body.atlas-view-list .active-filters-bar {
   display: none;
 }
 
-.atlas-hero-band {
-  pointer-events: auto;
-  width: 100%;
-  background: linear-gradient(118deg, #2e1065 0%, var(--atlas-hero-indigo) 48%, #3730a3 100%);
-  border-bottom: 3px solid var(--atlas-hero-indigo-accent);
-  color: #fff;
-}
-
-.atlas-header .atlas-hero-band {
-  padding: 7px 16px 6px;
-}
-
-.atlas-hero-tagline {
-  margin: 0 0 3px;
-  font-size: clamp(0.88rem, 2.1vw, 1.05rem);
-  font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-}
-
-.atlas-hero-tagline span {
-  display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #fde68a 0%,
-    #fef3c7 28%,
-    #e0e7ff 52%,
-    #fef3c7 76%,
-    #fde68a 100%
-  );
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: atlas-tagline-shimmer 9s ease-in-out infinite;
-}
-
-@keyframes atlas-tagline-shimmer {
-  0%,
-  100% {
-    background-position: 0% center;
-    opacity: 0.8;
-  }
-
-  50% {
-    background-position: 100% center;
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .atlas-hero-tagline span {
-    animation: none;
-    color: #fde68a;
-    background: none;
-    -webkit-background-clip: unset;
-    background-clip: unset;
-    opacity: 1;
-  }
+body:not(.atlas-view-list) .active-filters-bar {
+  margin: 2px 8px 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(219, 39, 119, 0.14);
+  color: #475569;
+  font-weight: 700;
 }
 
 .atlas-promo-slot {
@@ -732,9 +683,12 @@ body:not(.atlas-view-list) .atlas-list-only {
   padding: 0 16px;
 }
 
-.list-page-hero.atlas-hero-band {
+.list-page-hero {
   margin: 0 -16px 8px;
   padding: 9px 16px 8px;
+  background: #312e81;
+  border-bottom: 3px solid #6366f1;
+  color: #fff;
 }
 
 .list-page-kicker {
@@ -743,7 +697,7 @@ body:not(.atlas-view-list) .atlas-list-only {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--atlas-hero-gold);
+  color: #fcd34d;
 }
 
 .list-page-hero h1 {

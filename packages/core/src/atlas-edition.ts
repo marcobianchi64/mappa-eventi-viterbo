@@ -11,8 +11,6 @@ export interface AtlasEdition {
   mapZoom: number;
 }
 
-export const ATLAS_TAGLINE = "Vivi il tuo tempo libero";
-
 export const ATLAS_EDITION: AtlasEdition = {
   id: "viterbo",
   placeName: "Viterbo",

@@ -1,7 +1,6 @@
 import {
   CATEGORY_META,
   DATE_RANGE_LABELS,
-  ATLAS_TAGLINE,
   escapeHtml,
   formatEventSchedule,
   getDisplayCategory,
@@ -76,8 +75,7 @@ export function renderEventListPageHtml(
 
   return `
     <div class="list-page-layout">
-      <header class="list-page-hero atlas-hero-band">
-        <p class="atlas-hero-tagline" aria-hidden="true"><span>${escapeHtml(ATLAS_TAGLINE)}</span></p>
+      <header class="list-page-hero">
         <p class="list-page-kicker">${escapeHtml(getEditionTerritoryLabel())}</p>
         <h1>${escapeHtml(getEditionListTitle())}</h1>
         <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
