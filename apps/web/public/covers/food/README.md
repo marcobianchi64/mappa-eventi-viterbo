@@ -1,5 +1,15 @@
-# Cover enogastronomia
+# Le tue foto enogastronomia
 
-Le foto si mettono in **`food-covers/`** (root progetto), non qui.
+Puoi mettere le foto **qui** oppure in `food-covers/` (root progetto).
 
-Vedi `food-covers/README.md`.
+Nomi accettati: `foto1`, `foto 1`, `foto_1` … (jpg o png)
+
+Poi dalla root del progetto:
+
+```bash
+npm run prepare:food-covers
+npm run dev
+```
+
+Nel browser: **Ctrl+Shift+R**
+

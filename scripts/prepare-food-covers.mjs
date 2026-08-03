@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /**
- * Copia e converte foto1…foto7 dalla cartella food-covers/ (root progetto)
- * verso apps/web/public/covers/food/foto1.jpg … foto7.jpg
- *
- * Uso:
- *   1. Metti le tue foto in food-covers/ (foto1.png, foto2.jpg, …)
- *   2. npm run prepare:food-covers
+ * Installa le foto enogastronomia nell'app.
+ * Accetta nomi tipo: foto1, foto 1, Foto1.png, foto_1.jpg …
+ * Cerca in food-covers/ e in apps/web/public/covers/food/
  */
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { join, extname } from "node:path";
@@ -14,9 +11,13 @@ import { dirname } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const SOURCE_DIR = join(ROOT, "food-covers");
 const DEST_DIR = join(ROOT, "apps/web/public/covers/food");
+const SOURCE_DIRS = [
+  join(ROOT, "food-covers"),
+  join(ROOT, "apps/web/public/covers/food"),
+];
 const COUNT = 7;
+const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"]);
 
 async function loadSharp() {
   try {
@@ -27,85 +28,92 @@ async function loadSharp() {
   }
 }
 
-function matchFoto(files, index) {
-  const re = new RegExp(`^foto${index}$`, "i");
-  return files.find((name) => re.test(name.replace(/\.[^.]+$/, "")));
+/** "foto 8", "foto8", "Foto_3" → numero */
+function fotoNumber(filename) {
+  const base = filename.replace(/\.[^.]+$/, "").trim();
+  const m = base.match(/^foto[\s_-]*(\d+)$/i);
+  return m ? Number(m[1]) : null;
+}
+
+async function collectSourceFiles() {
+  const byNum = new Map();
+  for (const dir of SOURCE_DIRS) {
+    let names;
+    try {
+      names = await readdir(dir);
+    } catch {
+      continue;
+    }
+    for (const name of names) {
+      const ext = extname(name).toLowerCase();
+      if (!IMAGE_EXT.has(ext)) continue;
+      const num = fotoNumber(name);
+      if (num == null) continue;
+      if (!byNum.has(num)) {
+        byNum.set(num, { dir, name, num });
+      }
+    }
+  }
+  return [...byNum.values()].sort((a, b) => a.num - b.num);
+}
+
+async function writeJpeg(sharp, src, dest) {
+  const buf = await sharp(src).rotate().resize(1280, 720, { fit: "cover" }).jpeg({ quality: 85 }).toBuffer();
+  await writeFile(dest, buf);
 }
 
 async function main() {
-  await mkdir(SOURCE_DIR, { recursive: true });
   await mkdir(DEST_DIR, { recursive: true });
+  const sharp = await loadSharp();
+  const sources = await collectSourceFiles();
 
-  let files;
-  try {
-    files = await readdir(SOURCE_DIR);
-  } catch {
-    files = [];
+  console.log("\nFoto enogastronomia → apps/web/public/covers/food/\n");
+
+  if (sources.length === 0) {
+    console.log(`Nessuna foto trovata. Metti file tipo "foto1" o "foto 1" in:`);
+    for (const d of SOURCE_DIRS) console.log(`  - ${d}`);
+    process.exitCode = 1;
+    return;
   }
 
-  const sharp = await loadSharp();
-  if (!sharp) {
-    console.warn("Suggerimento: npm install -D sharp  (converte PNG/WebP in JPG)");
+  console.log(`Trovate ${sources.length} immagini: ${sources.map((s) => s.name).join(", ")}\n`);
+
+  const picked = sources.slice(0, COUNT);
+  if (sources.length < COUNT) {
+    console.warn(`Attenzione: servono ${COUNT} foto, ne hai ${sources.length}.`);
   }
 
   let ok = 0;
-  console.log(`\nSorgente: food-covers/`);
-  console.log(`Destinazione: apps/web/public/covers/food/\n`);
-
-  for (let i = 1; i <= COUNT; i++) {
-    const srcName = matchFoto(files, i);
-    const dest = join(DEST_DIR, `foto${i}.jpg`);
-    if (!srcName) {
-      console.warn(`  ✗ foto${i} — non trovata in food-covers/`);
-      continue;
-    }
-    const src = join(SOURCE_DIR, srcName);
-    const ext = extname(srcName).toLowerCase();
+  for (let slot = 1; slot <= picked.length; slot++) {
+    const { dir, name } = picked[slot - 1];
+    const src = join(dir, name);
+    const dest = join(DEST_DIR, `foto${slot}.jpg`);
+    const ext = extname(name).toLowerCase();
 
     try {
-      if (ext === ".jpg" || ext === ".jpeg") {
-        const input = await sharp?.(src) ?? null;
-        if (input) {
-          const buf = await input.rotate().resize(1280, 720, { fit: "cover" }).jpeg({ quality: 85 }).toBuffer();
-          await writeFile(dest, buf);
-        } else {
-          const { copyFile } = await import("node:fs/promises");
-          await copyFile(src, dest);
-        }
+      if ((ext === ".jpg" || ext === ".jpeg") && sharp) {
+        await writeJpeg(sharp, src, dest);
+      } else if (ext === ".jpg" || ext === ".jpeg") {
+        const { copyFile } = await import("node:fs/promises");
+        await copyFile(src, dest);
       } else if (sharp) {
-        const buf = await sharp(src)
-          .rotate()
-          .resize(1280, 720, { fit: "cover", position: "centre" })
-          .jpeg({ quality: 85 })
-          .toBuffer();
-        await writeFile(dest, buf);
+        await writeJpeg(sharp, src, dest);
       } else {
-        console.warn(`  ✗ foto${i} — ${ext}: installa sharp oppure salva come JPG`);
+        console.warn(`  ✗ foto${slot} ← ${name}: installa sharp (npm install) per convertire ${ext}`);
         continue;
       }
-      console.log(`  ✓ foto${i}.jpg ← food-covers/${srcName}`);
+      console.log(`  ✓ foto${slot}.jpg ← ${name}`);
       ok++;
     } catch (e) {
-      console.warn(`  ✗ foto${i} — errore: ${e.message}`);
+      console.warn(`  ✗ foto${slot} ← ${name}: ${e.message}`);
     }
   }
 
   console.log(`\nRisultato: ${ok}/${COUNT} foto installate.`);
-  if (ok === 0) {
-    console.log(`
-Nessuna foto trovata. Passi:
-  1. Apri la cartella food-covers/ nella root del progetto
-     (accanto a package.json, NON dentro apps/)
-  2. Copia qui foto1, foto2, … foto7 (jpg o png)
-  3. Rilancia: npm run prepare:food-covers
-`);
-    process.exitCode = 1;
-  } else if (ok < COUNT) {
-    console.log("Alcune foto mancano: controlla i nomi (foto1, foto2, … foto7).");
-    process.exitCode = 1;
-  } else {
-    console.log("OK — riavvia npm run dev e fai Ctrl+Shift+R nel browser.");
+  if (ok > 0) {
+    console.log("Riavvia npm run dev e fai Ctrl+Shift+R nel browser.");
   }
+  if (ok < COUNT) process.exitCode = 1;
 }
 
 main().catch((e) => {
