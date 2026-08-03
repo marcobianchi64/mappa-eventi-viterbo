@@ -4,6 +4,8 @@ import {
   escapeHtml,
   formatEventSchedule,
   getDisplayCategory,
+  getEditionListTitle,
+  getEditionTerritoryLabel,
   getEventComuneDisplayLabel,
   getEventDisplayTitle,
   getCategoryMeta,
@@ -60,9 +62,9 @@ export function renderEventListPageHtml(
               <h2 class="list-card-title">${title}</h2>
               <p class="list-card-excerpt">${desc}</p>
               <div class="list-card-meta">
-                <span class="list-card-meta-item">📅 ${when}</span>
-                <span class="list-card-meta-item" style="color:${meta.color}">🏷 ${escapeHtml(meta.label)}</span>
-                ${place ? `<span class="list-card-meta-item">📍 ${place}</span>` : ""}
+                <span class="list-card-meta-item list-card-meta-date">📅 ${when}</span>
+                <span class="list-card-meta-item list-card-meta-category" style="color:${meta.color}">🏷 ${escapeHtml(meta.label)}</span>
+                ${place ? `<span class="list-card-meta-item list-card-meta-place">📍 ${place}</span>` : ""}
               </div>
             </div>
           </button>
@@ -73,8 +75,9 @@ export function renderEventListPageHtml(
 
   return `
     <div class="list-page-layout">
-      <header class="list-page-intro">
-        <h1>Eventi in provincia di Viterbo</h1>
+      <header class="list-page-hero">
+        <p class="list-page-kicker">${escapeHtml(getEditionTerritoryLabel())}</p>
+        <h1>${escapeHtml(getEditionListTitle())}</h1>
         <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
       </header>
       <div class="list-cards">${cards}</div>

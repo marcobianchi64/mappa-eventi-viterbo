@@ -1,5 +1,6 @@
 import {
   DATE_RANGE_LABELS,
+  getEditionTerritoryLabel,
   DEFAULT_DATE_RANGE,
   injectAtlasTypography,
   detectContactType,
@@ -416,7 +417,8 @@ export class AtlasApp {
         ? "tutti gli eventi"
         : getCategoryMeta(this.listCategory).label.toLowerCase();
     const time = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
-    el.textContent = `Filtri in atto: categoria: ${category} · time: ${time}`;
+    const territory = getEditionTerritoryLabel();
+    el.textContent = `${territory} · ${category} · ${time}`;
     this.syncHeaderLayout();
   }
 

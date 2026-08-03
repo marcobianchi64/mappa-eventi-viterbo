@@ -41,6 +41,13 @@ export {
 } from "./constants.js";
 
 export {
+  ATLAS_EDITION,
+  getEditionListTitle,
+  getEditionTerritoryLabel,
+  type AtlasEdition,
+} from "./atlas-edition.js";
+
+export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,
   MAP_UI_SCALE_DESKTOP_LARGE,
