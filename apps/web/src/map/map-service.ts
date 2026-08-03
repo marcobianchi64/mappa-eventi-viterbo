@@ -187,7 +187,7 @@ export class MapService {
       radius: pinRadius,
       color: "#ffffff",
       weight: 3,
-      fillColor: "#2563eb",
+      fillColor: "#db2777",
       fillOpacity: 1,
     }).addTo(this.map);
     this.userMarker.bindPopup("Sei qui").openPopup();
@@ -208,10 +208,10 @@ export class MapService {
     if (this.nearCircle) this.map.removeLayer(this.nearCircle);
     this.nearCircle = L.circle([lat, lng], {
       radius: radiusKm * 1000,
-      color: "#2563eb",
+      color: "#db2777",
       weight: 2,
       dashArray: "6 4",
-      fillColor: "#2563eb",
+      fillColor: "#db2777",
       fillOpacity: 0.1,
     }).addTo(this.map);
   }
