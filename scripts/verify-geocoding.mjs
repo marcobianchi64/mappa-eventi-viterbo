@@ -4,6 +4,7 @@ import {
   geocodeEventPlace,
   resolveMapMarkerCoordinates,
   assessEventLocation,
+  inferComuneFromText,
   VITERBO_PROVINCE_CENTER,
 } from "@atlas/core";
 
@@ -77,6 +78,42 @@ if (!bagnaiaPin.adjusted) {
 const distBagnaia = distanceKm(bagnaiaPin.lat, bagnaiaPin.lng, viterbo.lat, viterbo.lng);
 if (distBagnaia < 2) {
   errors.push(`Bagnaia non deve restare sul centro Viterbo (${distBagnaia.toFixed(1)} km)`);
+}
+
+if (inferComuneFromText("Jacopo Mai – recital per pianoforte solo")) {
+  errors.push(`«pianoforte» non deve essere letto come comune Orte`);
+}
+
+const jacopoPlace = geocodeEventPlace({
+  title: "Jacopo Mai – recital per pianoforte solo",
+  venue: "Molo del fiume Fiora, Montalto Marina",
+  comune: null,
+  city: null,
+  location: null,
+});
+if (jacopoPlace.comuneKey !== "montalto di castro") {
+  errors.push(`Jacopo Mai atteso Montalto di Castro, ottenuto: ${jacopoPlace.comuneKey}`);
+}
+if (jacopoPlace.localitaKey !== "montalto marina") {
+  errors.push(`Jacopo Mai attesa località Montalto Marina, ottenuta: ${jacopoPlace.localitaKey}`);
+}
+
+const jacopoPin = assessEventLocation({
+  lat: 42.4603148,
+  lng: 12.3864259,
+  title: "Jacopo Mai – recital per pianoforte solo",
+  venue: "Molo del fiume Fiora, Montalto Marina",
+  comune: null,
+  city: null,
+  location: null,
+});
+const distJacopoOrte = distanceKm(jacopoPin.lat, jacopoPin.lng, 42.4603148, 12.3864259);
+if (distJacopoOrte < 15) {
+  errors.push(`Jacopo Mai non deve restare su Orte (${distJacopoOrte.toFixed(1)} km dal pin errato)`);
+}
+const distJacopoMarina = distanceKm(jacopoPin.lat, jacopoPin.lng, jacopoPlace.lat, jacopoPlace.lng);
+if (distJacopoMarina > 2) {
+  errors.push(`Jacopo Mai deve essere geolocalizzato a Montalto Marina (${distJacopoMarina.toFixed(1)} km)`);
 }
 
 if (errors.length) {

@@ -1,4 +1,5 @@
 import { getFrazioneEntry, inferLocalitaFromText } from "./viterbo-frazioni.js";
+import { textIncludesWholePhrase } from "./phrase-match.js";
 
 /** Coordinate centro abitato — provincia di Viterbo (fonte: dati ISTAT/OSM). */
 export const VITERBO_PROVINCE_CENTER = { lat: 42.4174, lng: 12.1049 };
@@ -85,6 +86,7 @@ const COMUNE_ALIASES: Record<string, string> = {
   "s. elia": "castel sant'elia",
   "s elia": "castel sant'elia",
   "civitella dagliano": "civitella d'agliano",
+  "montalto marina": "montalto di castro",
 };
 
 const COMUNE_ALIAS_KEYS_BY_LENGTH = Object.keys(COMUNE_ALIASES).sort((a, b) => b.length - a.length);
@@ -168,7 +170,7 @@ function resolveComuneKey(raw: string): string | null {
   if (COMUNE_COORDS[key]) return key;
 
   for (const name of COMUNE_NAMES_BY_LENGTH) {
-    if (key.includes(name) || name.includes(key)) return name;
+    if (textIncludesWholePhrase(key, name) || textIncludesWholePhrase(name, key)) return name;
   }
 
   return inferComuneFromText(raw);
@@ -180,11 +182,11 @@ export function inferComuneFromText(...parts: Array<string | null | undefined>):
   if (!haystack) return null;
 
   for (const aliasKey of COMUNE_ALIAS_KEYS_BY_LENGTH) {
-    if (haystack.includes(aliasKey)) return COMUNE_ALIASES[aliasKey];
+    if (textIncludesWholePhrase(haystack, aliasKey)) return COMUNE_ALIASES[aliasKey];
   }
 
   for (const name of COMUNE_NAMES_BY_LENGTH) {
-    if (haystack.includes(name)) return name;
+    if (textIncludesWholePhrase(haystack, name)) return name;
   }
   return null;
 }

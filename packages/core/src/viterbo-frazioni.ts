@@ -2,6 +2,7 @@
  * Frazioni e località della provincia di Viterbo con coordinate proprie.
  * Priorità sul centro del comune capoluogo (es. Bagnaia ≠ centro Viterbo).
  */
+import { textIncludesWholePhrase } from "./phrase-match.js";
 export type FrazioneEntry = {
   lat: number;
   lng: number;
@@ -28,6 +29,12 @@ export const VITERBO_FRAZIONI: Record<string, FrazioneEntry> = {
     label: "San Martino al Cimino",
   },
   "villa lante": { lat: 42.4288, lng: 12.1542, parentComune: "viterbo", label: "Bagnaia (Villa Lante)" },
+  "montalto marina": {
+    lat: 42.3102,
+    lng: 11.5564,
+    parentComune: "montalto di castro",
+    label: "Montalto Marina",
+  },
 };
 
 const FRAZIONE_NAMES_BY_LENGTH = Object.keys(VITERBO_FRAZIONI).sort((a, b) => b.length - a.length);
@@ -49,7 +56,7 @@ export function inferLocalitaFromText(...parts: Array<string | null | undefined>
   if (!haystack) return null;
 
   for (const name of FRAZIONE_NAMES_BY_LENGTH) {
-    if (haystack.includes(name)) return name;
+    if (textIncludesWholePhrase(haystack, name)) return name;
   }
   return null;
 }
