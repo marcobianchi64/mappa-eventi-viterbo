@@ -71,7 +71,7 @@ export function renderEventSheetCover(event: AtlasEvent): EventSheetCoverParts {
   };
 }
 
-/** Fade-in al caricamento; fallback illustrazione categoria se l'immagine fallisce. */
+/** Fade-in al caricamento; fallback se l'immagine fallisce. */
 export function bindEventMediaImages(root: ParentNode): void {
   root.querySelectorAll<HTMLImageElement>("[data-event-media] .event-media-img").forEach((img) => {
     const container = img.closest<HTMLElement>("[data-event-media]");
@@ -85,7 +85,9 @@ export function bindEventMediaImages(root: ParentNode): void {
       const category = (container.dataset.category as EventCategory | undefined) ?? "other";
       const seed = container.dataset.coverSeed ?? "atlas";
       const badge = container.querySelector(".stable-event-badge")?.outerHTML ?? "";
-      applyCategoryCoverFallback(container, category, seed, badge);
+      const hadRealImage = container.classList.contains("has-img");
+      // URL reale fallito → icona, non placeholder food (evita grigio + didascalia)
+      applyCategoryCoverFallback(container, category, seed, badge, hadRealImage);
     };
 
     if (img.complete && img.naturalWidth > 0) {
@@ -100,6 +102,29 @@ export function bindEventMediaImages(root: ParentNode): void {
 
     img.addEventListener("load", onLoaded, { once: true });
     img.addEventListener("error", onError, { once: true });
+  });
+
+  bindCategoryCoverImages(root);
+}
+
+/** Se foto1…foto7 mancano, torna all'icona invece del riquadro grigio. */
+export function bindCategoryCoverImages(root: ParentNode): void {
+  root.querySelectorAll<HTMLImageElement>(".category-cover-photo .category-cover-img").forEach((img) => {
+    if (img.dataset.coverBound === "1") return;
+    img.dataset.coverBound = "1";
+
+    img.addEventListener(
+      "error",
+      () => {
+        const container = img.closest<HTMLElement>(".category-cover");
+        if (!container || container.classList.contains("category-cover-icon")) return;
+        const category = (container.dataset.category as EventCategory | undefined) ?? "other";
+        const seed = container.dataset.coverSeed ?? "atlas";
+        const badge = container.querySelector(".stable-event-badge")?.outerHTML ?? "";
+        applyCategoryCoverFallback(container, category, seed, badge, true);
+      },
+      { once: true },
+    );
   });
 }
 

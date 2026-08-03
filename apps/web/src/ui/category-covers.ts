@@ -61,7 +61,7 @@ function coverCaptionHtml(): string {
 function coverImgTag(category: PhotoCoverCategory, seed: string): string {
   const variant = getCategoryCoverVariant(category, seed);
   const src = escapeAttr(getCategoryCoverImageSrc(category, seed));
-  return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-cover-variant="${variant}" aria-hidden="true" onerror="this.closest('.category-cover')?.classList.add('category-cover-missing')" />`;
+  return `<img class="category-cover-img" src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-cover-variant="${variant}" aria-hidden="true" />`;
 }
 
 function renderPhotoCoverInner(category: PhotoCoverCategory, seed: string, badgeHtml = ""): string {
@@ -126,6 +126,7 @@ export function applyCategoryCoverFallback(
   category: EventCategory,
   seed: string,
   badgeHtml = "",
+  preferIcon = false,
 ): void {
   const isSheet = container.classList.contains("stable-event-cover");
   container.classList.remove(
@@ -135,13 +136,16 @@ export function applyCategoryCoverFallback(
     "category-cover-photo",
     "category-cover-icon",
     "category-cover-custom",
+    "category-cover-missing",
   );
   container.classList.add("category-cover");
   container.dataset.coverSeed = seed;
   container.dataset.coverVariant = String(getCategoryCoverVariant(category, seed));
   container.style.background = "";
 
-  if (usesCategoryPhotoCover(category)) {
+  const usePhoto = usesCategoryPhotoCover(category) && !preferIcon;
+
+  if (usePhoto) {
     container.classList.add("category-cover-photo", "category-cover-custom");
     container.innerHTML = renderPhotoCoverInner(category, seed, badgeHtml);
   } else {
