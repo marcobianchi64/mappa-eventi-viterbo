@@ -1,5 +1,6 @@
 import {
   ATLAS_VERSION,
+  ATLAS_TAGLINE,
   CATEGORY_META,
   DEFAULT_DATE_RANGE,
   getEditionListTitle,
@@ -67,6 +68,9 @@ export function renderShell(): string {
             <button id="topInsertBtn" class="topbar-btn topbar-btn-insert atlas-map-only" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
           </div>
         </div>
+      </div>
+      <div class="atlas-hero-band atlas-map-only">
+        <p class="atlas-hero-tagline" aria-hidden="true"><span>${ATLAS_TAGLINE}</span></p>
         <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
       </div>
       <div id="atlasPromoSlot" class="atlas-promo-slot atlas-map-only" hidden aria-hidden="true"></div>
