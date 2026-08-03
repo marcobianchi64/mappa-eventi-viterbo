@@ -1,10 +1,11 @@
 import { getCategoryMeta, type EventCategory } from "@atlas/core";
 
-/** Solo enogastronomia: foto locali a rotazione. Altre categorie: icona. */
-export const PHOTO_COVER_CATEGORIES = ["food"] as const;
+/** Enogastronomia e sport: foto locali a rotazione se manca la locandina reale. */
+export const PHOTO_COVER_CATEGORIES = ["food", "sport"] as const;
 export type PhotoCoverCategory = (typeof PHOTO_COVER_CATEGORIES)[number];
 
 export const FOOD_COVER_COUNT = 7;
+export const SPORT_COVER_COUNT = 10;
 export const PLACEHOLDER_COVER_CAPTION = "foto sostitutiva provvisoria";
 
 export const COVER_VARIANTS_PER_CATEGORY = 10;
@@ -26,6 +27,7 @@ function hashSeed(seed: string): number {
 
 function coverVariantCount(category: EventCategory): number {
   if (category === "food") return FOOD_COVER_COUNT;
+  if (category === "sport") return SPORT_COVER_COUNT;
   return COVER_VARIANTS_PER_CATEGORY;
 }
 

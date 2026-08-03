@@ -29,12 +29,21 @@ function coverSeedAttr(event: AtlasEvent): string {
   return ` data-cover-seed="${escapeHtml(seed)}"`;
 }
 
+/** URL locandina reale dell'evento (mai sostituita da foto stock). */
+export function getEventMediaUrl(event: AtlasEvent): string | null {
+  const raw = event.image_url?.trim();
+  if (!raw) return null;
+  const normalized = raw.startsWith("//") ? `https:${raw}` : raw;
+  return isHttpUrl(normalized) ? normalized : null;
+}
+
 /** Area locandina 16:9 per card elenco eventi. */
 export function renderListCardMedia(event: AtlasEvent): string {
   const category = getDisplayCategory(event);
-  if (isHttpUrl(event.image_url)) {
-    const src = escapeHtml(event.image_url!);
-    return `<div class="list-card-media has-img"${categoryDataAttr(category)}${coverSeedAttr(event)} data-event-media>
+  const mediaUrl = getEventMediaUrl(event);
+  if (mediaUrl) {
+    const src = escapeHtml(mediaUrl);
+    return `<div class="list-card-media has-img"${categoryDataAttr(category)}${coverSeedAttr(event)} data-event-media data-real-cover="1">
       <div class="event-media-skeleton" aria-hidden="true"></div>
       <img class="event-media-img" src="${src}" alt="" ${EVENT_MEDIA_IMG_ATTRS} />
     </div>`;
@@ -52,14 +61,14 @@ export function renderEventSheetCover(event: AtlasEvent): EventSheetCoverParts {
   const category = getDisplayCategory(event);
   const meta = getCategoryMeta(category);
   const badge = `<div class="stable-event-badge" style="color:${meta.color}">${meta.label}</div>`;
-  const imageUrl = isHttpUrl(event.image_url) ? escapeHtml(event.image_url) : "";
+  const imageUrl = getEventMediaUrl(event);
 
   if (imageUrl) {
     return {
       category,
-      coverHtml: `<div class="stable-event-cover has-img"${categoryDataAttr(category)}${coverSeedAttr(event)} data-event-media>
+      coverHtml: `<div class="stable-event-cover has-img"${categoryDataAttr(category)}${coverSeedAttr(event)} data-event-media data-real-cover="1">
         <div class="event-media-skeleton" aria-hidden="true"></div>
-        <img class="event-media-img" src="${imageUrl}" alt="" decoding="async" referrerpolicy="no-referrer" />
+        <img class="event-media-img" src="${escapeHtml(imageUrl)}" alt="" decoding="async" referrerpolicy="no-referrer" />
         ${badge}
       </div>`,
     };
@@ -85,9 +94,9 @@ export function bindEventMediaImages(root: ParentNode): void {
       const category = (container.dataset.category as EventCategory | undefined) ?? "other";
       const seed = container.dataset.coverSeed ?? "atlas";
       const badge = container.querySelector(".stable-event-badge")?.outerHTML ?? "";
-      const hadRealImage = container.classList.contains("has-img");
-      // URL reale fallito → icona, non placeholder food (evita grigio + didascalia)
-      applyCategoryCoverFallback(container, category, seed, badge, hadRealImage);
+      const hadRealCover = container.dataset.realCover === "1";
+      // Locandina reale fallita → icona; mai foto sostitutiva al posto dell'originale
+      applyCategoryCoverFallback(container, category, seed, badge, hadRealCover);
     };
 
     if (img.complete && img.naturalWidth > 0) {
@@ -131,7 +140,7 @@ export function bindCategoryCoverImages(root: ParentNode): void {
 /** Cover compatta per tooltip mappa (senza foto reale). */
 export function renderMapTooltipCategoryCover(event: AtlasEvent): string {
   const category = getDisplayCategory(event);
-  if (isHttpUrl(event.image_url)) return "";
+  if (getEventMediaUrl(event)) return "";
   const seed = categoryCoverSeed(event);
   if (!usesCategoryPhotoCover(category)) {
     const meta = getCategoryMeta(category);

@@ -1,6 +1,13 @@
 # Cover segnaposto
 
-- **Enogastronomia** (`food/`): 7 foto locali a rotazione + didascalia «foto sostitutiva provvisoria»
-- **Altre categorie**: icona (gradiente + emoji)
+| Categoria | Senza locandina reale |
+|-----------|------------------------|
+| **food** | `foto1.jpg`…`foto7.jpg` (vedi `food/README.md`) |
+| **sport** | `01.jpg`…`10.jpg` in questa cartella |
+| **altre** | icona colorata |
 
-Vedi `food/README.md` per aggiungere le tue foto.
+Didascalia: *foto sostitutiva provvisoria*
+
+**Regola:** se l'evento ha `image_url` nel database, l'app mostra sempre la locandina reale.
+
+Per popolare le locandine mancanti: `npm run fix:images`
