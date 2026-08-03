@@ -19,9 +19,9 @@ export const ATLAS_EDITION: AtlasEdition = {
   mapZoom: DEFAULT_MAP_ZOOM,
 };
 
-/** Titolo elenco eventi (stile Oggiroma: «Programma eventi a Roma»). */
-export function getEditionListTitle(edition: AtlasEdition = ATLAS_EDITION): string {
-  return `Programma eventi a ${edition.placeName}`;
+/** Titolo elenco eventi (il territorio è già nel kicker sopra). */
+export function getEditionListTitle(_edition: AtlasEdition = ATLAS_EDITION): string {
+  return "Programma eventi";
 }
 
 /** Sottotitolo territorio per hero e filtri. */

@@ -27,6 +27,7 @@ export function setEventSheetOnClose(callback: (() => void) | null): void {
 export function closeEventSheet(): void {
   document.getElementById("stableEventOverlay")?.classList.remove("open");
   document.getElementById("stableEventSheet")?.classList.remove("open");
+  document.body.classList.remove("atlas-event-sheet-open");
   onCloseCallback?.();
 }
 
@@ -118,6 +119,7 @@ export function openEventSheet(
   bindEventMediaImages(content);
   overlay.classList.add("open");
   sheet.classList.add("open");
+  document.body.classList.add("atlas-event-sheet-open");
 }
 
 export function openFestivalEventSheet(
@@ -189,6 +191,7 @@ export function openFestivalEventSheet(
 
   overlay.classList.add("open");
   sheet.classList.add("open");
+  document.body.classList.add("atlas-event-sheet-open");
 }
 
 export function shareEvent(title: string, url: string): void {
