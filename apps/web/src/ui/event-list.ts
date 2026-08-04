@@ -77,8 +77,10 @@ export function renderEventListPageHtml(
     <div class="list-page-layout">
       <header class="list-page-hero">
         <p class="list-page-kicker">${escapeHtml(getEditionTerritoryLabel())}</p>
-        <h1>${escapeHtml(getEditionListTitle())}</h1>
-        <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
+        <div class="list-page-title-row">
+          <h1>${escapeHtml(getEditionListTitle())}</h1>
+          <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
+        </div>
       </header>
       <div class="list-cards">${cards}</div>
     </div>

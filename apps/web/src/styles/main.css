@@ -23,6 +23,9 @@
   --atlas-rose: #db2777;
   --atlas-rose-soft: #fdf2f8;
   --atlas-indigo-soft: #eef2ff;
+  --atlas-hero-indigo: #312e81;
+  --atlas-hero-indigo-accent: #6366f1;
+  --atlas-hero-gold: #fcd34d;
   --atlas-surface: #f8fafc;
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
   --font-base: 22px;
@@ -105,7 +108,12 @@ body:not(.atlas-view-list) .atlas-header::after {
 
 .atlas-header-inner {
   pointer-events: auto;
-  padding: 6px 10px 4px;
+  margin: 0 10px;
+  padding: 5px 10px 4px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid var(--atlas-hero-gold);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 14px rgba(49, 46, 129, 0.08);
 }
 
 .topbar {
@@ -621,11 +629,12 @@ button {
 
 .view-switch {
   display: flex;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 11px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid var(--atlas-hero-indigo);
+  box-shadow: 0 2px 10px rgba(49, 46, 129, 0.14);
   pointer-events: auto;
   flex-shrink: 0;
 }
@@ -633,27 +642,28 @@ button {
 .view-switch-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 12px;
+  gap: 6px;
+  padding: 9px 16px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 9px;
   background: transparent;
-  color: #64748b;
-  font-size: calc(var(--chip-font) * 0.78);
+  color: #475569;
+  font-size: calc(var(--chip-font) * 0.86);
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .view-switch-icon {
-  font-size: 1.05em;
+  font-size: 1.12em;
   line-height: 1;
 }
 
 .view-switch-btn.active {
-  background: #fff !important;
-  color: var(--atlas-rose) !important;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+  background: var(--atlas-hero-indigo) !important;
+  color: var(--atlas-hero-gold) !important;
+  box-shadow: 0 2px 8px rgba(49, 46, 129, 0.28);
 }
 
 body.atlas-view-list .atlas-map-only {
@@ -685,34 +695,45 @@ body:not(.atlas-view-list) .atlas-list-only {
 
 .list-page-hero {
   margin: 0 -16px 8px;
-  padding: 9px 16px 8px;
-  background: #312e81;
-  border-bottom: 3px solid #6366f1;
-  color: #fff;
+  padding: 5px 16px 4px;
+  background: var(--atlas-hero-indigo);
+  border-bottom: 2px solid var(--atlas-hero-indigo-accent);
+  color: var(--atlas-hero-gold);
 }
 
 .list-page-kicker {
-  margin: 0 0 2px;
-  font-size: calc(var(--legend-font) * 0.7);
+  margin: 0 0 1px;
+  font-size: calc(var(--legend-font) * 0.66);
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fcd34d;
+  color: #fff;
+  line-height: 1.15;
+}
+
+.list-page-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 2.5cm;
+  row-gap: 0;
 }
 
 .list-page-hero h1 {
-  margin: 0 0 3px;
-  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  margin: 0;
+  font-size: clamp(1rem, 2.2vw, 1.28rem);
   line-height: 1.15;
   font-weight: 800;
-  color: #fff;
+  color: var(--atlas-hero-gold);
 }
 
 .list-page-lead {
   margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: calc(var(--legend-font) * 0.78);
+  color: var(--atlas-hero-gold);
+  font-size: calc(var(--legend-font) * 0.74);
   font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .list-cards {
@@ -802,14 +823,23 @@ body:not(.atlas-view-list) .atlas-list-only {
   right: 0;
   bottom: 0;
   z-index: 5;
-  padding: 5px 8px;
-  font-size: 10px;
+  padding: 3px 5px;
+  font-size: 8px;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: rgba(255, 255, 255, 0.95);
   background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.2));
   pointer-events: none;
+}
+
+.list-card-media .category-cover-caption {
+  font-size: 7px;
+  padding: 2px 3px;
+  letter-spacing: -0.02em;
 }
 
 .stable-event-cover.category-cover-custom .stable-event-badge {
@@ -1767,7 +1797,15 @@ body:not(.atlas-view-list) .leaflet-top.leaflet-right {
   }
 
   .list-page-hero {
-    padding: 12px 14px 10px;
+    padding: 5px 14px 4px;
+  }
+
+  .list-page-title-row {
+    gap: 0 0.75rem;
+  }
+
+  .list-page-lead {
+    white-space: normal;
   }
 
   .list-card-excerpt {
