@@ -26,6 +26,7 @@
   --atlas-hero-indigo: #312e81;
   --atlas-hero-indigo-accent: #6366f1;
   --atlas-hero-gold: #fcd34d;
+  --atlas-detail-bg: #f3e4b8;
   --atlas-surface: #f8fafc;
   /* Fallback: sovrascritti da applyMapUiScale() in main.ts */
   --font-base: 22px;
@@ -1460,12 +1461,12 @@ body:not(.atlas-view-list) .leaflet-top.leaflet-right {
   z-index: 1800;
   max-height: 78vh;
   overflow-y: auto;
-  background: #fff;
+  background: var(--atlas-detail-bg);
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.2);
   transform: translateY(110%);
   transition: transform 0.25s ease;
-  border: 1px solid rgba(219, 39, 119, 0.08);
+  border: 1px solid #e0cf96;
 }
 
 .stable-event-sheet.open { transform: translateY(0); }
@@ -1578,7 +1579,7 @@ body:not(.atlas-view-list) .leaflet-top.leaflet-right {
   color: #475467;
   font-size: var(--sheet-body-font);
 }
-.stable-event-section { border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px; }
+.stable-event-section { border-top: 1px solid #dcc99a; padding-top: 12px; margin-top: 12px; }
 .stable-event-section h3 {
   margin: 0 0 8px;
   font-size: calc(var(--sheet-body-font) + 2px);
