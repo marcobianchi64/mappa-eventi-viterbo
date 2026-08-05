@@ -21,6 +21,8 @@ import {
   generateSubmissionReference,
   buildSubmissionWhatsAppUrl,
   assessEventLocation,
+  geocodeEventPlace,
+  type SubmissionKind,
   type AtlasEvent,
   type DateRangeKey,
   type FestivalMapGroup,
@@ -53,6 +55,8 @@ interface FormValues {
   contact: string;
   lat: number;
   lng: number;
+  submissionKind: SubmissionKind;
+  relatedEventId: string;
 }
 
 type AppViewMode = "map" | "list";
@@ -66,6 +70,8 @@ export class AtlasApp {
   private nearRadiusPreset: NearRadiusPreset = loadNearRadiusPreset();
   private lastUserPosition: { lat: number; lng: number } | null = null;
   private listCategory: EventListCategoryFilter = "all";
+  private insertMapPickActive = false;
+  private insertLocationFromMap = false;
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
@@ -111,6 +117,7 @@ export class AtlasApp {
       },
       shareEvent,
       showToast,
+      (e) => this.openInsertForCorrection(e),
     );
   }
 
@@ -169,6 +176,8 @@ export class AtlasApp {
       this.closeDockFlyouts();
     });
 
+    this.bindInsertFormControls();
+
     document.querySelectorAll(".filter-when-option").forEach((button) => {
       button.addEventListener("click", () => {
         this.currentRange = (button as HTMLButtonElement).dataset.range as DateRangeKey;
@@ -206,7 +215,9 @@ export class AtlasApp {
     });
 
     document.getElementById("openInsertMobile")?.addEventListener("click", () => {
+      closeEventSheet();
       this.openMobileSheet("insert");
+      this.beginInsertMapPick();
     });
 
     document.getElementById("closeSheet")?.addEventListener("click", () => {
@@ -397,6 +408,13 @@ export class AtlasApp {
 
     const insertOpen = which === "insert" && !insert?.classList.contains("open");
 
+    if (insertOpen) {
+      closeEventSheet();
+      this.beginInsertMapPick();
+    } else {
+      this.resetInsertPickState();
+    }
+
     insert?.classList.toggle("open", insertOpen);
     insert?.setAttribute("aria-hidden", insertOpen ? "false" : "true");
     insertBtn?.classList.toggle("active", insertOpen);
@@ -407,6 +425,170 @@ export class AtlasApp {
     insert?.classList.remove("open");
     insert?.setAttribute("aria-hidden", "true");
     document.getElementById("topInsertBtn")?.classList.remove("active");
+    this.resetInsertPickState();
+  }
+
+  private isInsertFormOpen(): boolean {
+    const flyoutOpen = document.getElementById("dockInsertFlyout")?.classList.contains("open");
+    const mobileInsert = document.getElementById("mobileInsertPanel");
+    const mobileOpen =
+      document.getElementById("mobileSheet")?.classList.contains("open") &&
+      mobileInsert &&
+      !mobileInsert.classList.contains("hidden");
+    return Boolean(flyoutOpen || mobileOpen);
+  }
+
+  private beginInsertMapPick(): void {
+    this.insertMapPickActive = true;
+    this.updateInsertLocationStatus("desktop");
+    this.updateInsertLocationStatus("mobile");
+    setStatus("Tocca la mappa per indicare la posizione.", "success");
+  }
+
+  private resetInsertPickState(): void {
+    this.insertMapPickActive = false;
+    this.insertLocationFromMap = false;
+  }
+
+  private bindInsertFormControls(): void {
+    document.querySelectorAll(".submission-kind-input").forEach((input) => {
+      input.addEventListener("change", () => this.syncInsertFormModeUi());
+    });
+    document.getElementById("pickMapLocation")?.addEventListener("click", () => this.beginInsertMapPick());
+    document.getElementById("pickMapLocationMobile")?.addEventListener("click", () => this.beginInsertMapPick());
+    ["venue", "venueMobile"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("input", () => {
+        this.updateInsertLocationStatus(id.endsWith("Mobile") ? "mobile" : "desktop");
+      });
+    });
+  }
+
+  private syncInsertFormModeUi(): void {
+    const isCorrection = this.getSubmissionKind("desktop") === "correction";
+    document.querySelectorAll(".insert-form-root").forEach((root) => {
+      root.classList.toggle("insert-form-correction", isCorrection);
+    });
+    const title = document.getElementById("insertFlyoutTitle");
+    const mobileTitle = document.getElementById("insertMobileTitle");
+    const heading = isCorrection ? "Migliora un evento" : "Segnala un evento";
+    if (title) title.textContent = heading;
+    if (mobileTitle) mobileTitle.textContent = heading;
+    (["", "Mobile"] as const).forEach((suffix) => {
+      const label = document.getElementById(`descriptionLabel${suffix}`);
+      const textarea = document.getElementById(`description${suffix}`) as HTMLTextAreaElement | null;
+      if (label) {
+        label.textContent = isCorrection
+          ? "Cosa vuoi correggere o aggiungere? *"
+          : "Breve descrizione (facoltativa)";
+      }
+      if (textarea) {
+        textarea.placeholder = isCorrection
+          ? "Es. foto ufficiale, orario esatto, link aggiornato, indirizzo preciso…"
+          : "Informazioni utili sull'evento";
+      }
+    });
+  }
+
+  private updateInsertLocationStatus(source: "desktop" | "mobile"): void {
+    const suffix = source === "mobile" ? "Mobile" : "";
+    const el = document.getElementById(`insertLocationStatus${suffix}`);
+    if (!el) return;
+    const lat = Number((document.getElementById(`lat${suffix}`) as HTMLInputElement | null)?.value);
+    const lng = Number((document.getElementById(`lng${suffix}`) as HTMLInputElement | null)?.value);
+    const venue = (document.getElementById(`venue${suffix}`) as HTMLInputElement | null)?.value.trim();
+    if (this.insertMapPickActive) {
+      el.textContent = "Modalità attiva: tocca un punto sulla mappa.";
+      el.className = "insert-location-status is-picking";
+      return;
+    }
+    if (this.insertLocationFromMap && Number.isFinite(lat) && Number.isFinite(lng)) {
+      el.textContent = `Posizione selezionata sulla mappa (${lat.toFixed(4)}, ${lng.toFixed(4)}).`;
+      el.className = "insert-location-status is-set";
+      return;
+    }
+    if (venue) {
+      el.textContent = "Useremo l'indirizzo scritto per stimare la posizione sulla mappa.";
+      el.className = "insert-location-status is-address";
+      return;
+    }
+    el.textContent = "Indica il punto sulla mappa oppure scrivi un indirizzo preciso.";
+    el.className = "insert-location-status";
+  }
+
+  private openInsertForCorrection(event: AtlasEvent): void {
+    if (this.viewMode !== "map") this.setViewMode("map");
+    closeEventSheet();
+    this.syncEventUrlParam(null);
+    this.prefillInsertFromEvent(event, "correction");
+    const insert = document.getElementById("dockInsertFlyout");
+    const insertBtn = document.getElementById("topInsertBtn");
+    insert?.classList.add("open");
+    insert?.setAttribute("aria-hidden", "false");
+    insertBtn?.classList.add("active");
+    this.insertMapPickActive = false;
+    this.insertLocationFromMap = true;
+    this.updateInsertLocationStatus("desktop");
+    this.updateInsertLocationStatus("mobile");
+    setStatus("Compila solo i campi da migliorare e invia la segnalazione.", "success");
+  }
+
+  private prefillInsertFromEvent(event: AtlasEvent, mode: SubmissionKind): void {
+    const toLocalInput = (iso?: string | null) => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "";
+      const pad = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+    (["", "Mobile"] as const).forEach((suffix) => {
+      const set = (id: string, value: string) => {
+        const el = document.getElementById(`${id}${suffix}`) as HTMLInputElement | HTMLTextAreaElement | null;
+        if (el) el.value = value;
+      };
+      set("title", event.title ?? "");
+      set("venue", event.venue ?? "");
+      set("event_url", event.event_url ?? "");
+      set("image_url", event.image_url ?? "");
+      set("start_date", toLocalInput(event.start_date));
+      set("end_date", toLocalInput(event.end_date));
+      set("lat", String(event.lat ?? ""));
+      set("lng", String(event.lng ?? ""));
+      set("related_event_id", event.date_event ? String(event.date_event) : "");
+      const category = document.getElementById(`category${suffix}`) as HTMLSelectElement | null;
+      if (category) category.value = getDisplayCategory(event);
+      const kindName = `submissionKind${suffix}`;
+      document
+        .querySelectorAll(`input[name="${kindName}"]`)
+        .forEach((input) => {
+          (input as HTMLInputElement).checked = (input as HTMLInputElement).value === mode;
+        });
+    });
+    this.syncInsertFormModeUi();
+  }
+
+  private getSubmissionKind(source: "desktop" | "mobile"): SubmissionKind {
+    const name = source === "mobile" ? "submissionKindMobile" : "submissionKind";
+    const checked = document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null;
+    return checked?.value === "correction" ? "correction" : "new";
+  }
+
+  private resolveSubmissionCoordinates(
+    form: FormValues,
+  ): { lat: number; lng: number; source: "map" | "address" | "existing" } | null {
+    if (this.insertLocationFromMap && Number.isFinite(form.lat) && Number.isFinite(form.lng)) {
+      return { lat: form.lat, lng: form.lng, source: "map" };
+    }
+    if (form.venue.trim()) {
+      const place = geocodeEventPlace({ venue: form.venue, title: form.title });
+      return { lat: place.lat, lng: place.lng, source: "address" };
+    }
+    if (form.submissionKind === "correction" && form.relatedEventId) {
+      const existing = this.allEvents.find((e) => String(e.date_event ?? "") === form.relatedEventId);
+      if (existing && Number.isFinite(existing.lat) && Number.isFinite(existing.lng)) {
+        return { lat: existing.lat, lng: existing.lng, source: "existing" };
+      }
+    }
+    return null;
   }
 
   private updateActiveFiltersBar(): void {
@@ -439,6 +621,8 @@ export class AtlasApp {
   }
 
   private setDraftPosition(lat: number, lng: number): void {
+    if (!this.isInsertFormOpen() || !this.insertMapPickActive) return;
+
     ["lat", "latMobile"].forEach((id) => {
       const el = document.getElementById(id) as HTMLInputElement | null;
       if (el) el.value = lat.toFixed(6);
@@ -447,8 +631,12 @@ export class AtlasApp {
       const el = document.getElementById(id) as HTMLInputElement | null;
       if (el) el.value = lng.toFixed(6);
     });
+    this.insertLocationFromMap = true;
+    this.insertMapPickActive = false;
     this.mapService.setDraftPosition(lat, lng);
-    setStatus("Posizione selezionata.", "success");
+    this.updateInsertLocationStatus("desktop");
+    this.updateInsertLocationStatus("mobile");
+    setStatus("Posizione registrata sulla mappa.", "success");
   }
 
   private syncFormValues(source: "desktop" | "mobile"): FormValues {
@@ -465,23 +653,38 @@ export class AtlasApp {
       contact: (document.getElementById(`contact${suffix}`) as HTMLInputElement).value.trim(),
       lat: Number((document.getElementById(`lat${suffix}`) as HTMLInputElement).value),
       lng: Number((document.getElementById(`lng${suffix}`) as HTMLInputElement).value),
+      submissionKind: this.getSubmissionKind(source),
+      relatedEventId: (document.getElementById(`related_event_id${suffix}`) as HTMLInputElement).value.trim(),
     };
   }
 
   private clearForm(source: "desktop" | "mobile"): void {
     const suffix = source === "mobile" ? "Mobile" : "";
-    ["title", "start_date", "end_date", "venue", "event_url", "image_url", "description", "contact", "lat", "lng"].forEach((id) => {
+    ["title", "start_date", "end_date", "venue", "event_url", "image_url", "description", "contact", "lat", "lng", "related_event_id"].forEach((id) => {
       const el = document.getElementById(`${id}${suffix}`) as HTMLInputElement | HTMLTextAreaElement | null;
       if (el) el.value = "";
     });
+    const kindName = `submissionKind${suffix}`;
+    const newRadio = document.querySelector(`input[name="${kindName}"][value="new"]`) as HTMLInputElement | null;
+    if (newRadio) newRadio.checked = true;
+    this.syncInsertFormModeUi();
+    this.resetInsertPickState();
+    this.updateInsertLocationStatus("desktop");
+    this.updateInsertLocationStatus("mobile");
   }
 
   private async addEvent(source: "desktop" | "mobile"): Promise<void> {
     const button = document.getElementById(source === "mobile" ? "saveButtonMobile" : "saveButton") as HTMLButtonElement;
     const form = this.syncFormValues(source);
+    const isCorrection = form.submissionKind === "correction";
 
-    if (!form.title || !form.startDate || !form.contact || !Number.isFinite(form.lat) || !Number.isFinite(form.lng)) {
-      setStatus("Inserisci titolo, data di inizio, contatto e posizione sulla mappa.", "error");
+    if (!form.title || !form.startDate || !form.contact) {
+      setStatus("Inserisci almeno titolo, data di inizio e contatto.", "error");
+      return;
+    }
+
+    if (isCorrection && !form.description) {
+      setStatus("Per un miglioramento descrivi cosa vuoi correggere o aggiungere.", "error");
       return;
     }
 
@@ -490,21 +693,47 @@ export class AtlasApp {
       return;
     }
 
+    const coords = this.resolveSubmissionCoordinates(form);
+    if (!coords) {
+      setStatus("Indica la posizione sulla mappa oppure scrivi un indirizzo nel campo Luogo.", "error");
+      return;
+    }
+
     const candidate = {
       title: form.title,
       start_date: new Date(form.startDate).toISOString(),
       venue: form.venue,
-      lat: form.lat,
-      lng: form.lng,
+      lat: coords.lat,
+      lng: coords.lng,
     };
 
-    const duplicate = this.allEvents.find((event) => eventsLookSimilar(candidate, event));
-    if (duplicate) {
-      setStatus("Questo evento risulta già presente su Atlas.", "error");
-      this.mapService.fitToCoordinates([[duplicate.lat, duplicate.lng]]);
-      setTimeout(() => this.handleOpenEvent(duplicate), 300);
-      return;
+    let relatedEventId = form.relatedEventId || null;
+    let submissionKind: SubmissionKind = form.submissionKind;
+
+    if (!isCorrection) {
+      const duplicate = this.allEvents.find((event) => eventsLookSimilar(candidate, event));
+      if (duplicate) {
+        const useCorrection = window.confirm(
+          `«${duplicate.title}» sembra già presente su Atlas.\n\nVuoi inviare un suggerimento di miglioramento invece di creare un duplicato?`,
+        );
+        if (!useCorrection) {
+          this.mapService.fitToCoordinates([[duplicate.lat, duplicate.lng]]);
+          setTimeout(() => this.handleOpenEvent(duplicate), 300);
+          return;
+        }
+        submissionKind = "correction";
+        relatedEventId = duplicate.date_event ? String(duplicate.date_event) : relatedEventId;
+        if (!form.description) {
+          setStatus("Descrivi cosa vuoi migliorare dell'evento già presente.", "error");
+          return;
+        }
+      }
     }
+
+    const description =
+      submissionKind === "correction"
+        ? `[Miglioramento evento${relatedEventId ? ` ${relatedEventId}` : ""}]\n${form.description}`.trim()
+        : form.description || null;
 
     const payload: EventSubmissionInput = {
       title: form.title,
@@ -514,12 +743,14 @@ export class AtlasApp {
       venue: form.venue || null,
       event_url: form.eventUrl || null,
       image_url: form.imageUrl || null,
-      description: form.description || null,
-      lat: form.lat,
-      lng: form.lng,
+      description,
+      lat: coords.lat,
+      lng: coords.lng,
       contact: form.contact,
       contact_type: detectContactType(form.contact),
       territory_id: "IT-VT",
+      submission_kind: submissionKind,
+      related_event_id: relatedEventId,
     };
 
     button.disabled = true;
@@ -532,7 +763,11 @@ export class AtlasApp {
 
       await submitUserReport({ ...payload, reference_code: referenceCode });
 
-      setStatus("Segnalazione inviata: verrà pubblicata se non già presente tra le fonti.", "success");
+      const successMessage =
+        submissionKind === "correction"
+          ? "Suggerimento inviato: un revisore valuterà le modifiche proposte."
+          : "Segnalazione inviata: verrà pubblicata se non già presente tra le fonti.";
+      setStatus(successMessage, "success");
 
       if (opsWhatsApp) {
         const waUrl = buildSubmissionWhatsAppUrl(opsWhatsApp, {
@@ -552,6 +787,8 @@ export class AtlasApp {
 
       this.clearForm(source);
       this.mapService.clearDraftMarker();
+      this.closeDockFlyouts();
+      document.getElementById("mobileSheet")?.classList.remove("open");
     } catch (error) {
       console.error(error);
       setStatus("Invio non riuscito. Riprova più tardi.", "error");

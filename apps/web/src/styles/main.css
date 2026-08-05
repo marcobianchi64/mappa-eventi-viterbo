@@ -469,7 +469,7 @@ body.atlas-view-list .filter-events-search {
   top: var(--atlas-header-stack);
   right: 12px;
   left: auto;
-  z-index: 1100;
+  z-index: 1900;
   width: min(var(--flyout-panel-width), calc(100vw - 24px));
   max-height: calc(100vh - var(--atlas-header-stack) - 12px);
   overflow-y: auto;
@@ -580,6 +580,69 @@ button {
 .status.error { color: #b42318; }
 .status.success { color: #167a38; }
 .hint { margin-top: 9px; font-size: var(--legend-font); color: #666; line-height: 1.4; }
+
+.insert-form-mode {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: grid;
+  gap: 8px;
+}
+
+.insert-form-mode-legend {
+  font-size: calc(var(--legend-font) * 0.82);
+  font-weight: 800;
+  color: #334155;
+  padding: 0 4px;
+}
+
+.insert-mode-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(var(--legend-font) * 0.88);
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+}
+
+.insert-location-panel {
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+}
+
+.insert-location-status {
+  margin: 0 0 8px;
+  font-size: calc(var(--legend-font) * 0.82);
+  line-height: 1.35;
+  color: #475569;
+}
+
+.insert-location-status.is-picking {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.insert-location-status.is-set {
+  color: #047857;
+  font-weight: 700;
+}
+
+.insert-location-status.is-address {
+  color: #9a3412;
+}
+
+.insert-pick-map-btn {
+  width: 100%;
+  background: #fff;
+  color: #1e3a5f;
+  border: 1px solid #cbd5e1;
+}
 
 .filter-panel,
 .programs-panel {

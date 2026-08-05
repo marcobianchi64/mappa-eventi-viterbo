@@ -21,6 +21,7 @@ export type {
 export type {
   EventSubmissionInput,
   EventSubmissionRecord,
+  SubmissionKind,
   SubmissionStatus,
   ContactType,
 } from "./types/submission.js";

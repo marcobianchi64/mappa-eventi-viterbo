@@ -74,14 +74,13 @@ export function renderShell(): string {
 
     <div id="dockInsertFlyout" class="dock-flyout atlas-map-only" aria-hidden="true">
       <div class="dock-flyout-header">
-        <h2>Inserisci un evento</h2>
+        <h2 id="insertFlyoutTitle">Segnala un evento</h2>
         <button id="closeInsertFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>
       </div>
-      <p class="dock-flyout-lead">Segnala un evento: entra in revisione prima della pubblicazione.</p>
-      <div class="panel-section" id="desktopInsertForm">
+      <p class="dock-flyout-lead">Compila i campi che conosci: un revisore verificherà prima della pubblicazione.</p>
+      <div class="panel-section insert-form-root" id="desktopInsertForm">
         ${insertFormFields("")}
         <button id="saveButton" class="btn full" type="button">Invia segnalazione per revisione</button>
-        <div class="hint">Clicca sulla mappa per impostare la posizione.</div>
         <div id="status" class="status" aria-live="polite"></div>
       </div>
     </div>
@@ -129,13 +128,12 @@ export function renderShell(): string {
           <div class="search-note">La ricerca non sposta la mappa verso località senza eventi attivi.</div>
         </div>
       </div>
-      <div id="mobileInsertPanel" class="hidden">
-        <h2>Inserisci un evento</h2>
-        <p class="dock-flyout-lead">Segnala un evento per la revisione.</p>
+      <div id="mobileInsertPanel" class="hidden insert-form-root">
+        <h2 id="insertMobileTitle">Segnala un evento</h2>
+        <p class="dock-flyout-lead">Compila i campi che conosci: un revisore verificherà prima della pubblicazione.</p>
         <div class="panel-section">
           ${insertFormFields("Mobile")}
           <button id="saveButtonMobile" class="btn full" type="button">Invia segnalazione per revisione</button>
-          <div class="hint">Clicca sulla mappa per impostare la posizione.</div>
           <div id="statusMobile" class="status" aria-live="polite"></div>
         </div>
       </div>
@@ -194,11 +192,25 @@ function renderFilterWhenOptions(active: DateRangeKey): string {
 }
 
 function insertFormFields(suffix: string): string {
+  const kindName = `submissionKind${suffix}`;
   return `
+    <fieldset class="insert-form-mode" aria-label="Tipo segnalazione">
+      <legend class="insert-form-mode-legend">Tipo segnalazione</legend>
+      <label class="insert-mode-option">
+        <input type="radio" name="${kindName}" value="new" class="submission-kind-input" checked />
+        <span>Nuovo evento</span>
+      </label>
+      <label class="insert-mode-option">
+        <input type="radio" name="${kindName}" value="correction" class="submission-kind-input" />
+        <span>Migliora evento esistente</span>
+      </label>
+    </fieldset>
+    <input type="hidden" id="related_event_id${suffix}" value="" />
+
     <label for="event_url${suffix}">Link della pagina dell'evento</label>
     <input id="event_url${suffix}" type="url" placeholder="https://..." />
 
-    <label for="title${suffix}">Titolo evento</label>
+    <label for="title${suffix}">Titolo evento *</label>
     <input id="title${suffix}" placeholder="Es. Concerto in piazza" />
 
     <label for="category${suffix}">Categoria</label>
@@ -211,28 +223,29 @@ function insertFormFields(suffix: string): string {
       <option value="other">Altri eventi</option>
     </select>
 
-    <label for="start_date${suffix}">Inizio</label>
+    <label for="start_date${suffix}">Inizio *</label>
     <input id="start_date${suffix}" type="datetime-local" />
 
     <label for="end_date${suffix}">Fine</label>
     <input id="end_date${suffix}" type="datetime-local" />
 
-    <label for="venue${suffix}">Luogo</label>
+    <label for="venue${suffix}">Luogo (indirizzo o descrizione)</label>
     <input id="venue${suffix}" placeholder="Es. Piazza San Lorenzo, Viterbo" />
+
+    <div class="insert-location-panel">
+      <p id="insertLocationStatus${suffix}" class="insert-location-status">Posizione: indica il punto sulla mappa oppure scrivi un indirizzo preciso.</p>
+      <button type="button" class="btn insert-pick-map-btn" id="pickMapLocation${suffix}">📍 Indica posizione sulla mappa</button>
+      <input type="hidden" id="lat${suffix}" value="" />
+      <input type="hidden" id="lng${suffix}" value="" />
+    </div>
 
     <label for="image_url${suffix}">Immagine dell'evento (facoltativa)</label>
     <input id="image_url${suffix}" type="url" placeholder="https://..." />
 
-    <label for="description${suffix}">Breve descrizione (facoltativa)</label>
+    <label for="description${suffix}" id="descriptionLabel${suffix}">Breve descrizione (facoltativa)</label>
     <textarea id="description${suffix}" placeholder="Informazioni utili sull'evento"></textarea>
 
     <label for="contact${suffix}">Contatto per verifica *</label>
     <input id="contact${suffix}" type="text" placeholder="Email, WhatsApp o telefono" required />
-
-    <label for="lat${suffix}">Latitudine</label>
-    <input id="lat${suffix}" placeholder="Clicca sulla mappa" readonly />
-
-    <label for="lng${suffix}">Longitudine</label>
-    <input id="lng${suffix}" placeholder="Clicca sulla mappa" readonly />
   `;
 }

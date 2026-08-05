@@ -462,9 +462,10 @@ export class AdminApp {
       div.className = "event";
       div.innerHTML = `
         <strong>${escapeHtml(sub.title)}</strong>
-        <div class="small">Rif. <code>${escapeHtml(sub.reference_code ?? "—")}</code> · ${formatDate(sub.created_at ?? sub.start_date)}</div>
+        <div class="small">${sub.submission_kind === "correction" ? "✏️ Miglioramento" : "＋ Nuovo evento"} · Rif. <code>${escapeHtml(sub.reference_code ?? "—")}</code> · ${formatDate(sub.created_at ?? sub.start_date)}</div>
         <div class="small">${meta.label} · ${formatDate(sub.start_date)}</div>
         <div class="small">${escapeHtml(sub.venue ?? "")}</div>
+        ${sub.related_event_id ? `<div class="small">Evento collegato: <code>${escapeHtml(sub.related_event_id)}</code></div>` : ""}
         <div class="small">Contatto: ${escapeHtml(sub.contact)} (${escapeHtml(sub.contact_type ?? "other")})</div>
         ${sub.event_url ? `<div class="small"><a href="${escapeHtml(sub.event_url)}" target="_blank" rel="noopener">Link evento</a></div>` : ""}
         <button class="approve" type="button">Approva e pubblica</button>

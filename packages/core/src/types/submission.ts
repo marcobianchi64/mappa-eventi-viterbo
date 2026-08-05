@@ -3,6 +3,8 @@ import type { EventCategory } from "./event.js";
 export type SubmissionStatus = "pending" | "approved" | "rejected" | "duplicate";
 export type ContactType = "email" | "whatsapp" | "phone" | "other";
 
+export type SubmissionKind = "new" | "correction";
+
 export interface EventSubmissionInput {
   title: string;
   category: EventCategory;
@@ -17,6 +19,8 @@ export interface EventSubmissionInput {
   contact: string;
   contact_type?: ContactType;
   territory_id?: string | null;
+  submission_kind?: SubmissionKind;
+  related_event_id?: string | null;
 }
 
 export interface EventSubmissionRecord extends EventSubmissionInput {

@@ -36,6 +36,7 @@ export function openEventSheet(
   onSaveInterest: (event: AtlasEvent) => void,
   onShare: (title: string, url: string) => void,
   onToast: (message: string) => void,
+  onSuggestImprovement?: (event: AtlasEvent) => void,
 ): void {
   const content = document.getElementById("stableEventContent");
   const overlay = document.getElementById("stableEventOverlay");
@@ -63,6 +64,10 @@ export function openEventSheet(
     ? `<button class="stable-event-action" data-action="official" type="button"><span>ℹ️</span>Info</button>`
     : `<button class="stable-event-action" data-action="no-official" type="button"><span>ℹ️</span>Info</button>`;
 
+  const improveAction = onSuggestImprovement
+    ? `<button class="stable-event-action" data-action="improve" type="button"><span>✏️</span>Migliora</button>`
+    : `<button class="stable-event-action" data-action="access" type="button"><span>🎟</span>Accesso</button>`;
+
   content.innerHTML = `
     <button class="stable-event-close" type="button" aria-label="Chiudi">×</button>
     ${coverHtml}
@@ -82,7 +87,7 @@ export function openEventSheet(
         ${directionsAction}
         <button class="stable-event-action" data-action="share" type="button"><span>📤</span>Condividi</button>
         ${officialAction}
-        <button class="stable-event-action" data-action="access" type="button"><span>🎟</span>Accesso</button>
+        ${improveAction}
       </div>
     </div>
   `;
@@ -114,6 +119,9 @@ export function openEventSheet(
   });
   content.querySelector('[data-action="access"]')?.addEventListener("click", () => {
     onToast("Accesso e partecipazione saranno gestiti dal modulo futuro");
+  });
+  content.querySelector('[data-action="improve"]')?.addEventListener("click", () => {
+    onSuggestImprovement?.(event);
   });
 
   bindEventMediaImages(content);
