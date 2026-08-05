@@ -1,8 +1,13 @@
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "./constants.js";
+import type { AtlasGeoContext } from "./atlas-geo.js";
 
-/** Configurazione territorio/edizione Atlas (una per deploy; multi-provincia in futuro). */
+/** Configurazione territorio/edizione Atlas (una per deploy; multi-provincia / nazionale in futuro). */
 export interface AtlasEdition {
   id: string;
+  /** Chiave territorio DB (es. IT-VT, IT-RM). */
+  territoryId: string;
+  /** Contesto geo per servizi esterni e collector futuri. */
+  geo: AtlasGeoContext;
   /** Nome luogo nell’intestazione: «Programma eventi a Viterbo». */
   placeName: string;
   /** Contesto breve sotto il titolo: «e provincia», «e Lazio», … */
@@ -13,6 +18,15 @@ export interface AtlasEdition {
 
 export const ATLAS_EDITION: AtlasEdition = {
   id: "viterbo",
+  territoryId: "IT-VT",
+  geo: {
+    countryCode: "IT",
+    regionSlug: "lazio",
+    provinceSlug: "viterbo",
+    provinceCode: "VT",
+    municipalitySlug: "viterbo",
+    municipalityName: "Viterbo",
+  },
   placeName: "Viterbo",
   placeScope: "e provincia",
   mapCenter: DEFAULT_MAP_CENTER,

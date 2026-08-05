@@ -42,6 +42,7 @@ import {
   renderEventListPageHtml,
   type EventListCategoryFilter,
 } from "./ui/event-list";
+import { renderUtilityServicesPanelHtml } from "./ui/utility-services.js";
 import { setStatus, showToast } from "./ui/toast";
 
 interface FormValues {
@@ -94,6 +95,7 @@ export class AtlasApp {
     this.syncFilterOptionActiveStates();
     this.updateActiveFiltersBar();
     this.renderPrograms();
+    this.renderUtilityServices();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
     this.applyViewFromUrl();
@@ -134,6 +136,7 @@ export class AtlasApp {
       filterEventsButton.setAttribute("aria-expanded", open ? "true" : "false");
       filterEventsPanel?.setAttribute("aria-hidden", open ? "false" : "true");
       document.getElementById("programsPanel")?.classList.remove("open");
+      document.getElementById("utilityServicesPanel")?.classList.remove("open");
       this.closeDockFlyouts();
     });
 
@@ -167,8 +170,17 @@ export class AtlasApp {
     document.getElementById("programsButton")?.addEventListener("click", () => {
       this.closeFilterMenu();
       this.closeDockFlyouts();
+      document.getElementById("utilityServicesPanel")?.classList.remove("open");
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
+    });
+
+    document.getElementById("utilityServicesButton")?.addEventListener("click", () => {
+      this.closeFilterMenu();
+      this.closeDockFlyouts();
+      document.getElementById("programsPanel")?.classList.remove("open");
+      this.renderUtilityServices();
+      document.getElementById("utilityServicesPanel")?.classList.toggle("open");
     });
 
     document.getElementById("topInsertBtn")?.addEventListener("click", () => {
@@ -889,6 +901,12 @@ export class AtlasApp {
     if (venue === query) return 2;
     if (venue.startsWith(query)) return 3;
     return 4;
+  }
+
+  private renderUtilityServices(): void {
+    const list = document.getElementById("utilityServicesList");
+    if (!list) return;
+    list.innerHTML = renderUtilityServicesPanelHtml();
   }
 
   private renderPrograms(): void {

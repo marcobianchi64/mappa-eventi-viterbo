@@ -48,6 +48,21 @@ export {
   type AtlasEdition,
 } from "./atlas-edition.js";
 
+export type { AtlasGeoContext } from "./atlas-geo.js";
+export { slugifyTerritoryName } from "./atlas-geo.js";
+
+export {
+  ATLAS_UTILITY_SERVICE_CATALOG,
+  ATLAS_EDITION_UTILITY_SERVICE_IDS,
+  getUtilityServicesForEdition,
+  resolveUtilityServiceUrl,
+  type AtlasUtilityServiceDefinition,
+  type AtlasUtilityServiceKind,
+  type AtlasUtilityServiceLink,
+  type AtlasUtilityServiceMode,
+  type AtlasUtilityResolution,
+} from "./atlas-services.js";
+
 export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,

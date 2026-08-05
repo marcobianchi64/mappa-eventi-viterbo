@@ -64,6 +64,7 @@ export function renderShell(): string {
               </div>
             </div>
             <button id="programsButton" class="topbar-btn topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
+            <button id="utilityServicesButton" class="topbar-btn topbar-btn-utility" type="button" title="Servizi utili"><span>✨</span><span class="topbar-btn-label">Servizi</span></button>
             <button id="topInsertBtn" class="topbar-btn topbar-btn-insert atlas-map-only" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
           </div>
         </div>
@@ -88,6 +89,12 @@ export function renderShell(): string {
     <div id="programsPanel" class="programs-panel">
       <h3>🔖 Salvati</h3>
       <div id="programsList">Nessun evento salvato.</div>
+    </div>
+
+    <div id="utilityServicesPanel" class="utility-services-panel">
+      <h3>✨ Servizi utili</h3>
+      <p class="utility-services-lead">Collegamenti rapidi per la tua area. Si aprono in una nuova scheda.</p>
+      <div id="utilityServicesList"></div>
     </div>
 
     <div id="map" class="atlas-map-only"></div>
