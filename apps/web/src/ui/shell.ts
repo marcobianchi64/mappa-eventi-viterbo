@@ -193,18 +193,23 @@ function renderFilterWhenOptions(active: DateRangeKey): string {
 
 function insertFormFields(suffix: string): string {
   const kindName = `submissionKind${suffix}`;
+  const contactChannelName = `contactChannel${suffix}`;
   return `
-    <fieldset class="insert-form-mode" aria-label="Tipo segnalazione">
-      <legend class="insert-form-mode-legend">Tipo segnalazione</legend>
-      <label class="insert-mode-option">
-        <input type="radio" name="${kindName}" value="new" class="submission-kind-input" checked />
-        <span>Nuovo evento</span>
-      </label>
-      <label class="insert-mode-option">
-        <input type="radio" name="${kindName}" value="correction" class="submission-kind-input" />
-        <span>Migliora evento esistente</span>
-      </label>
-    </fieldset>
+    <div class="insert-intro-card">
+      <p class="insert-intro-eyebrow">Tipo segnalazione</p>
+      <div class="insert-segment-row" role="radiogroup" aria-label="Tipo segnalazione">
+        <label class="insert-segment-option">
+          <input type="radio" name="${kindName}" value="new" class="submission-kind-input" checked />
+          <span class="insert-segment-title">Nuovo evento</span>
+          <span class="insert-segment-desc">Qualcosa che non è ancora in elenco</span>
+        </label>
+        <label class="insert-segment-option">
+          <input type="radio" name="${kindName}" value="correction" class="submission-kind-input" />
+          <span class="insert-segment-title">Migliora esistente</span>
+          <span class="insert-segment-desc">Foto, orari, link o indirizzo</span>
+        </label>
+      </div>
+    </div>
     <input type="hidden" id="related_event_id${suffix}" value="" />
 
     <label for="event_url${suffix}">Link della pagina dell'evento</label>
@@ -245,7 +250,20 @@ function insertFormFields(suffix: string): string {
     <label for="description${suffix}" id="descriptionLabel${suffix}">Breve descrizione (facoltativa)</label>
     <textarea id="description${suffix}" placeholder="Informazioni utili sull'evento"></textarea>
 
-    <label for="contact${suffix}">Contatto per verifica *</label>
-    <input id="contact${suffix}" type="text" placeholder="Email, WhatsApp o telefono" required />
+    <div class="insert-contact-card">
+      <p class="insert-intro-eyebrow">Contatto per verifica <span aria-hidden="true">*</span></p>
+      <p class="insert-contact-policy">Solo messaggi scritti (email o WhatsApp). Niente telefonate.</p>
+      <div class="insert-segment-row insert-segment-row-compact" role="radiogroup" aria-label="Canale contatto">
+        <label class="insert-segment-option insert-segment-option-compact">
+          <input type="radio" name="${contactChannelName}" value="email" class="contact-channel-input" checked />
+          <span class="insert-segment-title">Email</span>
+        </label>
+        <label class="insert-segment-option insert-segment-option-compact">
+          <input type="radio" name="${contactChannelName}" value="whatsapp" class="contact-channel-input" />
+          <span class="insert-segment-title">WhatsApp</span>
+        </label>
+      </div>
+      <input id="contact${suffix}" type="email" inputmode="email" autocomplete="email" placeholder="nome@esempio.it" required />
+    </div>
   `;
 }

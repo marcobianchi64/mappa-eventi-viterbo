@@ -306,3 +306,38 @@ export function detectContactType(contact: string): "email" | "whatsapp" | "phon
   if (/^\+?[\d\s\-().]{8,}$/.test(value)) return "phone";
   return "other";
 }
+
+export type SubmissionContactChannel = "email" | "whatsapp";
+
+export function validateSubmissionContact(
+  value: string,
+  channel: SubmissionContactChannel,
+): { ok: true; normalized: string; contact_type: SubmissionContactChannel } | { ok: false; message: string } {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return { ok: false, message: "Inserisci email o numero WhatsApp per la verifica." };
+  }
+
+  if (channel === "email") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      return { ok: false, message: "Inserisci un indirizzo email valido." };
+    }
+    return { ok: true, normalized: trimmed.toLowerCase(), contact_type: "email" };
+  }
+
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits.length < 9 || digits.length > 15) {
+    return {
+      ok: false,
+      message: "Inserisci il numero WhatsApp con prefisso internazionale (es. 393331234567).",
+    };
+  }
+  return { ok: true, normalized: `+${digits}`, contact_type: "whatsapp" };
+}
+
+export function formatSubmissionContactLabel(contactType?: string | null): string {
+  if (contactType === "email") return "Email";
+  if (contactType === "whatsapp") return "WhatsApp";
+  if (contactType === "phone") return "Telefono (legacy)";
+  return "Altro";
+}

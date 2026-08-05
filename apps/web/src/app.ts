@@ -3,7 +3,8 @@ import {
   getEditionTerritoryLabel,
   DEFAULT_DATE_RANGE,
   injectAtlasTypography,
-  detectContactType,
+  validateSubmissionContact,
+  type SubmissionContactChannel,
   escapeHtml,
   eventsLookSimilar,
   getDisplayCategory,
@@ -53,6 +54,7 @@ interface FormValues {
   imageUrl: string;
   description: string;
   contact: string;
+  contactChannel: SubmissionContactChannel;
   lat: number;
   lng: number;
   submissionKind: SubmissionKind;
@@ -454,6 +456,12 @@ export class AtlasApp {
     document.querySelectorAll(".submission-kind-input").forEach((input) => {
       input.addEventListener("change", () => this.syncInsertFormModeUi());
     });
+    document.querySelectorAll(".contact-channel-input").forEach((input) => {
+      input.addEventListener("change", () => {
+        this.syncContactFieldUi("desktop");
+        this.syncContactFieldUi("mobile");
+      });
+    });
     document.getElementById("pickMapLocation")?.addEventListener("click", () => this.beginInsertMapPick());
     document.getElementById("pickMapLocationMobile")?.addEventListener("click", () => this.beginInsertMapPick());
     ["venue", "venueMobile"].forEach((id) => {
@@ -461,6 +469,32 @@ export class AtlasApp {
         this.updateInsertLocationStatus(id.endsWith("Mobile") ? "mobile" : "desktop");
       });
     });
+    this.syncContactFieldUi("desktop");
+    this.syncContactFieldUi("mobile");
+  }
+
+  private getContactChannel(source: "desktop" | "mobile"): SubmissionContactChannel {
+    const name = source === "mobile" ? "contactChannelMobile" : "contactChannel";
+    const checked = document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null;
+    return checked?.value === "whatsapp" ? "whatsapp" : "email";
+  }
+
+  private syncContactFieldUi(source: "desktop" | "mobile"): void {
+    const suffix = source === "mobile" ? "Mobile" : "";
+    const channel = this.getContactChannel(source);
+    const input = document.getElementById(`contact${suffix}`) as HTMLInputElement | null;
+    if (!input) return;
+    if (channel === "email") {
+      input.type = "email";
+      input.inputMode = "email";
+      input.autocomplete = "email";
+      input.placeholder = "nome@esempio.it";
+    } else {
+      input.type = "tel";
+      input.inputMode = "tel";
+      input.autocomplete = "tel";
+      input.placeholder = "Es. 393331234567";
+    }
   }
 
   private syncInsertFormModeUi(): void {
@@ -651,6 +685,7 @@ export class AtlasApp {
       imageUrl: (document.getElementById(`image_url${suffix}`) as HTMLInputElement).value.trim(),
       description: (document.getElementById(`description${suffix}`) as HTMLTextAreaElement).value.trim(),
       contact: (document.getElementById(`contact${suffix}`) as HTMLInputElement).value.trim(),
+      contactChannel: this.getContactChannel(source),
       lat: Number((document.getElementById(`lat${suffix}`) as HTMLInputElement).value),
       lng: Number((document.getElementById(`lng${suffix}`) as HTMLInputElement).value),
       submissionKind: this.getSubmissionKind(source),
@@ -667,7 +702,13 @@ export class AtlasApp {
     const kindName = `submissionKind${suffix}`;
     const newRadio = document.querySelector(`input[name="${kindName}"][value="new"]`) as HTMLInputElement | null;
     if (newRadio) newRadio.checked = true;
+    const contactChannelName = `contactChannel${suffix}`;
+    const emailRadio = document.querySelector(
+      `input[name="${contactChannelName}"][value="email"]`,
+    ) as HTMLInputElement | null;
+    if (emailRadio) emailRadio.checked = true;
     this.syncInsertFormModeUi();
+    this.syncContactFieldUi(source === "mobile" ? "mobile" : "desktop");
     this.resetInsertPickState();
     this.updateInsertLocationStatus("desktop");
     this.updateInsertLocationStatus("mobile");
@@ -678,8 +719,14 @@ export class AtlasApp {
     const form = this.syncFormValues(source);
     const isCorrection = form.submissionKind === "correction";
 
-    if (!form.title || !form.startDate || !form.contact) {
-      setStatus("Inserisci almeno titolo, data di inizio e contatto.", "error");
+    if (!form.title || !form.startDate) {
+      setStatus("Inserisci almeno titolo e data di inizio.", "error");
+      return;
+    }
+
+    const contactCheck = validateSubmissionContact(form.contact, form.contactChannel);
+    if (!contactCheck.ok) {
+      setStatus(contactCheck.message, "error");
       return;
     }
 
@@ -746,8 +793,8 @@ export class AtlasApp {
       description,
       lat: coords.lat,
       lng: coords.lng,
-      contact: form.contact,
-      contact_type: detectContactType(form.contact),
+      contact: contactCheck.normalized,
+      contact_type: contactCheck.contact_type,
       territory_id: "IT-VT",
       submission_kind: submissionKind,
       related_event_id: relatedEventId,

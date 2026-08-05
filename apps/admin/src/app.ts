@@ -4,6 +4,7 @@ import {
   compareMapRegistryFromEvents,
   escapeHtml,
   formatDate,
+  formatSubmissionContactLabel,
   getCategoryMeta,
   isRegistryInPubblicazione,
   loadDiscoverySession,
@@ -466,7 +467,7 @@ export class AdminApp {
         <div class="small">${meta.label} · ${formatDate(sub.start_date)}</div>
         <div class="small">${escapeHtml(sub.venue ?? "")}</div>
         ${sub.related_event_id ? `<div class="small">Evento collegato: <code>${escapeHtml(sub.related_event_id)}</code></div>` : ""}
-        <div class="small">Contatto: ${escapeHtml(sub.contact)} (${escapeHtml(sub.contact_type ?? "other")})</div>
+        <div class="small">Contatto: ${escapeHtml(sub.contact)} · ${escapeHtml(formatSubmissionContactLabel(sub.contact_type))}</div>
         ${sub.event_url ? `<div class="small"><a href="${escapeHtml(sub.event_url)}" target="_blank" rel="noopener">Link evento</a></div>` : ""}
         <button class="approve" type="button">Approva e pubblica</button>
         <button class="reject" type="button">Rifiuta</button>
