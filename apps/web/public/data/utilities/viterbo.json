@@ -1,0 +1,247 @@
+{
+  "editionId": "viterbo",
+  "territoryId": "IT-VT",
+  "syncedAt": "2026-08-14T17:20:30.924Z",
+  "pharmacies": {
+    "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
+    "sourceLabel": "Pagine Gialle",
+    "items": [
+      {
+        "name": "Farmacia Sassacci della Dr.ssa Anna Maria Versace",
+        "address": "Via Terni, 26 - 01033 Civita Castellana (VT)",
+        "phone": "0761 540381",
+        "url": "https://www.paginegialle.it/farmacia-sassacci-civita-castallana"
+      },
+      {
+        "name": "Farmacia del Pilastro S.a.s. di M. Vittoria Terracina",
+        "address": "Via Carlo Minciotti, 35 - 01100 Viterbo (VT)",
+        "phone": "0761 341072",
+        "url": "https://www.paginegialle.it/farmaciaterracina"
+      },
+      {
+        "name": "Farmacia dei Papi",
+        "address": "Via Cassia Nord, 13 - 01100 Viterbo (VT)",
+        "phone": "0761 270110",
+        "url": "https://www.paginegialle.it/farmacia-deipapi"
+      },
+      {
+        "name": "Farmacia Petroselli",
+        "address": "Via Cattaneo Carlo, 30 - 01100 Viterbo (VT)",
+        "phone": "0761 324240",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-pila-petroselli-dr.-maria-teresa"
+      },
+      {
+        "name": "Farmacia Blasi",
+        "address": "Viale Fiume, 6 - 01100 Viterbo (VT)",
+        "phone": "0761 288017",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-blasi_22293402"
+      },
+      {
+        "name": "Farmacia Comunale - Santa Barbara",
+        "address": "Via Porsenna, 41 - 01100 Viterbo (VT)",
+        "phone": "0761 250059",
+        "url": "https://www.paginegialle.it/viterbo-vt/trasporto-pubblico/francigena"
+      },
+      {
+        "name": "Farmacia Comunale La Quercia",
+        "address": "Piazza Campo Graziano, 35/C - 01100 Viterbo (VT)",
+        "phone": "0761 343384",
+        "url": "https://www.paginegialle.it/viterbo-vt/trasporti/francigena_3"
+      },
+      {
+        "name": "Farmacia dei Papi",
+        "address": "Via Cassia Nord, 13 - 01100 Viterbo (VT)",
+        "phone": "0761 270110",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-dei-papi-s-n-c"
+      },
+      {
+        "name": "Farmacia del Sacrario",
+        "address": "Piazzale dei Caduti, 12/15 - 01100 Viterbo (VT)",
+        "phone": "0761 304034",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-del-sacrario_22736205"
+      },
+      {
+        "name": "Farmacia Gabriele Rossi",
+        "address": "Via Madre Teresa di Calcutta, 2/C - 01100 Viterbo (VT)",
+        "phone": "0761 250883",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacia-caprio-rossi"
+      },
+      {
+        "name": "Farmacia Il Murialdo",
+        "address": "Via dei Monti Cimini, 15 - 01100 Viterbo (VT)",
+        "phone": "0761 972592",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-murialdo"
+      },
+      {
+        "name": "Farmacia Morelli",
+        "address": "Via della Stazione, 5 - 01100 Grotte Santo Stefano (VT)",
+        "phone": "0761 367015",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/morelli_T10131551"
+      },
+      {
+        "name": "Farmacia Natalini",
+        "address": "Piazza Buratti Mariano, 2/3 - 01100 Viterbo (VT)",
+        "phone": "0761 379976",
+        "url": "https://www.paginegialle.it/san-martino-al-cimino-vt/farmacie/farmacia-natalini_2"
+      },
+      {
+        "name": "Farmacia Riccardi",
+        "address": "Via della Palazzina, 197 - 01100 Viterbo (VT)",
+        "phone": "0761 250825",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/riccardi"
+      },
+      {
+        "name": "Farmacia Rossi",
+        "address": "Largo Africa, 14 - 01100 Viterbo (VT)",
+        "phone": "0761 343121",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-rossi_20243868"
+      },
+      {
+        "name": "Giacci Dr. Federico Farmacia",
+        "address": "36/A, Vl. Trieste - 01100 Viterbo (VT)",
+        "phone": "0761 341083",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/giacci-dr-federico"
+      },
+      {
+        "name": "Farmacia del Cimino Snc",
+        "address": "Viale Cesare Battisti, 51 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 745789",
+        "url": "https://www.paginegialle.it/farmaciadelciminosnc-sorianonelcimino"
+      },
+      {
+        "name": "Farmacia Ricci - Mari",
+        "address": "Via Alessandro Manzoni, 15/F - 01030 Vitorchiano (VT)",
+        "phone": "0761 370022",
+        "url": "https://www.paginegialle.it/farmaciaricci-mari-vitorchiano"
+      },
+      {
+        "name": "Farmacia Muscolino",
+        "address": "Viale Monaci Ernesto, 96 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 748194",
+        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacie/farmacia-muscolino-dottor-pasquale"
+      },
+      {
+        "name": "Farmacia Belati",
+        "address": "Viale Vittorio Emanuele III, 22 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 745025",
+        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacia-belati-zagoreo-s-a-s-di-fani-dott-lorenzo"
+      },
+      {
+        "name": "Farmacia di Canepina",
+        "address": "Piazzale Caduti e Dispersi della Seconda Guerra Mondiale, 18 - 01030 Canepina (VT)",
+        "phone": "0761 750069",
+        "url": "https://www.paginegialle.it/canepina-vt/farmacie/farmacia-di-canepina_9465275"
+      },
+      {
+        "name": "Farmacia Zonghi e Cerri",
+        "address": "Piazza Europa, 52 - 01019 Vetralla (VT)",
+        "phone": "0761 461640",
+        "url": "https://www.paginegialle.it/tre-croci-vt/farmacie/farmacia-comunale-sanitas"
+      },
+      {
+        "name": "Farmacia Ventura",
+        "address": "Piazza Italia, 11 - 01017 Tuscania (VT)",
+        "phone": "0761 435012",
+        "url": "https://www.paginegialle.it/farmacia-ventura-tuscania"
+      },
+      {
+        "name": "Farmacia Centrale Ronciglione",
+        "address": "Viale della Resistenza, 37 - 01037 Ronciglione (VT)",
+        "phone": "0761 625021",
+        "url": "https://www.paginegialle.it/farmaciacentrale-ronciglione"
+      },
+      {
+        "name": "Farmacia Lupi SNC",
+        "address": "Via Roma, 2/D - 01039 Vignanello (VT)",
+        "phone": "0761 755453",
+        "url": "https://www.paginegialle.it/farmacialupi-vignanello"
+      }
+    ]
+  },
+  "cinema": {
+    "sourceUrl": "https://www.mymovies.it/cinema/viterbo/provincia/",
+    "sourceLabel": "MYmovies",
+    "items": [
+      {
+        "title": "ODISSEA",
+        "url": "https://www.mymovies.it/film/2026/odissea/",
+        "showings": [
+          {
+            "cinema": "Gallery",
+            "town": "Montefiascone",
+            "times": [
+              "17:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          }
+        ]
+      },
+      {
+        "title": "SPIDER-MAN - BRAND NEW DAY",
+        "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+        "showings": [
+          {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "17:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
+          },
+          {
+            "cinema": "Gallery",
+            "town": "Montefiascone",
+            "times": [
+              "20:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          }
+        ]
+      },
+      {
+        "title": "MICHAEL",
+        "url": "https://www.mymovies.it/film/2026/michael/",
+        "showings": [
+          {
+            "cinema": "Arena Etrusco Lido",
+            "town": "Tarquinia",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/20275/"
+          }
+        ]
+      },
+      {
+        "title": "HAMNET - NEL NOME DEL FIGLIO",
+        "url": "https://www.mymovies.it/film/2025/hamnet/",
+        "showings": [
+          {
+            "cinema": "Arena Marconi",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/23914/"
+          }
+        ]
+      }
+    ]
+  }
+}

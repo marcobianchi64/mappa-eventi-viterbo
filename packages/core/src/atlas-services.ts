@@ -49,12 +49,12 @@ export const ATLAS_UTILITY_SERVICE_CATALOG: AtlasUtilityServiceDefinition[] = [
     label: "Farmacie di turno",
     description: "Turni aggiornati su Pagine Gialle per la tua area.",
     provider: "Pagine Gialle",
-    resolution: "region",
-    urlTemplate: "https://www.paginegialle.it/farmacie-turno/{region_slug}",
+    resolution: "municipality",
+    urlTemplate: "https://www.paginegialle.it/farmacie-turno/{municipality_slug}",
     icon: "💊",
-    mode: "external_link",
+    mode: "atlas_sync_planned",
     territoryUrlOverrides: {
-      "IT-VT": "https://www.paginegialle.it/farmacie-turno/lazio",
+      "IT-VT": "https://www.paginegialle.it/farmacie-turno/viterbo",
     },
   },
   {
@@ -77,7 +77,7 @@ export const ATLAS_UTILITY_SERVICE_CATALOG: AtlasUtilityServiceDefinition[] = [
     resolution: "province",
     urlTemplate: "https://www.mymovies.it/cinema/{province_slug}/provincia/",
     icon: "🎬",
-    mode: "external_link_sync_planned",
+    mode: "atlas_sync_planned",
     territoryUrlOverrides: {
       "IT-VT": "https://www.mymovies.it/cinema/viterbo/provincia/",
     },

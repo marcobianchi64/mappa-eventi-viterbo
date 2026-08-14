@@ -93,7 +93,7 @@ export function renderShell(): string {
 
     <div id="utilityServicesPanel" class="utility-services-panel">
       <h3>✨ Servizi utili</h3>
-      <p class="utility-services-lead">Collegamenti rapidi per la tua area. Si aprono in una nuova scheda.</p>
+      <p class="utility-services-lead">Farmacie e cinema aggiornati ogni giorno. Link esterni per prenotazioni.</p>
       <div id="utilityServicesList"></div>
     </div>
 

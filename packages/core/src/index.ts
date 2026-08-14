@@ -64,6 +64,17 @@ export {
 } from "./atlas-services.js";
 
 export {
+  UTILITY_SYNC_DATA_PATH,
+  formatUtilitySyncDate,
+  utilitySyncDataUrl,
+  type UtilityCinemaFilm,
+  type UtilityCinemaShowing,
+  type UtilityPharmacyEntry,
+  type UtilitySyncSection,
+  type UtilitySyncSnapshot,
+} from "./atlas-utility-sync.js";
+
+export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,
   MAP_UI_SCALE_DESKTOP_LARGE,

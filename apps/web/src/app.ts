@@ -42,7 +42,11 @@ import {
   renderEventListPageHtml,
   type EventListCategoryFilter,
 } from "./ui/event-list";
-import { renderUtilityServicesPanelHtml } from "./ui/utility-services.js";
+import {
+  loadUtilitySyncSnapshot,
+  renderUtilityServicesLoadingHtml,
+  renderUtilityServicesPanelHtml,
+} from "./ui/utility-services.js";
 import { setStatus, showToast } from "./ui/toast";
 
 interface FormValues {
@@ -906,7 +910,14 @@ export class AtlasApp {
   private renderUtilityServices(): void {
     const list = document.getElementById("utilityServicesList");
     if (!list) return;
-    list.innerHTML = renderUtilityServicesPanelHtml();
+    list.innerHTML = renderUtilityServicesLoadingHtml();
+    void loadUtilitySyncSnapshot()
+      .then((snapshot) => {
+        list.innerHTML = renderUtilityServicesPanelHtml(snapshot);
+      })
+      .catch(() => {
+        list.innerHTML = renderUtilityServicesPanelHtml(null);
+      });
   }
 
   private renderPrograms(): void {
