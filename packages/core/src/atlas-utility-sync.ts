@@ -5,6 +5,9 @@ export interface UtilityPharmacyEntry {
   address?: string;
   phone?: string;
   url?: string;
+  municipality?: string;
+  /** Orari previsti per oggi, se disponibili dalla fonte. */
+  hoursToday?: string;
 }
 
 export interface UtilityCinemaShowing {
@@ -23,6 +26,8 @@ export interface UtilityCinemaFilm {
 export interface UtilitySyncSection<T> {
   sourceUrl: string;
   sourceLabel: string;
+  /** Data di riferimento del turno (YYYY-MM-DD), se applicabile. */
+  dutyDate?: string;
   items: T[];
 }
 

@@ -67,13 +67,15 @@ export function renderShell(): string {
               <button id="programsButton" class="topbar-btn topbar-btn-core topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
               <button id="topInsertBtn" class="topbar-btn topbar-btn-core topbar-btn-insert" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
             </div>
-            <div class="topbar-actions-utility" aria-label="Servizi utili">
-              <button id="cinemaButton" class="topbar-btn topbar-btn-utility topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
-              <button id="pharmacyButton" class="topbar-btn topbar-btn-utility topbar-btn-pharmacy" type="button" title="Farmacie di turno aperte" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
-            </div>
           </div>
         </div>
-        <p id="activeFiltersBar" class="active-filters-bar atlas-map-only" aria-live="polite"></p>
+        <div class="header-subbar">
+          <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
+          <div class="header-subbar-utility" aria-label="Servizi utili">
+            <button id="cinemaButton" class="topbar-btn topbar-btn-utility topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
+            <button id="pharmacyButton" class="topbar-btn topbar-btn-utility topbar-btn-pharmacy" type="button" title="Farmacie di turno oggi in provincia" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
+          </div>
+        </div>
       </div>
       <div id="atlasPromoSlot" class="atlas-promo-slot atlas-map-only" hidden aria-hidden="true"></div>
     </header>
@@ -97,7 +99,7 @@ export function renderShell(): string {
     </div>
 
     <div id="pharmacyPanel" class="utility-services-panel utility-panel-pharmacy">
-      <h3>💊 Farmacie aperte</h3>
+      <h3>💊 Farmacie di turno oggi</h3>
       <div id="pharmacyPanelList"></div>
     </div>
 

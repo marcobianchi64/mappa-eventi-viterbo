@@ -1,7 +1,6 @@
 import type {
   UtilityCinemaFilm,
   UtilityCinemaShowing,
-  UtilityPharmacyEntry,
 } from "@atlas/core";
 
 function stripTags(html: string): string {
@@ -15,32 +14,6 @@ function decodeHtml(text: string): string {
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'");
-}
-
-export function parsePharmaciesFromPagineGialle(html: string): UtilityPharmacyEntry[] {
-  const pharmacies: UtilityPharmacyEntry[] = [];
-  const itemRe =
-    /<div\s+class="search-itm card-listing[^"]*"[\s\S]*?(?=<div\s+class="search-itm card-listing|<\/section>|<footer)/g;
-
-  for (const block of html.match(itemRe) ?? []) {
-    const nameMatch = block.match(/class="[^"]*search-itm__rag[^"]*"[\s\S]*?>([\s\S]*?)<\/h2>/);
-    const addrMatch = block.match(/class="search-itm__adr"[\s\S]*?<div\s*>([\s\S]*?)<\/div>/);
-    const phoneMatch = block.match(/search-itm__phone-item">([^<]+)/);
-    const urlMatch = block.match(/href="(https:\/\/www\.paginegialle\.it\/[^"#]+)"/);
-    if (!nameMatch) continue;
-
-    const name = decodeHtml(stripTags(nameMatch[1]));
-    if (!name.toLowerCase().includes("farmacia")) continue;
-
-    pharmacies.push({
-      name,
-      address: addrMatch ? decodeHtml(stripTags(addrMatch[1])) : undefined,
-      phone: phoneMatch?.[1]?.trim(),
-      url: urlMatch?.[1],
-    });
-  }
-
-  return pharmacies;
 }
 
 export function parseCinemaFromMyMovies(html: string): UtilityCinemaFilm[] {

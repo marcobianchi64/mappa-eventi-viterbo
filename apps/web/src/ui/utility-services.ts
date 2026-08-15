@@ -10,11 +10,10 @@ import {
 export { loadUtilitySyncSnapshot } from "./utility-services-data.js";
 
 export function renderPharmacyPanelHtml(snapshot: UtilitySyncSnapshot | null): string {
-  const territory = getEditionTerritoryLabel();
   const pharmacyService = getUtilityServicesForEdition().find((s) => s.kind === "pharmacy_duty");
 
   if (snapshot?.pharmacies.items.length) {
-    return renderPharmacySection(snapshot, territory, pharmacyService);
+    return renderPharmacySection(snapshot, pharmacyService);
   }
 
   if (pharmacyService) {
@@ -44,39 +43,42 @@ export function renderCinemaPanelHtml(snapshot: UtilitySyncSnapshot | null): str
 
 function renderPharmacySection(
   snapshot: UtilitySyncSnapshot,
-  territory: string,
   external?: AtlasUtilityServiceLink,
 ): string {
   const updated = formatUtilitySyncDate(snapshot.syncedAt);
-  const items = snapshot.pharmacies.items
-    .slice(0, 12)
-    .map((pharmacy) => {
-      const meta = [pharmacy.address, pharmacy.phone].filter(Boolean).join(" · ");
-      const inner = `
-        <strong class="utility-sync-item-title">${escapeHtml(pharmacy.name)}</strong>
-        ${meta ? `<span class="utility-sync-item-meta">${escapeHtml(meta)}</span>` : ""}
-      `;
-      if (pharmacy.url) {
-        return `<a class="utility-sync-item" href="${escapeHtml(pharmacy.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
-      }
-      return `<div class="utility-sync-item">${inner}</div>`;
-    })
-    .join("");
-
-  const more =
-    snapshot.pharmacies.items.length > 12
-      ? `<p class="utility-sync-more">+ altre ${snapshot.pharmacies.items.length - 12} farmacie</p>`
-      : "";
+  const dutyDate = snapshot.pharmacies.dutyDate;
+  const dutyLabel = dutyDate
+    ? new Date(`${dutyDate}T12:00:00`).toLocaleDateString("it-IT", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })
+    : "oggi";
+  const items = snapshot.pharmacies.items.map((pharmacy) => {
+    const meta = [pharmacy.municipality, pharmacy.address, pharmacy.phone, pharmacy.hoursToday ? `oggi ${pharmacy.hoursToday}` : ""]
+      .filter(Boolean)
+      .join(" · ");
+    const inner = `
+      <strong class="utility-sync-item-title">${escapeHtml(pharmacy.name)}</strong>
+      ${meta ? `<span class="utility-sync-item-meta">${escapeHtml(meta)}</span>` : ""}
+    `;
+    if (pharmacy.url) {
+      return `<a class="utility-sync-item" href="${escapeHtml(pharmacy.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+    }
+    return `<div class="utility-sync-item">${inner}</div>`;
+  }).join("");
 
   const sourceUrl = external?.url ?? snapshot.pharmacies.sourceUrl;
 
   return `
     <div class="utility-services-list">
-      <p class="utility-services-lead">${escapeHtml(territory)} · aggiornato ${escapeHtml(updated)}</p>
+      <p class="utility-services-lead">
+        Turno del <strong>${escapeHtml(dutyLabel)}</strong> in provincia
+        (${snapshot.pharmacies.items.length} farmacie) · aggiornato ${escapeHtml(updated)}
+      </p>
       <div class="utility-sync-items">${items}</div>
-      ${more}
       <a class="utility-sync-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">
-        Vedi tutte su ${escapeHtml(snapshot.pharmacies.sourceLabel)} ↗
+        Verifica su ${escapeHtml(snapshot.pharmacies.sourceLabel)} ↗
       </a>
     </div>
   `;

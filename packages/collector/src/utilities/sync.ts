@@ -11,7 +11,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchHtml } from "../connectors/fetch-html.js";
-import { parseCinemaFromMyMovies, parsePharmaciesFromPagineGialle } from "./parse.js";
+import { getUtilityDutyDate, parsePharmaciesFromPagineGialle } from "./parse-pharmacies.js";
+import { parseCinemaFromMyMovies } from "./parse.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,9 +58,10 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   }
 
   console.log(`→ Farmacie (${edition.id}): ${pharmacyUrl}`);
-  const pharmacyHtml = await fetchHtml(pharmacyUrl);
-  const pharmacies = parsePharmaciesFromPagineGialle(pharmacyHtml);
-  console.log(`  ${pharmacies.length} farmacie trovate`);
+  const pharmacyHtml = await fetchHtml(pharmacyUrl, { retries: 3 });
+  const dutyDate = getUtilityDutyDate();
+  const pharmacies = parsePharmaciesFromPagineGialle(pharmacyHtml, dutyDate);
+  console.log(`  ${pharmacies.length} farmacie di turno per il ${dutyDate}`);
 
   console.log(`→ Cinema (${edition.id}): ${cinemaUrl}`);
   const cinemaHtml = await fetchHtml(cinemaUrl);
@@ -73,6 +75,7 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
     pharmacies: {
       sourceUrl: pharmacyUrl,
       sourceLabel: "Pagine Gialle",
+      dutyDate,
       items: pharmacies,
     },
     cinema: {
