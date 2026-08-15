@@ -100,12 +100,12 @@ export function renderShell(): string {
 
     <div id="pharmacyPanel" class="utility-services-panel utility-panel-pharmacy">
       <h3>💊 Farmacie di turno oggi</h3>
-      <div id="pharmacyPanelList"></div>
+      <div id="pharmacyPanelList" class="utility-panel-scroll"></div>
     </div>
 
     <div id="cinemaPanel" class="utility-services-panel utility-panel-cinema">
       <h3>🎬 Cinema</h3>
-      <div id="cinemaPanelList"></div>
+      <div id="cinemaPanelList" class="utility-panel-scroll"></div>
     </div>
 
     <div id="map" class="atlas-map-only"></div>

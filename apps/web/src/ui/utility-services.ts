@@ -125,19 +125,23 @@ function renderPharmacyPanelContent(
 
   return `
     <div class="utility-services-list" data-utility-panel="pharmacy">
-      <p class="utility-services-lead">
-        Turno del <strong>${escapeHtml(dutyLabel)}</strong> · ${items.length} risultati
-        · aggiornato ${escapeHtml(updated)}
-      </p>
-      <div class="utility-panel-toolbar">
-        <div class="utility-chip-row" role="group" aria-label="Fascia oraria">${shiftButtons}</div>
-        <label class="utility-search">
-          <span class="utility-search-label">Cerca comune o farmacia</span>
-          <input type="search" class="utility-search-input" data-pharmacy-search placeholder="Es. Viterbo, Montefiascone…" value="${escapeHtml(state.query)}" />
-        </label>
+      <div class="utility-panel-sticky">
+        <p class="utility-services-lead">
+          Turno del <strong>${escapeHtml(dutyLabel)}</strong> · ${items.length} risultati
+          · aggiornato ${escapeHtml(updated)}
+        </p>
+        <div class="utility-panel-toolbar">
+          <div class="utility-chip-row" role="group" aria-label="Fascia oraria">${shiftButtons}</div>
+          <label class="utility-search">
+            <span class="utility-search-label">Cerca comune o farmacia</span>
+            <input type="search" class="utility-search-input" data-pharmacy-search placeholder="Es. Viterbo, Montefiascone…" value="${escapeHtml(state.query)}" />
+          </label>
+        </div>
       </div>
-      ${list}
-      <div class="utility-consult-links">${consultLinks}</div>
+      <div class="utility-panel-scroll-body">
+        ${list}
+        <div class="utility-consult-links">${consultLinks}</div>
+      </div>
     </div>
   `;
 }
@@ -212,19 +216,23 @@ function renderCinemaPanelContent(
 
   return `
     <div class="utility-services-list" data-utility-panel="cinema">
-      <p class="utility-services-lead">Provincia · aggiornato ${escapeHtml(updated)}</p>
-      <div class="utility-panel-toolbar">
-        <div class="utility-chip-row" role="group" aria-label="Vista cinema">${modeButtons}</div>
-        <label class="utility-search">
-          <span class="utility-search-label">${state.mode === "cinemas" ? "Cerca cinema o comune" : "Cerca film o sala"}</span>
-          <input type="search" class="utility-search-input" data-cinema-search placeholder="${state.mode === "cinemas" ? "Es. Moderno, Bolsena, Gallery…" : "Es. Odissea, Spider-Man…"}" value="${escapeHtml(state.query)}" />
-        </label>
-        ${state.mode === "cinemas" && townChips ? `<div class="utility-chip-row utility-chip-row-wrap" role="group" aria-label="Comuni">${townChips}</div>` : ""}
+      <div class="utility-panel-sticky">
+        <p class="utility-services-lead">Provincia · aggiornato ${escapeHtml(updated)}</p>
+        <div class="utility-panel-toolbar">
+          <div class="utility-chip-row" role="group" aria-label="Vista cinema">${modeButtons}</div>
+          <label class="utility-search">
+            <span class="utility-search-label">${state.mode === "cinemas" ? "Cerca cinema o comune" : "Cerca film o sala"}</span>
+            <input type="search" class="utility-search-input" data-cinema-search placeholder="${state.mode === "cinemas" ? "Es. Moderno, Bolsena, Gallery…" : "Es. Odissea, Spider-Man…"}" value="${escapeHtml(state.query)}" />
+          </label>
+          ${state.mode === "cinemas" && townChips ? `<div class="utility-chip-row utility-chip-row-wrap" role="group" aria-label="Comuni">${townChips}</div>` : ""}
+        </div>
       </div>
-      ${body}
-      <a class="utility-sync-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">
-        Programmazione completa su ${escapeHtml(snapshot.cinema.sourceLabel)} ↗
-      </a>
+      <div class="utility-panel-scroll-body">
+        ${body}
+        <a class="utility-sync-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">
+          Programmazione completa su ${escapeHtml(snapshot.cinema.sourceLabel)} ↗
+        </a>
+      </div>
     </div>
   `;
 }

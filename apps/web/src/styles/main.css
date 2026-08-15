@@ -806,7 +806,51 @@ button {
   left: auto;
   width: min(420px, calc(100vw - 24px));
   max-height: calc(100vh - var(--atlas-header-stack) - 12px);
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.utility-panel-scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.utility-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.utility-panel-sticky {
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+.utility-panel-scroll-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 4px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .utility-panel-cinema {
@@ -817,8 +861,9 @@ button {
   right: 12px;
 }
 .filter-panel.open,
-.programs-panel.open,
-.utility-services-panel.open { display: block; }
+.programs-panel.open { display: block; }
+
+.utility-services-panel.open { display: flex; }
 
 .filter-panel h3,
 .programs-panel h3,
@@ -947,12 +992,6 @@ a.utility-cinema-venue-title:hover {
 
 a.utility-cinema-film-link:hover {
   color: #5b21b6;
-}
-
-.utility-services-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .utility-service-item {
