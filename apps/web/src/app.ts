@@ -45,8 +45,8 @@ import {
 } from "./ui/event-list";
 import {
   loadUtilitySyncSnapshot,
-  renderCinemaPanelHtml,
-  renderPharmacyPanelHtml,
+  mountCinemaPanel,
+  mountPharmacyPanel,
   renderUtilityPanelLoadingHtml,
 } from "./ui/utility-services.js";
 import { setStatus, showToast } from "./ui/toast";
@@ -943,8 +943,8 @@ export class AtlasApp {
     if (!pharmacyList || !cinemaList) return;
 
     void this.ensureUtilitySnapshot().then((snapshot) => {
-      pharmacyList.innerHTML = renderPharmacyPanelHtml(snapshot);
-      cinemaList.innerHTML = renderCinemaPanelHtml(snapshot);
+      mountPharmacyPanel(pharmacyList, snapshot);
+      mountCinemaPanel(cinemaList, snapshot);
     });
   }
 
@@ -991,10 +991,10 @@ export class AtlasApp {
     button.classList.add("active");
 
     void this.ensureUtilitySnapshot().then((snapshot) => {
-      list.innerHTML =
-        kind === "pharmacy"
-          ? renderPharmacyPanelHtml(snapshot)
-          : renderCinemaPanelHtml(snapshot);
+      const listEl = document.getElementById(listId);
+      if (!listEl) return;
+      if (kind === "pharmacy") mountPharmacyPanel(listEl, snapshot);
+      else mountCinemaPanel(listEl, snapshot);
     });
   }
 

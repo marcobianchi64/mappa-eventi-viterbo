@@ -825,10 +825,128 @@ button {
 .utility-services-panel h3 { margin: 0 0 10px; font-size: var(--panel-label-font); }
 
 .utility-services-lead {
-  margin: 0 0 12px;
-  font-size: calc(var(--legend-font) * 0.82);
+  margin: 0 0 10px;
+  font-size: calc(var(--legend-font) * 0.8);
   line-height: 1.35;
+  color: #475569;
+}
+
+.utility-panel-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.utility-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.utility-chip-row-wrap {
+  margin-top: 2px;
+}
+
+.utility-chip {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: calc(var(--legend-font) * 0.74);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.utility-chip.active {
+  background: #312e81;
+  border-color: #312e81;
+  color: #fde68a;
+}
+
+.utility-chip-town {
+  background: #fff;
+}
+
+.utility-search {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.utility-search-label {
+  font-size: calc(var(--legend-font) * 0.68);
+  font-weight: 700;
   color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.utility-search-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: calc(var(--legend-font) * 0.8);
+}
+
+.utility-consult-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.utility-sync-source-secondary {
+  font-weight: 600;
+}
+
+.utility-cinema-venues {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.utility-cinema-venue-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.utility-cinema-venue-title {
+  display: block;
+  margin-bottom: 6px;
+  font-size: calc(var(--legend-font) * 0.86);
+  color: #1e293b;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+a.utility-cinema-venue-title:hover {
+  color: #5b21b6;
+}
+
+.utility-cinema-venue-films {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.utility-cinema-venue-film {
+  font-size: calc(var(--legend-font) * 0.78);
+  line-height: 1.35;
+}
+
+.utility-cinema-film-link {
+  font-weight: 700;
+  color: #334155;
+  text-decoration: none;
+}
+
+a.utility-cinema-film-link:hover {
+  color: #5b21b6;
 }
 
 .utility-services-list {

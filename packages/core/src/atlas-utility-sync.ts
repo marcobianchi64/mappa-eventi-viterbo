@@ -23,6 +23,17 @@ export interface UtilityCinemaFilm {
   showings: UtilityCinemaShowing[];
 }
 
+export interface UtilityCinemaVenue {
+  cinema: string;
+  town?: string;
+  url?: string;
+  films: Array<{
+    title: string;
+    url?: string;
+    times: string[];
+  }>;
+}
+
 export interface UtilitySyncSection<T> {
   sourceUrl: string;
   sourceLabel: string;
@@ -31,12 +42,21 @@ export interface UtilitySyncSection<T> {
   items: T[];
 }
 
+export interface UtilityPharmacyConsultation {
+  all: string;
+  map?: string;
+}
+
 export interface UtilitySyncSnapshot {
   editionId: string;
   territoryId: string;
   syncedAt: string;
-  pharmacies: UtilitySyncSection<UtilityPharmacyEntry>;
-  cinema: UtilitySyncSection<UtilityCinemaFilm>;
+  pharmacies: UtilitySyncSection<UtilityPharmacyEntry> & {
+    consult?: UtilityPharmacyConsultation;
+  };
+  cinema: UtilitySyncSection<UtilityCinemaFilm> & {
+    venues?: UtilityCinemaVenue[];
+  };
 }
 
 export const UTILITY_SYNC_DATA_PATH = "/data/utilities";

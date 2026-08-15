@@ -69,10 +69,24 @@ export {
   utilitySyncDataUrl,
   type UtilityCinemaFilm,
   type UtilityCinemaShowing,
+  type UtilityCinemaVenue,
+  type UtilityPharmacyConsultation,
   type UtilityPharmacyEntry,
   type UtilitySyncSection,
   type UtilitySyncSnapshot,
 } from "./atlas-utility-sync.js";
+
+export {
+  buildCinemaVenues,
+  classifyPharmacyShifts,
+  filterCinemaFilms,
+  filterCinemaVenues,
+  filterPharmacies,
+  listCinemaTowns,
+  pharmacyMatchesShift,
+  type CinemaViewMode,
+  type PharmacyShiftFilter,
+} from "./atlas-utility-filters.js";
 
 export {
   MAP_UI_SCALE,

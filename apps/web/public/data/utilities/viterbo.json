@@ -1,11 +1,15 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-08-15T15:33:25.429Z",
+  "syncedAt": "2026-08-15T15:46:25.002Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
     "dutyDate": "2026-08-15",
+    "consult": {
+      "all": "https://www.paginegialle.it/farmacie-turno/viterbo",
+      "map": "https://www.paginegialle.it/mappa/farmacie-turno/viterbo?rk="
+    },
     "items": [
       {
         "name": "Farmacia Sassacci della Dr.ssa Anna Maria Versace",
@@ -236,6 +240,43 @@
               "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/23914/"
+          }
+        ]
+      }
+    ],
+    "venues": [
+      {
+        "cinema": "Arena Marconi",
+        "town": "Bolsena",
+        "url": "https://www.mymovies.it/cinema/viterbo/bolsena/23914/",
+        "films": [
+          {
+            "title": "HAMNET - NEL NOME DEL FIGLIO",
+            "url": "https://www.mymovies.it/film/2025/hamnet/",
+            "times": [
+              "21:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Multisala Moderno",
+        "town": "Bolsena",
+        "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/",
+        "films": [
+          {
+            "title": "ODISSEA",
+            "url": "https://www.mymovies.it/film/2026/odissea/",
+            "times": [
+              "17:00"
+            ]
+          },
+          {
+            "title": "SPIDER-MAN - BRAND NEW DAY",
+            "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+            "times": [
+              "21:30"
+            ]
           }
         ]
       }

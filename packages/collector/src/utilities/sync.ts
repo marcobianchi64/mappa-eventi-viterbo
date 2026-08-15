@@ -2,6 +2,7 @@ import {
   ATLAS_EDITION,
   ATLAS_EDITION_UTILITY_SERVICE_IDS,
   ATLAS_UTILITY_SERVICE_CATALOG,
+  buildCinemaVenues,
   resolveUtilityServiceUrl,
   type AtlasEdition,
   type AtlasUtilityServiceKind,
@@ -67,7 +68,9 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   const cinemaHtml = await fetchHtml(cinemaUrl);
   const cinema = parseCinemaFromMyMovies(cinemaHtml);
   console.log(`  ${cinema.length} film in programmazione`);
+  const venues = buildCinemaVenues(cinema);
 
+  const municipalitySlug = edition.geo?.municipalitySlug ?? edition.id;
   const snapshot: UtilitySyncSnapshot = {
     editionId: edition.id,
     territoryId: edition.territoryId,
@@ -76,12 +79,17 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
       sourceUrl: pharmacyUrl,
       sourceLabel: "Pagine Gialle",
       dutyDate,
+      consult: {
+        all: pharmacyUrl,
+        map: `https://www.paginegialle.it/mappa/farmacie-turno/${municipalitySlug}?rk=`,
+      },
       items: pharmacies,
     },
     cinema: {
       sourceUrl: cinemaUrl,
       sourceLabel: "MYmovies",
       items: cinema,
+      venues,
     },
   };
 
