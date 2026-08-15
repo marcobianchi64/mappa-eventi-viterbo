@@ -21,7 +21,7 @@ export function renderShell(): string {
 
     <header class="atlas-header">
       <div class="atlas-header-inner">
-        <div class="topbar">
+        <div class="topbar topbar-main">
           <div class="brand-mark" title="${listTitle}">
             <span class="brand-name">Atlas</span>
             <span class="brand-territory">${territory}</span>
@@ -31,54 +31,54 @@ export function renderShell(): string {
             <button id="viewListBtn" class="view-switch-btn" type="button" title="Elenco eventi"><span class="view-switch-icon">📋</span><span class="view-switch-label">Elenco</span></button>
           </nav>
           <div class="topbar-actions">
-            <div class="topbar-actions-primary">
-              <button id="pharmacyButton" class="topbar-btn topbar-btn-service topbar-btn-pharmacy" type="button" title="Farmacie di turno aperte" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
-              <button id="cinemaButton" class="topbar-btn topbar-btn-service topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
-            </div>
-            <div class="topbar-actions-secondary">
-            <div class="filter-menu-wrap" id="filterMenuWrap">
-              <button
-                id="filterEventsButton"
-                class="topbar-btn topbar-btn-muted topbar-btn-filter filter-events-trigger"
-                type="button"
-                aria-expanded="false"
-                aria-controls="filterEventsPanel"
-              ><span>🔎</span><span class="topbar-btn-label">Filtra</span></button>
-              <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
-                <div class="filter-events-columns">
-                  <div class="filter-events-col">
-                    <h3 class="filter-events-heading">Cosa</h3>
-                    <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+            <div class="topbar-actions-core">
+              <div class="filter-menu-wrap" id="filterMenuWrap">
+                <button
+                  id="filterEventsButton"
+                  class="topbar-btn topbar-btn-core topbar-btn-filter filter-events-trigger"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="filterEventsPanel"
+                ><span>🔎</span><span class="topbar-btn-label">Filtra</span></button>
+                <div id="filterEventsPanel" class="filter-events-panel" aria-hidden="true">
+                  <div class="filter-events-columns">
+                    <div class="filter-events-col">
+                      <h3 class="filter-events-heading">Cosa</h3>
+                      <div class="filter-events-list" role="group" aria-label="Categoria">${renderFilterCategoryOptions()}</div>
+                    </div>
+                    <div class="filter-events-col">
+                      <h3 class="filter-events-heading">Quando</h3>
+                      <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+                    </div>
                   </div>
-                  <div class="filter-events-col">
-                    <h3 class="filter-events-heading">Quando</h3>
-                    <div class="filter-events-list" role="group" aria-label="Periodo">${renderFilterWhenOptions(DEFAULT_DATE_RANGE)}</div>
+                  <div class="filter-events-search atlas-map-only">
+                    <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
+                    <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
+                    <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
+                    <div class="search-box">
+                      <input id="searchPlace" placeholder="Cerca evento o località" />
+                      <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
+                    </div>
+                    <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
+                    <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
                   </div>
-                </div>
-                <div class="filter-events-search atlas-map-only">
-                  <p class="filter-events-search-lead">Cerca per nome o vicinanza</p>
-                  <div class="near-radius" role="group" aria-label="Distanza ricerca eventi">${nearRadiusChips}</div>
-                  <p id="nearRadiusHintDock" class="near-radius-hint small"></p>
-                  <div class="search-box">
-                    <input id="searchPlace" placeholder="Cerca evento o località" />
-                    <button id="searchPlaceButton" class="btn dark" type="button">Cerca</button>
-                  </div>
-                  <button id="nearMeButtonDock" class="btn full" type="button">📍 Cerca vicino a me</button>
-                  <div class="search-note">La ricerca mostra solo eventi attivi nel periodo selezionato.</div>
                 </div>
               </div>
+              <button id="programsButton" class="topbar-btn topbar-btn-core topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
+              <button id="topInsertBtn" class="topbar-btn topbar-btn-core topbar-btn-insert" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
             </div>
-            <button id="programsButton" class="topbar-btn topbar-btn-muted topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
+            <div class="topbar-actions-utility" aria-label="Servizi utili">
+              <button id="cinemaButton" class="topbar-btn topbar-btn-utility topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
+              <button id="pharmacyButton" class="topbar-btn topbar-btn-utility topbar-btn-pharmacy" type="button" title="Farmacie di turno aperte" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
             </div>
-            <button id="topInsertBtn" class="topbar-btn topbar-btn-insert atlas-map-only" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
           </div>
         </div>
-        <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
+        <p id="activeFiltersBar" class="active-filters-bar atlas-map-only" aria-live="polite"></p>
       </div>
       <div id="atlasPromoSlot" class="atlas-promo-slot atlas-map-only" hidden aria-hidden="true"></div>
     </header>
 
-    <div id="dockInsertFlyout" class="dock-flyout atlas-map-only" aria-hidden="true">
+    <div id="dockInsertFlyout" class="dock-flyout" aria-hidden="true">
       <div class="dock-flyout-header">
         <h2 id="insertFlyoutTitle">Segnala un evento</h2>
         <button id="closeInsertFlyout" class="dock-flyout-close" type="button" aria-label="Chiudi">×</button>

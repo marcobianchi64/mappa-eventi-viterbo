@@ -430,9 +430,35 @@ export class AtlasApp {
 
     const insertOpen = which === "insert" && !insert?.classList.contains("open");
 
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      const mobileSheet = document.getElementById("mobileSheet");
+      const mobileInsert = document.getElementById("mobileInsertPanel");
+      const mobileOpen =
+        mobileSheet?.classList.contains("open") &&
+        mobileInsert &&
+        !mobileInsert.classList.contains("hidden");
+      const willOpen = !mobileOpen;
+
+      if (willOpen) {
+        closeEventSheet();
+        this.openMobileSheet("insert");
+        if (this.viewMode === "map") this.beginInsertMapPick();
+        else this.resetInsertPickState();
+      } else {
+        mobileSheet?.classList.remove("open");
+        this.resetInsertPickState();
+      }
+      insertBtn?.classList.toggle("active", willOpen);
+      return;
+    }
+
     if (insertOpen) {
       closeEventSheet();
-      this.beginInsertMapPick();
+      if (this.viewMode === "map") {
+        this.beginInsertMapPick();
+      } else {
+        this.resetInsertPickState();
+      }
     } else {
       this.resetInsertPickState();
     }
@@ -654,7 +680,7 @@ export class AtlasApp {
         : getCategoryMeta(this.listCategory).label.toLowerCase();
     const time = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
     const territory = getEditionTerritoryLabel();
-    el.textContent = `${territory} · ${category} · ${time}`;
+    el.innerHTML = `<span class="active-filters-main">${escapeHtml(`${territory} · ${category} · ${time}`)}</span> <span class="active-filters-hint">(clic Filtra per cambiare)</span>`;
     this.syncHeaderLayout();
   }
 
