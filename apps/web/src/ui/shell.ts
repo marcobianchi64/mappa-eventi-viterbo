@@ -26,15 +26,20 @@ export function renderShell(): string {
             <span class="brand-name">Atlas</span>
             <span class="brand-territory">${territory}</span>
           </div>
-          <nav class="view-switch" aria-label="Vista">
+          <nav class="view-switch topbar-nav-primary" aria-label="Vista">
             <button id="viewMapBtn" class="view-switch-btn active" type="button" title="Mappa eventi"><span class="view-switch-icon">🗺</span><span class="view-switch-label">Mappa</span></button>
             <button id="viewListBtn" class="view-switch-btn" type="button" title="Elenco eventi"><span class="view-switch-icon">📋</span><span class="view-switch-label">Elenco</span></button>
           </nav>
           <div class="topbar-actions">
+            <div class="topbar-actions-primary">
+              <button id="pharmacyButton" class="topbar-btn topbar-btn-service topbar-btn-pharmacy" type="button" title="Farmacie di turno aperte" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
+              <button id="cinemaButton" class="topbar-btn topbar-btn-service topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
+            </div>
+            <div class="topbar-actions-secondary">
             <div class="filter-menu-wrap" id="filterMenuWrap">
               <button
                 id="filterEventsButton"
-                class="topbar-btn topbar-btn-filter filter-events-trigger"
+                class="topbar-btn topbar-btn-muted topbar-btn-filter filter-events-trigger"
                 type="button"
                 aria-expanded="false"
                 aria-controls="filterEventsPanel"
@@ -63,8 +68,8 @@ export function renderShell(): string {
                 </div>
               </div>
             </div>
-            <button id="programsButton" class="topbar-btn topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
-            <button id="utilityServicesButton" class="topbar-btn topbar-btn-utility" type="button" title="Servizi utili"><span>✨</span><span class="topbar-btn-label">Servizi</span></button>
+            <button id="programsButton" class="topbar-btn topbar-btn-muted topbar-btn-saved" type="button" title="Eventi salvati"><span>🔖</span><span class="topbar-btn-label">Salvati</span></button>
+            </div>
             <button id="topInsertBtn" class="topbar-btn topbar-btn-insert atlas-map-only" type="button" title="Inserisci evento"><span>＋</span><span class="topbar-btn-label">Inserisci</span></button>
           </div>
         </div>
@@ -91,10 +96,14 @@ export function renderShell(): string {
       <div id="programsList">Nessun evento salvato.</div>
     </div>
 
-    <div id="utilityServicesPanel" class="utility-services-panel">
-      <h3>✨ Servizi utili</h3>
-      <p class="utility-services-lead">Farmacie e cinema aggiornati ogni giorno. Link esterni per prenotazioni.</p>
-      <div id="utilityServicesList"></div>
+    <div id="pharmacyPanel" class="utility-services-panel utility-panel-pharmacy">
+      <h3>💊 Farmacie aperte</h3>
+      <div id="pharmacyPanelList"></div>
+    </div>
+
+    <div id="cinemaPanel" class="utility-services-panel utility-panel-cinema">
+      <h3>🎬 Cinema</h3>
+      <div id="cinemaPanelList"></div>
     </div>
 
     <div id="map" class="atlas-map-only"></div>

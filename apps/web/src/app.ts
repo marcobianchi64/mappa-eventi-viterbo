@@ -31,6 +31,7 @@ import {
   type EventSubmissionInput,
   type NearRadiusPreset,
   type SavedInterest,
+  type UtilitySyncSnapshot,
 } from "@atlas/core";
 import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
 import { MapService } from "./map/map-service";
@@ -44,8 +45,9 @@ import {
 } from "./ui/event-list";
 import {
   loadUtilitySyncSnapshot,
-  renderUtilityServicesLoadingHtml,
-  renderUtilityServicesPanelHtml,
+  renderCinemaPanelHtml,
+  renderPharmacyPanelHtml,
+  renderUtilityPanelLoadingHtml,
 } from "./ui/utility-services.js";
 import { setStatus, showToast } from "./ui/toast";
 
@@ -79,6 +81,7 @@ export class AtlasApp {
   private listCategory: EventListCategoryFilter = "all";
   private insertMapPickActive = false;
   private insertLocationFromMap = false;
+  private utilitySnapshot: UtilitySyncSnapshot | null | undefined;
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
@@ -99,7 +102,7 @@ export class AtlasApp {
     this.syncFilterOptionActiveStates();
     this.updateActiveFiltersBar();
     this.renderPrograms();
-    this.renderUtilityServices();
+    void this.prefetchUtilitySnapshot();
     injectAtlasTypography();
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
     this.applyViewFromUrl();
@@ -140,7 +143,7 @@ export class AtlasApp {
       filterEventsButton.setAttribute("aria-expanded", open ? "true" : "false");
       filterEventsPanel?.setAttribute("aria-hidden", open ? "false" : "true");
       document.getElementById("programsPanel")?.classList.remove("open");
-      document.getElementById("utilityServicesPanel")?.classList.remove("open");
+      this.closeUtilityPanels();
       this.closeDockFlyouts();
     });
 
@@ -174,17 +177,17 @@ export class AtlasApp {
     document.getElementById("programsButton")?.addEventListener("click", () => {
       this.closeFilterMenu();
       this.closeDockFlyouts();
-      document.getElementById("utilityServicesPanel")?.classList.remove("open");
+      this.closeUtilityPanels();
       this.renderPrograms();
       document.getElementById("programsPanel")?.classList.toggle("open");
     });
 
-    document.getElementById("utilityServicesButton")?.addEventListener("click", () => {
-      this.closeFilterMenu();
-      this.closeDockFlyouts();
-      document.getElementById("programsPanel")?.classList.remove("open");
-      this.renderUtilityServices();
-      document.getElementById("utilityServicesPanel")?.classList.toggle("open");
+    document.getElementById("pharmacyButton")?.addEventListener("click", () => {
+      this.toggleUtilityPanel("pharmacy");
+    });
+
+    document.getElementById("cinemaButton")?.addEventListener("click", () => {
+      this.toggleUtilityPanel("cinema");
     });
 
     document.getElementById("topInsertBtn")?.addEventListener("click", () => {
@@ -302,6 +305,7 @@ export class AtlasApp {
     document.getElementById("viewListBtn")?.classList.toggle("active", mode === "list");
 
     document.getElementById("programsPanel")?.classList.remove("open");
+    this.closeUtilityPanels();
     this.closeFilterMenu();
     this.closeDockFlyouts();
 
@@ -908,16 +912,64 @@ export class AtlasApp {
   }
 
   private renderUtilityServices(): void {
-    const list = document.getElementById("utilityServicesList");
-    if (!list) return;
-    list.innerHTML = renderUtilityServicesLoadingHtml();
-    void loadUtilitySyncSnapshot()
-      .then((snapshot) => {
-        list.innerHTML = renderUtilityServicesPanelHtml(snapshot);
-      })
-      .catch(() => {
-        list.innerHTML = renderUtilityServicesPanelHtml(null);
-      });
+    const pharmacyList = document.getElementById("pharmacyPanelList");
+    const cinemaList = document.getElementById("cinemaPanelList");
+    if (!pharmacyList || !cinemaList) return;
+
+    void this.ensureUtilitySnapshot().then((snapshot) => {
+      pharmacyList.innerHTML = renderPharmacyPanelHtml(snapshot);
+      cinemaList.innerHTML = renderCinemaPanelHtml(snapshot);
+    });
+  }
+
+  private prefetchUtilitySnapshot(): void {
+    void this.ensureUtilitySnapshot().then(() => this.renderUtilityServices());
+  }
+
+  private async ensureUtilitySnapshot(): Promise<UtilitySyncSnapshot | null> {
+    if (this.utilitySnapshot !== undefined) return this.utilitySnapshot;
+    this.utilitySnapshot = await loadUtilitySyncSnapshot();
+    return this.utilitySnapshot;
+  }
+
+  private closeUtilityPanels(): void {
+    document.getElementById("pharmacyPanel")?.classList.remove("open");
+    document.getElementById("cinemaPanel")?.classList.remove("open");
+    document.getElementById("pharmacyButton")?.setAttribute("aria-expanded", "false");
+    document.getElementById("cinemaButton")?.setAttribute("aria-expanded", "false");
+    document.getElementById("pharmacyButton")?.classList.remove("active");
+    document.getElementById("cinemaButton")?.classList.remove("active");
+  }
+
+  private toggleUtilityPanel(kind: "pharmacy" | "cinema"): void {
+    this.closeFilterMenu();
+    this.closeDockFlyouts();
+    document.getElementById("programsPanel")?.classList.remove("open");
+
+    const panelId = kind === "pharmacy" ? "pharmacyPanel" : "cinemaPanel";
+    const buttonId = kind === "pharmacy" ? "pharmacyButton" : "cinemaButton";
+    const listId = kind === "pharmacy" ? "pharmacyPanelList" : "cinemaPanelList";
+    const panel = document.getElementById(panelId);
+    const button = document.getElementById(buttonId);
+    const list = document.getElementById(listId);
+    if (!panel || !button || !list) return;
+
+    const willOpen = !panel.classList.contains("open");
+    this.closeUtilityPanels();
+
+    if (!willOpen) return;
+
+    list.innerHTML = renderUtilityPanelLoadingHtml();
+    panel.classList.add("open");
+    button.setAttribute("aria-expanded", "true");
+    button.classList.add("active");
+
+    void this.ensureUtilitySnapshot().then((snapshot) => {
+      list.innerHTML =
+        kind === "pharmacy"
+          ? renderPharmacyPanelHtml(snapshot)
+          : renderCinemaPanelHtml(snapshot);
+    });
   }
 
   private renderPrograms(): void {

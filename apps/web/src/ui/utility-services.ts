@@ -1,58 +1,50 @@
 import {
-  ATLAS_EDITION,
   escapeHtml,
   formatUtilitySyncDate,
+  getEditionTerritoryLabel,
   getUtilityServicesForEdition,
-  utilitySyncDataUrl,
   type AtlasUtilityServiceLink,
   type UtilitySyncSnapshot,
 } from "@atlas/core";
 
-export async function loadUtilitySyncSnapshot(
-  editionId: string = ATLAS_EDITION.id,
-): Promise<UtilitySyncSnapshot | null> {
-  try {
-    const response = await fetch(utilitySyncDataUrl(editionId), { cache: "no-cache" });
-    if (!response.ok) return null;
-    return (await response.json()) as UtilitySyncSnapshot;
-  } catch {
-    return null;
-  }
-}
+export { loadUtilitySyncSnapshot } from "./utility-services-data.js";
 
-export function renderUtilityServicesPanelHtml(snapshot: UtilitySyncSnapshot | null): string {
-  const services = getUtilityServicesForEdition();
-  const sections: string[] = [];
-
-  const pharmacyService = services.find((s) => s.kind === "pharmacy_duty");
-  const cinemaService = services.find((s) => s.kind === "cinema_listings");
-  const bookingServices = services.filter((s) => s.kind === "cinema_booking");
+export function renderPharmacyPanelHtml(snapshot: UtilitySyncSnapshot | null): string {
+  const territory = getEditionTerritoryLabel();
+  const pharmacyService = getUtilityServicesForEdition().find((s) => s.kind === "pharmacy_duty");
 
   if (snapshot?.pharmacies.items.length) {
-    sections.push(renderPharmacySection(snapshot, pharmacyService));
-  } else if (pharmacyService) {
-    sections.push(renderExternalServiceItem(pharmacyService));
+    return renderPharmacySection(snapshot, territory, pharmacyService);
   }
+
+  if (pharmacyService) {
+    return renderExternalFallback(pharmacyService, "Farmacie di turno non ancora sincronizzate per questa area.");
+  }
+
+  return `<p class="utility-services-empty">Farmacie non disponibili per questa area.</p>`;
+}
+
+export function renderCinemaPanelHtml(snapshot: UtilitySyncSnapshot | null): string {
+  const territory = getEditionTerritoryLabel();
+  const cinemaService = getUtilityServicesForEdition().find((s) => s.kind === "cinema_listings");
 
   if (snapshot?.cinema.items.length) {
-    sections.push(renderCinemaSection(snapshot, cinemaService));
-  } else if (cinemaService) {
-    sections.push(renderExternalServiceItem(cinemaService));
+    return renderCinemaSection(snapshot, territory, cinemaService);
   }
 
-  for (const service of bookingServices) {
-    sections.push(renderExternalServiceItem(service));
+  if (cinemaService) {
+    return renderExternalFallback(
+      cinemaService,
+      "Programmazione cinema non ancora sincronizzata per questa area.",
+    );
   }
 
-  if (sections.length === 0) {
-    return `<p class="utility-services-empty">Servizi in arrivo per questa area.</p>`;
-  }
-
-  return `<div class="utility-services-list">${sections.join("")}</div>`;
+  return `<p class="utility-services-empty">Cinema non disponibile per questa area.</p>`;
 }
 
 function renderPharmacySection(
   snapshot: UtilitySyncSnapshot,
+  territory: string,
   external?: AtlasUtilityServiceLink,
 ): string {
   const updated = formatUtilitySyncDate(snapshot.syncedAt);
@@ -79,25 +71,20 @@ function renderPharmacySection(
   const sourceUrl = external?.url ?? snapshot.pharmacies.sourceUrl;
 
   return `
-    <section class="utility-sync-section">
-      <div class="utility-sync-header">
-        <span class="utility-sync-icon" aria-hidden="true">💊</span>
-        <div>
-          <h4 class="utility-sync-title">Farmacie di turno</h4>
-          <p class="utility-sync-lead">Provincia di Viterbo · aggiornato ${escapeHtml(updated)}</p>
-        </div>
-      </div>
+    <div class="utility-services-list">
+      <p class="utility-services-lead">${escapeHtml(territory)} · aggiornato ${escapeHtml(updated)}</p>
       <div class="utility-sync-items">${items}</div>
       ${more}
       <a class="utility-sync-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">
         Vedi tutte su ${escapeHtml(snapshot.pharmacies.sourceLabel)} ↗
       </a>
-    </section>
+    </div>
   `;
 }
 
 function renderCinemaSection(
   snapshot: UtilitySyncSnapshot,
+  territory: string,
   external?: AtlasUtilityServiceLink,
 ): string {
   const updated = formatUtilitySyncDate(snapshot.syncedAt);
@@ -131,42 +118,39 @@ function renderCinemaSection(
   const sourceUrl = external?.url ?? snapshot.cinema.sourceUrl;
 
   return `
-    <section class="utility-sync-section">
-      <div class="utility-sync-header">
-        <span class="utility-sync-icon" aria-hidden="true">🎬</span>
-        <div>
-          <h4 class="utility-sync-title">Programmazione cinema</h4>
-          <p class="utility-sync-lead">Provincia di Viterbo · aggiornato ${escapeHtml(updated)}</p>
-        </div>
-      </div>
+    <div class="utility-services-list">
+      <p class="utility-services-lead">${escapeHtml(territory)} · aggiornato ${escapeHtml(updated)}</p>
       <div class="utility-cinema-films">${films}</div>
       <a class="utility-sync-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">
         Programmazione completa su ${escapeHtml(snapshot.cinema.sourceLabel)} ↗
       </a>
-    </section>
+    </div>
   `;
 }
 
-function renderExternalServiceItem(service: AtlasUtilityServiceLink): string {
+function renderExternalFallback(service: AtlasUtilityServiceLink, message: string): string {
   return `
-    <a
-      class="utility-service-item"
-      href="${escapeHtml(service.url)}"
-      target="_blank"
-      rel="noopener noreferrer"
-      data-utility-id="${escapeHtml(service.id)}"
-    >
-      <span class="utility-service-icon" aria-hidden="true">${service.icon}</span>
-      <span class="utility-service-copy">
-        <strong class="utility-service-label">${escapeHtml(service.label)}</strong>
-        <span class="utility-service-desc">${escapeHtml(service.description)}</span>
-        <span class="utility-service-provider">${escapeHtml(service.provider)}</span>
-      </span>
-      <span class="utility-service-arrow" aria-hidden="true">↗</span>
-    </a>
+    <div class="utility-services-list">
+      <p class="utility-services-lead">${escapeHtml(message)}</p>
+      <a
+        class="utility-service-item"
+        href="${escapeHtml(service.url)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-utility-id="${escapeHtml(service.id)}"
+      >
+        <span class="utility-service-icon" aria-hidden="true">${service.icon}</span>
+        <span class="utility-service-copy">
+          <strong class="utility-service-label">${escapeHtml(service.label)}</strong>
+          <span class="utility-service-desc">${escapeHtml(service.description)}</span>
+          <span class="utility-service-provider">${escapeHtml(service.provider)}</span>
+        </span>
+        <span class="utility-service-arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
   `;
 }
 
-export function renderUtilityServicesLoadingHtml(): string {
-  return `<p class="utility-services-empty">Caricamento servizi…</p>`;
+export function renderUtilityPanelLoadingHtml(): string {
+  return `<p class="utility-services-empty">Caricamento…</p>`;
 }
