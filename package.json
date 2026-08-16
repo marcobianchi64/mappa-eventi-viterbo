@@ -41,7 +41,8 @@
     "verify:event-image": "npm run build -w @atlas/core && npm run build -w @atlas/collector && node scripts/verify-event-image.mjs",
     "verify:golden": "npm run build -w @atlas/core && node scripts/verify-golden-events.mjs",
     "verify:festival-group": "npm run build -w @atlas/core && node scripts/verify-festival-group.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden && npm run verify:festival-group"
+    "verify:utility-panel-scroll": "node scripts/verify-utility-panel-scroll.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden && npm run verify:festival-group && npm run verify:utility-panel-scroll"
   },
   "engines": {
     "node": ">=20"

@@ -814,43 +814,63 @@ button {
 }
 
 .utility-panel-scroll {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-  scrollbar-color: #64748b #e2e8f0;
-  touch-action: pan-y;
-  padding-right: 2px;
-}
-
-.utility-panel-scroll::-webkit-scrollbar {
-  width: 10px;
-}
-
-.utility-panel-scroll::-webkit-scrollbar-track {
-  background: #e2e8f0;
-  border-radius: 999px;
-}
-
-.utility-panel-scroll::-webkit-scrollbar-thumb {
-  background: #64748b;
-  border-radius: 999px;
-  border: 2px solid #e2e8f0;
-  min-height: 40px;
-}
-
-.utility-panel-scroll::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .utility-services-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  flex: 1 1 0;
+  min-height: 0;
+  gap: 0;
+}
+
+.utility-panel-sticky {
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+.utility-panel-scroll-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #e2e8f0;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar {
+  width: 12px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 8px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 8px;
+  border: 3px solid #e2e8f0;
+  min-height: 48px;
+}
+
+.utility-panel-scroll-body::-webkit-scrollbar-thumb:hover {
+  background-color: #1e293b;
 }
 
 .utility-panel-cinema {
@@ -2385,8 +2405,8 @@ body:not(.atlas-view-list) .leaflet-top.leaflet-right {
     bottom: max(10px, env(safe-area-inset-bottom, 0px));
   }
 
-  .utility-panel-scroll::-webkit-scrollbar {
-    width: 8px;
+  .utility-panel-scroll-body::-webkit-scrollbar {
+    width: 10px;
   }
 
   .active-filters-bar {
