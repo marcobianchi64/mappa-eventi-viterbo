@@ -1,5 +1,6 @@
 import {
   buildCinemaVenues,
+  countCinemaVenuesWithShowtimes,
   escapeHtml,
   filterCinemaFilms,
   filterCinemaVenues,
@@ -7,9 +8,11 @@ import {
   formatUtilitySyncDate,
   getUtilityServicesForEdition,
   listCinemaTowns,
+  mergeCinemaVenuesWithRegistry,
   type AtlasUtilityServiceLink,
   type CinemaViewMode,
   type PharmacyShiftFilter,
+  type UtilityCinemaVenue,
   type UtilitySyncSnapshot,
 } from "@atlas/core";
 
@@ -47,7 +50,7 @@ export function mountPharmacyPanel(
 }
 
 export function mountCinemaPanel(container: HTMLElement, snapshot: UtilitySyncSnapshot | null): void {
-  if (!snapshot?.cinema.items.length) {
+  if (!snapshot) {
     const service = getUtilityServicesForEdition().find((s) => s.kind === "cinema_listings");
     container.innerHTML = service
       ? renderExternalFallback(
@@ -58,7 +61,8 @@ export function mountCinemaPanel(container: HTMLElement, snapshot: UtilitySyncSn
     return;
   }
 
-  const venues = snapshot.cinema.venues ?? buildCinemaVenues(snapshot.cinema.items);
+  const syncedVenues = snapshot.cinema.venues ?? buildCinemaVenues(snapshot.cinema.items);
+  const venues = mergeCinemaVenuesWithRegistry(syncedVenues);
   const state = { mode: "cinemas" as CinemaViewMode, query: "" };
 
   const render = (): void => {
@@ -67,6 +71,41 @@ export function mountCinemaPanel(container: HTMLElement, snapshot: UtilitySyncSn
   };
 
   render();
+}
+
+function cinemaVenueEmptyMessage(venue: UtilityCinemaVenue): string {
+  if (venue.placeStatus === "seasonal") {
+    return "Stagione chiusa o nessun film in programmazione oggi.";
+  }
+  return "Nessun film in programmazione oggi.";
+}
+
+function renderCinemaVenueCard(venue: UtilityCinemaVenue): string {
+  const label = venue.town ? `${venue.cinema} (${venue.town})` : venue.cinema;
+  const hasShowtimes = venue.films.length > 0;
+  const header = venue.url
+    ? `<a class="utility-cinema-venue-title" href="${escapeHtml(venue.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+    : `<strong class="utility-cinema-venue-title">${escapeHtml(label)}</strong>`;
+  const badge = hasShowtimes
+    ? `<span class="utility-cinema-venue-badge utility-cinema-venue-badge-live">Oggi in sala</span>`
+    : `<span class="utility-cinema-venue-badge utility-cinema-venue-badge-quiet">Nessun film oggi</span>`;
+
+  const films = hasShowtimes
+    ? venue.films
+        .map((film) => {
+          const title = film.url
+            ? `<a class="utility-cinema-film-link" href="${escapeHtml(film.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(film.title)}</a>`
+            : `<span class="utility-cinema-film-link">${escapeHtml(film.title)}</span>`;
+          return `<div class="utility-cinema-venue-film">${title} <span class="utility-cinema-times">${escapeHtml(film.times.join(", "))}</span></div>`;
+        })
+        .join("")
+    : `<p class="utility-cinema-venue-empty">${escapeHtml(cinemaVenueEmptyMessage(venue))}</p>`;
+
+  const cardClass = hasShowtimes
+    ? "utility-cinema-venue-card"
+    : "utility-cinema-venue-card utility-cinema-venue-card-quiet";
+
+  return `<article class="${cardClass}">${badge}${header}<div class="utility-cinema-venue-films">${films}</div></article>`;
 }
 
 function renderPharmacyPanelContent(
@@ -148,18 +187,20 @@ function renderPharmacyPanelContent(
 
 function renderCinemaPanelContent(
   snapshot: UtilitySyncSnapshot,
-  venues: ReturnType<typeof buildCinemaVenues>,
+  venues: UtilityCinemaVenue[],
   state: { mode: CinemaViewMode; query: string },
 ): string {
   const updated = formatUtilitySyncDate(snapshot.syncedAt);
   const service = getUtilityServicesForEdition().find((s) => s.kind === "cinema_listings");
   const sourceUrl = service?.url ?? snapshot.cinema.sourceUrl;
-  const townChips = listCinemaTowns(venues)
-    .map(
+  const withShowtimes = countCinemaVenuesWithShowtimes(venues);
+  const townChips = [
+    `<button type="button" class="utility-chip utility-chip-town${state.query ? "" : " active"}" data-cinema-town="">Tutte</button>`,
+    ...listCinemaTowns(venues).map(
       (town) =>
-        `<button type="button" class="utility-chip utility-chip-town" data-cinema-town="${escapeHtml(town)}">${escapeHtml(town)}</button>`,
-    )
-    .join("");
+        `<button type="button" class="utility-chip utility-chip-town${state.query === town ? " active" : ""}" data-cinema-town="${escapeHtml(town)}">${escapeHtml(town)}</button>`,
+    ),
+  ].join("");
 
   const modeButtons = `
     <button type="button" class="utility-chip${state.mode === "cinemas" ? " active" : ""}" data-cinema-mode="cinemas">Per cinema</button>
@@ -172,23 +213,7 @@ function renderCinemaPanelContent(
     body =
       filteredVenues.length === 0
         ? `<p class="utility-services-empty">Nessun cinema trovato. Prova un altro comune o apri MYmovies.</p>`
-        : `<div class="utility-cinema-venues">${filteredVenues
-            .map((venue) => {
-              const label = venue.town ? `${venue.cinema} (${venue.town})` : venue.cinema;
-              const header = venue.url
-                ? `<a class="utility-cinema-venue-title" href="${escapeHtml(venue.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
-                : `<strong class="utility-cinema-venue-title">${escapeHtml(label)}</strong>`;
-              const films = venue.films
-                .map((film) => {
-                  const title = film.url
-                    ? `<a class="utility-cinema-film-link" href="${escapeHtml(film.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(film.title)}</a>`
-                    : `<span class="utility-cinema-film-link">${escapeHtml(film.title)}</span>`;
-                  return `<div class="utility-cinema-venue-film">${title} <span class="utility-cinema-times">${escapeHtml(film.times.join(", "))}</span></div>`;
-                })
-                .join("");
-              return `<article class="utility-cinema-venue-card">${header}<div class="utility-cinema-venue-films">${films}</div></article>`;
-            })
-            .join("")}</div>`;
+        : `<div class="utility-cinema-venues">${filteredVenues.map((venue) => renderCinemaVenueCard(venue)).join("")}</div>`;
   } else {
     const filteredFilms = filterCinemaFilms(snapshot.cinema.items, state.query);
     body =
@@ -217,14 +242,17 @@ function renderCinemaPanelContent(
   return `
     <div class="utility-services-list" data-utility-panel="cinema">
       <div class="utility-panel-sticky">
-        <p class="utility-services-lead">Provincia · aggiornato ${escapeHtml(updated)}</p>
+        <p class="utility-services-lead">
+          <strong>${withShowtimes}</strong> con programmazione oggi · ${venues.length} sale in provincia
+          · aggiornato ${escapeHtml(updated)}
+        </p>
         <div class="utility-panel-toolbar">
           <div class="utility-chip-row" role="group" aria-label="Vista cinema">${modeButtons}</div>
           <label class="utility-search">
             <span class="utility-search-label">${state.mode === "cinemas" ? "Cerca cinema o comune" : "Cerca film o sala"}</span>
             <input type="search" class="utility-search-input" data-cinema-search placeholder="${state.mode === "cinemas" ? "Es. Moderno, Bolsena, Gallery…" : "Es. Odissea, Spider-Man…"}" value="${escapeHtml(state.query)}" />
           </label>
-          ${state.mode === "cinemas" && townChips ? `<div class="utility-chip-row utility-chip-row-wrap" role="group" aria-label="Comuni">${townChips}</div>` : ""}
+          ${state.mode === "cinemas" && townChips ? `<div class="utility-chip-row utility-chip-row-wrap" role="group" aria-label="Comuni e filtri">${townChips}</div>` : ""}
         </div>
       </div>
       <div class="utility-panel-scroll-body" tabindex="0" aria-label="Elenco cinema">

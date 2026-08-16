@@ -1,6 +1,10 @@
-import type { AtlasPlaceRegistryEntry, UtilityCoverageReport } from "./atlas-registry.js";
+import type {
+  AtlasPlaceRegistryEntry,
+  CoverageGap,
+  OperationalAlertDraft,
+  UtilityCoverageReport,
+} from "./atlas-registry.js";
 import type { UtilityCinemaVenue } from "./atlas-utility-sync.js";
-import type { CoverageGap, OperationalAlertDraft } from "./atlas-registry.js";
 
 /** Sale cinema censite — provincia di Viterbo (pilota). */
 export const ATLAS_CINEMA_PLACES_VT: AtlasPlaceRegistryEntry[] = [
@@ -138,4 +142,60 @@ export function coverageToAlerts(report: UtilityCoverageReport): OperationalAler
       checkedAt: report.checkedAt,
     },
   }));
+}
+
+function venueUrlFromPlace(place: AtlasPlaceRegistryEntry): string | undefined {
+  return (
+    place.externalRefs?.mymovies?.url ??
+    place.externalRefs?.comingsoon?.url ??
+    undefined
+  );
+}
+
+/** Ordina: prima sale con programmazione, poi per comune e nome. */
+export function sortCinemaVenuesForDisplay(venues: UtilityCinemaVenue[]): UtilityCinemaVenue[] {
+  return [...venues].sort((a, b) => {
+    const aHas = a.films.length > 0 ? 0 : 1;
+    const bHas = b.films.length > 0 ? 0 : 1;
+    if (aHas !== bHas) return aHas - bHas;
+    const town = (a.town ?? "").localeCompare(b.town ?? "", "it");
+    if (town !== 0) return town;
+    return a.cinema.localeCompare(b.cinema, "it");
+  });
+}
+
+/** Unisce sync odierno con censimento: tutte le sale sempre visibili. */
+export function mergeCinemaVenuesWithRegistry(
+  syncedVenues: UtilityCinemaVenue[],
+  registry: AtlasPlaceRegistryEntry[] = ATLAS_CINEMA_PLACES_VT,
+): UtilityCinemaVenue[] {
+  const merged: UtilityCinemaVenue[] = [];
+  const usedSynced = new Set<number>();
+
+  for (const place of registry.filter(
+    (entry) => entry.placeType === "cinema" && entry.status !== "closed",
+  )) {
+    const matchIdx = syncedVenues.findIndex((venue) => venueMatchesPlace(venue, place));
+    const synced = matchIdx >= 0 ? syncedVenues[matchIdx] : null;
+    if (matchIdx >= 0) usedSynced.add(matchIdx);
+
+    merged.push({
+      cinema: place.name,
+      town: place.municipality,
+      url: synced?.url ?? venueUrlFromPlace(place),
+      films: synced?.films ?? [],
+      placeId: place.id,
+      placeStatus: place.status,
+    });
+  }
+
+  syncedVenues.forEach((venue, index) => {
+    if (!usedSynced.has(index)) merged.push(venue);
+  });
+
+  return sortCinemaVenuesForDisplay(merged);
+}
+
+export function countCinemaVenuesWithShowtimes(venues: UtilityCinemaVenue[]): number {
+  return venues.filter((venue) => venue.films.length > 0).length;
 }

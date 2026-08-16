@@ -34,6 +34,9 @@ export interface UtilityCinemaVenue {
     url?: string;
     times: string[];
   }>;
+  /** Id luogo censito (AIM), se presente nel registro. */
+  placeId?: string;
+  placeStatus?: "active" | "seasonal" | "closed" | "unknown";
 }
 
 export interface UtilitySyncSection<T> {

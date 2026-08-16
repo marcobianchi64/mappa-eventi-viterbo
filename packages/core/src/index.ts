@@ -91,7 +91,10 @@ export {
 export {
   ATLAS_CINEMA_PLACES_VT,
   checkCinemaCoverage,
+  countCinemaVenuesWithShowtimes,
   coverageToAlerts,
+  mergeCinemaVenuesWithRegistry,
+  sortCinemaVenuesForDisplay,
 } from "./atlas-place-catalog.js";
 
 export type {
