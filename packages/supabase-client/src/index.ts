@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type {
   AtlasEvent,
+  AtlasPlaceStatus,
   AtlasSource,
   EventSubmissionInput,
   EventSubmissionRecord,
@@ -347,6 +348,39 @@ export async function updateOperationalAlertStatus(
     resolved_at: status === "resolved" || status === "dismissed" ? new Date().toISOString() : null,
   };
   const { error } = await supabase.from("operational_alerts").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export interface AtlasPlaceAdmin {
+  id: string;
+  name: string;
+  place_type: string;
+  territory_id: string;
+  municipality?: string | null;
+  address?: string | null;
+  status: AtlasPlaceStatus;
+  primary_source_id?: string | null;
+  registry_source?: string | null;
+  registry_observed_at?: string | null;
+  screen_count?: number | null;
+  notes?: string | null;
+}
+
+export async function fetchPlacesAdmin(): Promise<AtlasPlaceAdmin[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("places")
+    .select("*")
+    .order("place_type", { ascending: true })
+    .order("municipality", { ascending: true })
+    .order("name", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AtlasPlaceAdmin[];
+}
+
+export async function updatePlaceStatus(id: string, status: AtlasPlaceStatus): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("places").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 }
 

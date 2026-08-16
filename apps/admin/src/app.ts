@@ -16,6 +16,7 @@ import {
   createSource,
   fetchAllEventsAdmin,
   fetchOperationalAlerts,
+  fetchPlacesAdmin,
   fetchPendingEvents,
   fetchPendingSubmissions,
   fetchSources,
@@ -25,6 +26,7 @@ import {
   signInWithOtp,
   updateEventReview,
   updateOperationalAlertStatus,
+  updatePlaceStatus,
   updateSource,
   updateSubmissionStatus,
 } from "@atlas/supabase-client";
@@ -45,7 +47,15 @@ import {
   type RegistryFilters,
 } from "./registry/event-registry.js";
 
-type AdminTab = "dashboard" | "map" | "discovery" | "registry" | "submissions" | "sources" | "events";
+type AdminTab =
+  | "dashboard"
+  | "map"
+  | "discovery"
+  | "registry"
+  | "places"
+  | "submissions"
+  | "sources"
+  | "events";
 
 export class AdminApp {
   private tab: AdminTab = "dashboard";
@@ -97,6 +107,7 @@ export class AdminApp {
             <button type="button" data-tab="map" class="tab">Mappa</button>
             <button type="button" data-tab="discovery" class="tab">Scoperta</button>
             <button type="button" data-tab="registry" class="tab">Registro</button>
+            <button type="button" data-tab="places" class="tab">Patrimonio</button>
             <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
             <button type="button" data-tab="events" class="tab">Revisione</button>
             <button type="button" data-tab="sources" class="tab">Fonti</button>
@@ -163,6 +174,7 @@ export class AdminApp {
       else if (this.tab === "map") await this.renderMap(panel);
       else if (this.tab === "discovery") await this.renderDiscovery(panel);
       else if (this.tab === "registry") await this.renderRegistry(panel);
+      else if (this.tab === "places") await this.renderPlaces(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
       else if (this.tab === "events") await this.renderEvents(panel);
       else if (this.tab === "sources") await this.renderSources(panel);
@@ -195,6 +207,7 @@ export class AdminApp {
         <button type="button" class="primary" data-goto="discovery">Vai a Scoperta</button>
         <button type="button" class="primary" data-goto="map">Apri mappa gestore</button>
         <button type="button" class="primary" data-goto="registry">Registro eventi</button>
+        <button type="button" class="primary" data-goto="places">Patrimonio dati</button>
         <button type="button" class="primary" data-goto="submissions">Segnalazioni (${submissions.length})</button>
       </div>
       <section class="operations-alerts">
@@ -233,6 +246,95 @@ export class AdminApp {
         const status = btn.dataset.alertStatus;
         if (!id || (status !== "acknowledged" && status !== "resolved")) return;
         void updateOperationalAlertStatus(id, status).then(() => this.renderPanel());
+      });
+    });
+  }
+
+  private async renderPlaces(panel: HTMLElement): Promise<void> {
+    const places = await fetchPlacesAdmin();
+    const typeLabel: Record<string, string> = {
+      cinema: "Cinema",
+      pharmacy: "Farmacia",
+      theater: "Teatro",
+      museum: "Museo",
+      municipality: "Comune",
+      pro_loco: "Pro loco",
+      venue: "Luogo",
+      other: "Altro",
+    };
+    const active = places.filter((place) => place.status === "active").length;
+    const review = places.filter((place) => place.status === "unknown").length;
+
+    panel.innerHTML = `
+      <h2>Patrimonio dati</h2>
+      <p class="small">Anagrafiche riutilizzabili, separate dalle osservazioni quotidiane. Cinema e farmacie sono i primi domini pilota.</p>
+      <div class="stats">
+        <div class="stat"><strong>${places.length}</strong><span>Luoghi registrati</span></div>
+        <div class="stat"><strong>${active}</strong><span>Verificati attivi</span></div>
+        <div class="stat"><strong>${review}</strong><span>Da verificare</span></div>
+      </div>
+      <label class="places-filter">Filtra
+        <select data-places-filter>
+          <option value="">Tutti i tipi</option>
+          ${[...new Set(places.map((place) => place.place_type))]
+            .map((type) => `<option value="${escapeHtml(type)}">${escapeHtml(typeLabel[type] ?? type)}</option>`)
+            .join("")}
+        </select>
+      </label>
+      <div class="places-list" data-places-list>
+        ${this.renderPlacesRows(places, typeLabel)}
+      </div>
+    `;
+
+    const list = panel.querySelector<HTMLElement>("[data-places-list]");
+    panel.querySelector<HTMLSelectElement>("[data-places-filter]")?.addEventListener("change", (event) => {
+      const selected = (event.target as HTMLSelectElement).value;
+      if (list) list.innerHTML = this.renderPlacesRows(places.filter((place) => !selected || place.place_type === selected), typeLabel);
+      this.bindPlaceStatusActions(panel);
+    });
+    this.bindPlaceStatusActions(panel);
+  }
+
+  private renderPlacesRows(
+    places: Awaited<ReturnType<typeof fetchPlacesAdmin>>,
+    typeLabel: Record<string, string>,
+  ): string {
+    if (!places.length) return `<p class="small">Nessun luogo ancora sincronizzato. Esegui i seed Supabase.</p>`;
+    return places
+      .map(
+        (place) => `
+          <article class="place-row">
+            <div>
+              <strong>${escapeHtml(place.name)}</strong>
+              <span>${escapeHtml(typeLabel[place.place_type] ?? place.place_type)} · ${escapeHtml(place.municipality ?? "Comune non indicato")}</span>
+              ${place.address ? `<span>${escapeHtml(place.address)}</span>` : ""}
+              <small>${escapeHtml(place.registry_source ?? place.primary_source_id ?? "Fonte da registrare")}${place.registry_observed_at ? ` · rilevato ${escapeHtml(place.registry_observed_at)}` : ""}</small>
+            </div>
+            <label>Stato
+              <select data-place-status data-place-id="${escapeHtml(place.id)}">
+                ${(["active", "unknown", "seasonal", "closed"] as const)
+                  .map((status) => `<option value="${status}"${place.status === status ? " selected" : ""}>${status}</option>`)
+                  .join("")}
+              </select>
+            </label>
+          </article>`,
+      )
+      .join("");
+  }
+
+  private bindPlaceStatusActions(panel: HTMLElement): void {
+    panel.querySelectorAll<HTMLSelectElement>("[data-place-status]").forEach((select) => {
+      select.addEventListener("change", () => {
+        const id = select.dataset.placeId;
+        const status = select.value as "active" | "unknown" | "seasonal" | "closed";
+        if (!id) return;
+        select.disabled = true;
+        void updatePlaceStatus(id, status)
+          .then(() => this.renderPanel())
+          .catch((error: unknown) => {
+            select.disabled = false;
+            window.alert(`Aggiornamento non riuscito: ${(error as Error).message}`);
+          });
       });
     });
   }

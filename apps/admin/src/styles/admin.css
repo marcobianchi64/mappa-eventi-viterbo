@@ -130,6 +130,57 @@ button {
   color: #fff;
 }
 
+.places-filter {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  width: auto;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+
+.places-filter select,
+.place-row select {
+  width: auto;
+  margin: 0;
+}
+
+.places-list {
+  display: grid;
+  gap: 8px;
+}
+
+.place-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.place-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.place-row span,
+.place-row small {
+  color: #666;
+}
+
+.place-row label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .place-row { align-items: stretch; flex-direction: column; }
+}
+
 .source-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
