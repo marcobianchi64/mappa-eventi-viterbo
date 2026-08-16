@@ -23,6 +23,16 @@ function pharmacyMatchesPlace(
   if (sourceUrl && pharmacy.url === sourceUrl) return true;
 
   if (normalize(pharmacy.municipality ?? "") !== normalize(place.municipality ?? "")) return false;
+  const observedAddress = normalize(pharmacy.address ?? "");
+  const registeredAddress = normalize(place.address ?? "");
+  if (
+    observedAddress.length >= 10 &&
+    registeredAddress.length >= 10 &&
+    (observedAddress.includes(registeredAddress) || registeredAddress.includes(observedAddress))
+  ) {
+    return true;
+  }
+
   const names = [place.name, ...(place.matchNames ?? [])].map(normalize);
   const observedName = normalize(pharmacy.name);
   return names.some((name) => name === observedName);

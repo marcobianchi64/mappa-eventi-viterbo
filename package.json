@@ -43,7 +43,8 @@
     "verify:festival-group": "npm run build -w @atlas/core && node scripts/verify-festival-group.mjs",
     "verify:utility-panel-scroll": "node scripts/verify-utility-panel-scroll.mjs",
     "verify:cinema-coverage": "npm run build -w @atlas/core && node scripts/verify-cinema-coverage.mjs",
-    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden && npm run verify:festival-group && npm run verify:utility-panel-scroll && npm run verify:cinema-coverage"
+    "verify:pharmacy-registry": "npm run build -w @atlas/core && node scripts/verify-pharmacy-registry.mjs",
+    "verify": "npm run verify:ui-scale && npm run verify:map-dedupe && npm run verify:discovery-table && npm run verify:event-schedule && npm run verify:frazioni && npm run verify:geocoding && npm run verify:location-confidence && npm run verify:event-image && npm run verify:golden && npm run verify:festival-group && npm run verify:utility-panel-scroll && npm run verify:cinema-coverage && npm run verify:pharmacy-registry"
   },
   "engines": {
     "node": ">=20"
