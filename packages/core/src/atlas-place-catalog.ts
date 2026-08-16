@@ -152,12 +152,9 @@ function venueUrlFromPlace(place: AtlasPlaceRegistryEntry): string | undefined {
   );
 }
 
-/** Ordina: prima sale con programmazione, poi per comune e nome. */
+/** Ordina per comune e nome — elenco provincia costante. */
 export function sortCinemaVenuesForDisplay(venues: UtilityCinemaVenue[]): UtilityCinemaVenue[] {
   return [...venues].sort((a, b) => {
-    const aHas = a.films.length > 0 ? 0 : 1;
-    const bHas = b.films.length > 0 ? 0 : 1;
-    if (aHas !== bHas) return aHas - bHas;
     const town = (a.town ?? "").localeCompare(b.town ?? "", "it");
     if (town !== 0) return town;
     return a.cinema.localeCompare(b.cinema, "it");

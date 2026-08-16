@@ -14,8 +14,8 @@ const merged = mergeCinemaVenuesWithRegistry(venues);
 if (merged.length !== ATLAS_CINEMA_PLACES_VT.filter((p) => p.status !== "closed").length) {
   throw new Error(`Attese ${ATLAS_CINEMA_PLACES_VT.length} sale nel merge, trovate ${merged.length}`);
 }
-if (merged[0]?.films.length === 0) {
-  throw new Error("La prima sala dovrebbe avere programmazione (ordinamento)");
+if (merged[0]?.cinema !== "Arena Marconi") {
+  throw new Error("Ordinamento atteso per comune/nome, prima sala Bolsena Arena Marconi");
 }
 if (!merged.some((venue) => venue.cinema === "The Space Cinema" && venue.films.length === 0)) {
   throw new Error("The Space dovrebbe comparire senza film");
