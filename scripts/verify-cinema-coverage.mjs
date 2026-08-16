@@ -26,8 +26,8 @@ if (merged.length !== expectedCount) {
 if (merged[0]?.cinema !== "Olimpya" || merged[0]?.town !== "Acquapendente") {
   throw new Error("Ordinamento atteso per comune/nome, prima sala Olimpya ad Acquapendente");
 }
-if (!merged.some((venue) => venue.cinema === "The Space Cinema" && venue.films.length === 0)) {
-  throw new Error("The Space dovrebbe comparire senza film");
+if (merged.some((venue) => venue.cinema === "The Space Cinema")) {
+  throw new Error("Un record cinema chiuso o errato non deve comparire nel pubblico");
 }
 
 const report = checkCinemaCoverage(venues);

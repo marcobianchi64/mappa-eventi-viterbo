@@ -99,10 +99,10 @@ INSERT INTO public.places (
     'cinema',
     'IT-VT',
     'Viterbo',
-    'active',
+    'closed',
     NULL,
-    '{"comingsoon": {"url": "https://www.comingsoon.it/cinema/viterbo/the-space-cinema-viterbo/5085/"}}'::jsonb,
-    'Multisala Viterbo — fonte MYmovies assente, censito per gap detection'
+    '{}'::jsonb,
+    'Record corretto il 2026-08-16: il precedente URL ComingSoon 5085 reindirizza a Bologna; nessuna sede The Space risulta nella provincia.'
   )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,

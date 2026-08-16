@@ -272,14 +272,10 @@ export const ATLAS_CINEMA_PLACES_VT: AtlasPlaceRegistryEntry[] = [
     placeType: "cinema",
     territoryId: "IT-VT",
     municipality: "Viterbo",
-    status: "active",
+    status: "closed",
     matchNames: ["The Space", "Space Cinema"],
-    externalRefs: {
-      comingsoon: {
-        url: "https://www.comingsoon.it/cinema/viterbo/the-space-cinema-viterbo/5085/",
-      },
-    },
-    notes: "Non indicizzato su MYmovies provincia — richiede fonte alternativa",
+    notes:
+      "Record corretto il 2026-08-16: il precedente URL ComingSoon 5085 reindirizza a Bologna; nessuna sede The Space risulta nella provincia.",
   },
 ];
 
