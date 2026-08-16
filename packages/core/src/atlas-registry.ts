@@ -43,6 +43,8 @@ export interface AtlasPlaceRegistryEntry {
   placeType: AtlasPlaceType;
   territoryId: string;
   municipality?: string;
+  address?: string;
+  screenCount?: number;
   status: AtlasPlaceStatus;
   primarySourceId?: string;
   externalRefs?: PlaceExternalRefs;

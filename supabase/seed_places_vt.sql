@@ -110,3 +110,48 @@ ON CONFLICT (id) DO UPDATE SET
   status = EXCLUDED.status,
   external_refs = EXCLUDED.external_refs,
   notes = EXCLUDED.notes;
+
+-- Sale rilevate dal censimento anagrafico manuale fornito il 2026-08-16.
+-- Non sono programmazioni: restano nel registro anche senza film oggi.
+INSERT INTO public.places (
+  id, name, place_type, territory_id, municipality, status, notes
+) VALUES
+  ('place-cinema-olimpya-acquapendente', 'Olimpya', 'cinema', 'IT-VT', 'Acquapendente', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-florida-civita-castellana', 'Florida', 'cinema', 'IT-VT', 'Civita Castellana', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-multisala-flavia-montefiascone', 'Multisala Flavia', 'cinema', 'IT-VT', 'Montefiascone', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-florida-soriano-cimino', 'Florida', 'cinema', 'IT-VT', 'Soriano nel Cimino', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-colombo-valentano', 'Colombo', 'cinema', 'IT-VT', 'Valentano', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-albertone-nazionale-vasanello', 'Albertone Nazionale', 'cinema', 'IT-VT', 'Vasanello', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-lux-viterbo', 'Lux', 'cinema', 'IT-VT', 'Viterbo', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività'),
+  ('place-cinema-trento-viterbo', 'Trento', 'cinema', 'IT-VT', 'Viterbo', 'unknown', 'Censimento manuale 2026-08-16: da verificare operatività')
+ON CONFLICT (id) DO NOTHING;
+
+-- La fonte, l'indirizzo e gli schermi rimangono dati strutturati e interrogabili.
+UPDATE public.places AS place
+SET
+  name = census.name,
+  municipality = census.municipality,
+  address = census.address,
+  screen_count = census.screen_count,
+  status = census.status,
+  registry_source = 'Censimento manuale fornito dal committente',
+  registry_observed_at = DATE '2026-08-16',
+  notes = census.notes
+FROM (
+  VALUES
+    ('place-cinema-olimpya-acquapendente', 'Olimpya', 'Acquapendente', 'Via Cantorrivo, 5/a', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-moderno-bolsena', 'Moderna', 'Bolsena', 'Via Marconi, snc', 2, 'unknown', 'Denominazione indicata come Moderna; da verificare operatività'),
+    ('place-cinema-tevere-castiglione', 'Tevere', 'Castiglione in Teverina', 'Via Orvietana, 37', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-florida-civita-castellana', 'Florida', 'Civita Castellana', 'Via del Forte, 26', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-excelsior-vetralla', 'Excelsior', 'Cura di Vetralla', 'Via Cassia, 277', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-multisala-flavia-montefiascone', 'Multisala Flavia', 'Montefiascone', 'Via della Croce, 1', 2, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-gallery-montefiascone', 'Gallery', 'Montefiascone', 'Via Cardinal Salotti, snc', 2, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-florida-soriano-cimino', 'Florida', 'Soriano nel Cimino', 'P.zza G. Marconi, 21', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-etrusco-tarquinia', 'Etrusco', 'Tarquinia', 'Via della Caserma, 32', 4, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-colombo-valentano', 'Colombo', 'Valentano', 'Via Monte Grappa, 3', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-albertone-nazionale-vasanello', 'Albertone Nazionale', 'Vasanello', 'Via S. Maria, 20', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-lux-viterbo', 'Lux', 'Viterbo', 'Viale Trento, 1', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-trento-viterbo', 'Trento', 'Viterbo', 'Via del Santuario, 51', 1, 'unknown', 'Da verificare operatività'),
+    ('place-cinema-tuscia-village-vitorchiano', 'Cinetuscia Village', 'Vitorchiano', 'Via Marmolada, snc', 6, 'unknown', 'Denominazione indicata come Cinetuscia Village; da verificare operatività')
+) AS census(id, name, municipality, address, screen_count, status, notes)
+WHERE place.id = census.id;
