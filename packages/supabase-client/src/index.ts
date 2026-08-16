@@ -305,6 +305,52 @@ export async function updateSource(id: string, patch: Partial<SourceInput>): Pro
 }
 
 // ---------------------------------------------------------------------------
+// Control Center — affidabilità dati
+// ---------------------------------------------------------------------------
+
+export type OperationalAlertStatus = "open" | "acknowledged" | "resolved" | "dismissed";
+
+export interface OperationalAlert {
+  id: string;
+  alert_type: string;
+  severity: "info" | "warning" | "critical";
+  territory_id?: string | null;
+  place_id?: string | null;
+  title: string;
+  message: string;
+  consecutive_misses: number;
+  last_seen_at: string;
+  status: OperationalAlertStatus;
+}
+
+export async function fetchOperationalAlerts(
+  statuses: OperationalAlertStatus[] = ["open", "acknowledged"],
+): Promise<OperationalAlert[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("operational_alerts")
+    .select("*")
+    .in("status", statuses)
+    .order("last_seen_at", { ascending: false })
+    .limit(100);
+  if (error) throw new Error(error.message);
+  return (data ?? []) as OperationalAlert[];
+}
+
+export async function updateOperationalAlertStatus(
+  id: string,
+  status: OperationalAlertStatus,
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const patch = {
+    status,
+    resolved_at: status === "resolved" || status === "dismissed" ? new Date().toISOString() : null,
+  };
+  const { error } = await supabase.from("operational_alerts").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+// ---------------------------------------------------------------------------
 // Auth admin
 // ---------------------------------------------------------------------------
 

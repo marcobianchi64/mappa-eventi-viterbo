@@ -147,6 +147,7 @@ export class AtlasApp {
   }
 
   private handleOpenEvent(event: AtlasEvent, festivalGroup?: FestivalMapGroup): void {
+    this.closeUtilityPanels();
     if (festivalGroup && festivalGroup.events.length > 1) {
       openFestivalEventSheet(
         festivalGroup,
@@ -205,6 +206,16 @@ export class AtlasApp {
         filterEventsButton?.setAttribute("aria-expanded", "false");
         filterEventsPanel?.setAttribute("aria-hidden", "true");
       }
+
+      const utilityRoots = [
+        document.getElementById("pharmacyButton"),
+        document.getElementById("cinemaButton"),
+        document.getElementById("pharmacyPanel"),
+        document.getElementById("cinemaPanel"),
+      ];
+      if (!utilityRoots.some((root) => root?.contains(e.target as Node))) {
+        this.closeUtilityPanels();
+      }
     });
 
     document.getElementById("viewMapBtn")?.addEventListener("click", () => this.setViewMode("map"));
@@ -218,11 +229,13 @@ export class AtlasApp {
       document.getElementById("programsPanel")?.classList.toggle("open");
     });
 
-    document.getElementById("pharmacyButton")?.addEventListener("click", () => {
+    document.getElementById("pharmacyButton")?.addEventListener("click", (e) => {
+      e.stopPropagation();
       this.toggleUtilityPanel("pharmacy");
     });
 
-    document.getElementById("cinemaButton")?.addEventListener("click", () => {
+    document.getElementById("cinemaButton")?.addEventListener("click", (e) => {
+      e.stopPropagation();
       this.toggleUtilityPanel("cinema");
     });
 
@@ -465,6 +478,7 @@ export class AtlasApp {
     const insertBtn = document.getElementById("topInsertBtn");
     document.getElementById("programsPanel")?.classList.remove("open");
     this.closeFilterMenu();
+    this.closeUtilityPanels();
 
     const insertOpen = which === "insert" && !insert?.classList.contains("open");
 
@@ -730,6 +744,7 @@ export class AtlasApp {
   }
 
   private openMobileSheet(which: "filter" | "insert"): void {
+    this.closeUtilityPanels();
     const sheet = document.getElementById("mobileSheet");
     const filterPanel = document.getElementById("mobileFilterPanel");
     const insertPanel = document.getElementById("mobileInsertPanel");
@@ -930,6 +945,7 @@ export class AtlasApp {
   }
 
   private searchPlace(inputId: string): void {
+    this.closeUtilityPanels();
     const input = document.getElementById(inputId) as HTMLInputElement;
     const query = normalizeSearchText(input.value);
 
@@ -1143,6 +1159,7 @@ export class AtlasApp {
   }
 
   private goNearMe(): void {
+    this.closeUtilityPanels();
     if (this.locationRequestRunning) return;
 
     if (!navigator.geolocation) {

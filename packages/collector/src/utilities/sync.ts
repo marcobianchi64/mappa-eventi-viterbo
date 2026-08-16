@@ -16,12 +16,14 @@ import { fileURLToPath } from "node:url";
 import { fetchHtml } from "../connectors/fetch-html.js";
 import { getUtilityDutyDate, parsePharmaciesFromPagineGialle } from "./parse-pharmacies.js";
 import { parseCinemaFromMyMovies } from "./parse.js";
+import { UtilitySyncWriter } from "./persist.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface SyncUtilitiesOptions {
   edition?: AtlasEdition;
   outputPath?: string;
+  persistence?: { supabaseUrl: string; serviceRoleKey: string };
 }
 
 function resolveEditionServiceUrl(
@@ -111,6 +113,14 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
   console.log(`✓ Salvato ${outputPath}`);
+
+  if (options.persistence) {
+    await new UtilitySyncWriter({
+      url: options.persistence.supabaseUrl,
+      serviceRoleKey: options.persistence.serviceRoleKey,
+    }).persist(snapshot);
+    console.log("✓ Osservazioni e alert utility aggiornati su Supabase");
+  }
 
   return snapshot;
 }

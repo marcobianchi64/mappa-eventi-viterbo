@@ -15,6 +15,7 @@ import {
   approveSubmissionAsEvent,
   createSource,
   fetchAllEventsAdmin,
+  fetchOperationalAlerts,
   fetchPendingEvents,
   fetchPendingSubmissions,
   fetchSources,
@@ -23,6 +24,7 @@ import {
   getSession,
   signInWithOtp,
   updateEventReview,
+  updateOperationalAlertStatus,
   updateSource,
   updateSubmissionStatus,
 } from "@atlas/supabase-client";
@@ -170,10 +172,11 @@ export class AdminApp {
   }
 
   private async renderDashboard(panel: HTMLElement): Promise<void> {
-    const [sources, pendingEvents, submissions] = await Promise.all([
+    const [sources, pendingEvents, submissions, operationalAlerts] = await Promise.all([
       fetchSources(),
       fetchPendingEvents(),
       fetchPendingSubmissions(),
+      fetchOperationalAlerts(),
     ]);
 
     const activeSources = sources.filter((s) => s.status === "active").length;
@@ -186,6 +189,7 @@ export class AdminApp {
         <div class="stat"><strong>${pendingEvents.length}</strong><span>Eventi in revisione</span></div>
         <div class="stat"><strong>${submissions.length}</strong><span>Segnalazioni utenti</span></div>
         <div class="stat"><strong>${errorSources}</strong><span>Fonti in errore</span></div>
+        <div class="stat"><strong>${operationalAlerts.length}</strong><span>Alert dati aperti</span></div>
       </div>
       <div class="quick-actions">
         <button type="button" class="primary" data-goto="discovery">Vai a Scoperta</button>
@@ -193,6 +197,24 @@ export class AdminApp {
         <button type="button" class="primary" data-goto="registry">Registro eventi</button>
         <button type="button" class="primary" data-goto="submissions">Segnalazioni (${submissions.length})</button>
       </div>
+      <section class="operations-alerts">
+        <h3>Qualità dati e copertura</h3>
+        ${
+          operationalAlerts.length
+            ? `<ul class="operations-alert-list">${operationalAlerts
+                .map(
+                  (alert) => `
+                    <li>
+                      <strong>${escapeHtml(alert.title)}</strong>
+                      <span>${escapeHtml(alert.message)} · ${alert.consecutive_misses} controlli</span>
+                      <button type="button" data-alert-status="acknowledged" data-alert-id="${escapeHtml(alert.id)}">Preso in carico</button>
+                      <button type="button" data-alert-status="resolved" data-alert-id="${escapeHtml(alert.id)}">Risolto</button>
+                    </li>`,
+                )
+                .join("")}</ul>`
+            : "<p class=\"small\">Nessun alert dati aperto.</p>"
+        }
+      </section>
       <p class="small">Operazioni quotidiane: cartella <code>ops/desktop/</code> sul Desktop.</p>
     `;
 
@@ -203,6 +225,14 @@ export class AdminApp {
           b.classList.toggle("active", (b as HTMLButtonElement).dataset.tab === this.tab);
         });
         void this.renderPanel();
+      });
+    });
+    panel.querySelectorAll<HTMLButtonElement>("[data-alert-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.alertId;
+        const status = btn.dataset.alertStatus;
+        if (!id || (status !== "acknowledged" && status !== "resolved")) return;
+        void updateOperationalAlertStatus(id, status).then(() => this.renderPanel());
       });
     });
   }
