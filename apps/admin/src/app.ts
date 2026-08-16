@@ -287,7 +287,7 @@ export class AdminApp {
 
     panel.querySelector<HTMLFormElement>("[data-experience-form]")?.addEventListener("submit", (event) => {
       event.preventDefault();
-      const data = new FormData(event.currentTarget);
+      const data = new FormData(event.currentTarget as HTMLFormElement);
       const value = (name: string) => String(data.get(name) ?? "").trim();
       void createExperienceAdmin({
         title: value("title"),
