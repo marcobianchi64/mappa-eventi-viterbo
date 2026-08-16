@@ -1,0 +1,73 @@
+{
+  "fetchedAt": "2026-08-02T17:05:37.363Z",
+  "categories": {
+    "culture": [
+      {
+        "file": "culture/01.jpg",
+        "source": "wikimedia",
+        "title": "His Majesty's Theatre, Perth 1933 audience.jpg",
+        "score": 5,
+        "license": "Public domain",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:His_Majesty%27s_Theatre,_Perth_1933_audience.jpg",
+        "photographer": null
+      },
+      {
+        "file": "culture/02.jpg",
+        "source": "wikimedia",
+        "title": "Englert audience 12-3-2004 reopening matinee as civic theatre.JPG",
+        "score": 5,
+        "license": "CC0",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:Englert_audience_12-3-2004_reopening_matinee_as_civic_theatre.JPG",
+        "photographer": null
+      },
+      {
+        "file": "culture/03.jpg",
+        "source": "wikimedia",
+        "title": "StateLibQld 2 270281 Audience inside His Majesty's Theatre watching a performance by the Brisbane Amateur Operatic Society, Brisbane, 1914.jpg",
+        "score": 5,
+        "license": "Public domain",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:StateLibQld_2_270281_Audience_inside_His_Majesty%27s_Theatre_watching_a_performance_by_the_Brisbane_Amateur_Operatic_Society,_Brisbane,_1914.jpg",
+        "photographer": null
+      },
+      {
+        "file": "culture/04.jpg",
+        "source": "wikimedia",
+        "title": "TheEgg2020HartTheatreInteriorAudioBoothFromAudience.jpg",
+        "score": 5,
+        "license": "CC BY-SA 4.0",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:TheEgg2020HartTheatreInteriorAudioBoothFromAudience.jpg",
+        "photographer": null
+      },
+      {
+        "file": "culture/05.jpg",
+        "source": "wikimedia",
+        "title": "The Burton Holmes lectures; (1901) (14782224052).jpg",
+        "score": 5,
+        "license": "No restrictions",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:The_Burton_Holmes_lectures;_(1901)_(14782224052).jpg",
+        "photographer": null
+      },
+      {
+        "file": "culture/06.jpg",
+        "copiedFrom": "01.jpg"
+      },
+      {
+        "file": "culture/07.jpg",
+        "copiedFrom": "01.jpg"
+      },
+      {
+        "file": "culture/08.jpg",
+        "copiedFrom": "01.jpg"
+      },
+      {
+        "file": "culture/09.jpg",
+        "copiedFrom": "01.jpg"
+      },
+      {
+        "file": "culture/10.jpg",
+        "copiedFrom": "01.jpg"
+      }
+    ]
+  },
+  "note": "Scene evocative; tinta CSS in app (duotone evanescente)"
+}
