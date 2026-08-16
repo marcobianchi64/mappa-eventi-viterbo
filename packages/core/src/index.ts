@@ -89,6 +89,24 @@ export {
 } from "./atlas-utility-filters.js";
 
 export {
+  ATLAS_CINEMA_PLACES_VT,
+  checkCinemaCoverage,
+  coverageToAlerts,
+} from "./atlas-place-catalog.js";
+
+export type {
+  AtlasContentDomain,
+  AtlasPlaceRegistryEntry,
+  AtlasPlaceStatus,
+  AtlasPlaceType,
+  CoverageGap,
+  OperationalAlertDraft,
+  OperationalAlertSeverity,
+  OperationalAlertType,
+  UtilityCoverageReport,
+} from "./atlas-registry.js";
+
+export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,
   MAP_UI_SCALE_DESKTOP_LARGE,

@@ -79,8 +79,9 @@ export function renderEventListPageHtml(
         <p class="list-page-kicker">${escapeHtml(getEditionTerritoryLabel())}</p>
         <div class="list-page-title-row">
           <h1>${escapeHtml(getEditionListTitle())}</h1>
-          <p class="list-page-lead"><strong>${summary}</strong> · ${events.length} eventi in elenco</p>
         </div>
+        <p class="list-page-stat" aria-live="polite"><strong>${events.length}</strong> eventi trovati</p>
+        <p class="list-page-lead">${summary} · aggiornato ogni giorno da più fonti locali</p>
       </header>
       <div class="list-cards">${cards}</div>
     </div>

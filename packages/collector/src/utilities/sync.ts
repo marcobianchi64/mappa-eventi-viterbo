@@ -3,6 +3,8 @@ import {
   ATLAS_EDITION_UTILITY_SERVICE_IDS,
   ATLAS_UTILITY_SERVICE_CATALOG,
   buildCinemaVenues,
+  checkCinemaCoverage,
+  coverageToAlerts,
   resolveUtilityServiceUrl,
   type AtlasEdition,
   type AtlasUtilityServiceKind,
@@ -65,10 +67,20 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   console.log(`  ${pharmacies.length} farmacie di turno per il ${dutyDate}`);
 
   console.log(`→ Cinema (${edition.id}): ${cinemaUrl}`);
-  const cinemaHtml = await fetchHtml(cinemaUrl);
+  const cinemaHtml = await fetchHtml(cinemaUrl, { retries: 3 });
   const cinema = parseCinemaFromMyMovies(cinemaHtml);
   console.log(`  ${cinema.length} film in programmazione`);
   const venues = buildCinemaVenues(cinema);
+  const cinemaCoverage = checkCinemaCoverage(venues);
+  const operationalAlerts = coverageToAlerts(cinemaCoverage);
+  if (cinemaCoverage.missing.length > 0) {
+    console.warn(
+      `  ⚠ Copertura cinema: ${cinemaCoverage.found}/${cinemaCoverage.expected} sale con dati`,
+    );
+    for (const gap of cinemaCoverage.missing) {
+      console.warn(`    · ${gap.placeName} (${gap.municipality ?? "?"}) — ${gap.reason}`);
+    }
+  }
 
   const municipalitySlug = edition.geo?.municipalitySlug ?? edition.id;
   const snapshot: UtilitySyncSnapshot = {
@@ -91,6 +103,8 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
       items: cinema,
       venues,
     },
+    coverage: { cinema: cinemaCoverage },
+    operationalAlerts,
   };
 
   const outputPath = options.outputPath ?? defaultOutputPath(edition.id);

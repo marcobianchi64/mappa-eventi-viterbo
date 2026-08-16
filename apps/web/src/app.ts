@@ -44,6 +44,11 @@ import {
   type EventListCategoryFilter,
 } from "./ui/event-list";
 import {
+  bindMapDiscoverSheet,
+  renderMapDiscoverSheetHtml,
+  type MapDiscoverSheetState,
+} from "./ui/map-discover-sheet.js";
+import {
   loadUtilitySyncSnapshot,
   mountCinemaPanel,
   mountPharmacyPanel,
@@ -85,6 +90,8 @@ export class AtlasApp {
   private readonly interests = new InterestsService();
   private mapService!: MapService;
 
+  private mapDiscoverReady = false;
+
   start(): void {
     const root = document.getElementById("app");
     if (!root) throw new Error("Elemento #app non trovato");
@@ -108,6 +115,35 @@ export class AtlasApp {
     this.applyViewFromUrl();
     void this.loadEvents();
     this.restoreTopbar();
+    this.setupMapDiscoverSheet();
+  }
+
+  private setupMapDiscoverSheet(): void {
+    const sheet = document.getElementById("mapDiscoverSheet");
+    if (!sheet || this.mapDiscoverReady) return;
+    bindMapDiscoverSheet(sheet, {
+      onSelectEvent: (eventId) => {
+        const event = this.allEvents.find((e) => String(e.date_event) === eventId);
+        if (event) this.handleOpenEvent(event);
+      },
+      onOpenList: () => this.setViewMode("list"),
+      onStateChange: () => {
+        setTimeout(() => this.mapService.invalidateSize(), 300);
+      },
+    });
+    this.mapDiscoverReady = true;
+  }
+
+  private renderMapDiscoverSheet(): void {
+    const sheet = document.getElementById("mapDiscoverSheet");
+    if (!sheet) return;
+    const events = this.getListEvents();
+    const state = sheet.dataset.state as MapDiscoverSheetState | undefined;
+    sheet.innerHTML = renderMapDiscoverSheetHtml(events, this.currentRange, events.length);
+    if (state && (state === "collapsed" || state === "peek" || state === "expanded")) {
+      sheet.classList.remove("is-collapsed", "is-peek", "is-expanded");
+      sheet.classList.add(`is-${state}`);
+    }
   }
 
   private handleOpenEvent(event: AtlasEvent, festivalGroup?: FestivalMapGroup): void {
@@ -397,6 +433,8 @@ export class AtlasApp {
       this.mapService.fitToCoordinates(coords);
       this.initialMapFitDone = true;
     }
+
+    this.renderMapDiscoverSheet();
   }
 
   private setCategoryFilter(category: EventListCategoryFilter): void {

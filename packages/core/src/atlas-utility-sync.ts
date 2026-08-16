@@ -1,5 +1,7 @@
 /** Snapshot giornaliero servizi utilità (farmacie, cinema) per edizione Atlas. */
 
+import type { OperationalAlertDraft, UtilityCoverageReport } from "./atlas-registry.js";
+
 export interface UtilityPharmacyEntry {
   name: string;
   address?: string;
@@ -57,6 +59,12 @@ export interface UtilitySyncSnapshot {
   cinema: UtilitySyncSection<UtilityCinemaFilm> & {
     venues?: UtilityCinemaVenue[];
   };
+  /** Controllo copertura rispetto al censimento luoghi. */
+  coverage?: {
+    cinema?: UtilityCoverageReport;
+  };
+  /** Alert operativi generati dal sync (per Control Center). */
+  operationalAlerts?: OperationalAlertDraft[];
 }
 
 export const UTILITY_SYNC_DATA_PATH = "/data/utilities";

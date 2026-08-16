@@ -108,7 +108,10 @@ export function renderShell(): string {
       <div id="cinemaPanelList" class="utility-panel-scroll"></div>
     </div>
 
-    <div id="map" class="atlas-map-only"></div>
+    <div class="map-stage atlas-map-only">
+      <div id="map"></div>
+      <aside id="mapDiscoverSheet" class="map-discover-sheet is-peek" aria-label="Eventi in provincia"></aside>
+    </div>
 
     <main id="listPage" class="list-page atlas-list-only" hidden>
       <div id="eventListContent"></div>
