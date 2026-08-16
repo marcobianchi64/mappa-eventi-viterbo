@@ -6,7 +6,7 @@ import type {
 } from "./atlas-registry.js";
 import type { UtilityCinemaVenue } from "./atlas-utility-sync.js";
 
-/** Sale cinema censite — provincia di Viterbo (pilota). */
+/** Sale cinema censite — provincia di Viterbo (fonte: MYmovies + ComingSoon). */
 export const ATLAS_CINEMA_PLACES_VT: AtlasPlaceRegistryEntry[] = [
   {
     id: "place-cinema-arena-marconi-bolsena",
@@ -43,6 +43,40 @@ export const ATLAS_CINEMA_PLACES_VT: AtlasPlaceRegistryEntry[] = [
     },
   },
   {
+    id: "place-cinema-tevere-castiglione",
+    name: "Tevere",
+    placeType: "cinema",
+    territoryId: "IT-VT",
+    municipality: "Castiglione in Teverina",
+    status: "active",
+    primarySourceId: "src-mymovies-vt",
+    matchNames: ["Cinema Tevere", "Tevere"],
+    externalRefs: {
+      mymovies: {
+        slug: "castiglioneinteverina",
+        venue_id: "6102",
+        url: "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+      },
+    },
+  },
+  {
+    id: "place-cinema-gallery-montefiascone",
+    name: "Cinema Multisala Gallery",
+    placeType: "cinema",
+    territoryId: "IT-VT",
+    municipality: "Montefiascone",
+    status: "active",
+    primarySourceId: "src-mymovies-vt",
+    matchNames: ["Gallery", "Cinema Gallery", "Multisala Gallery"],
+    externalRefs: {
+      mymovies: {
+        slug: "montefiascone",
+        venue_id: "5883",
+        url: "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/",
+      },
+    },
+  },
+  {
     id: "place-cinema-arena-etrusco-tarquinia",
     name: "Arena Etrusco Lido",
     placeType: "cinema",
@@ -56,6 +90,60 @@ export const ATLAS_CINEMA_PLACES_VT: AtlasPlaceRegistryEntry[] = [
         slug: "tarquinia",
         venue_id: "20275",
         url: "https://www.mymovies.it/cinema/viterbo/tarquinia/20275/",
+      },
+    },
+    notes: "Cinema estivo sul lido",
+  },
+  {
+    id: "place-cinema-etrusco-tarquinia",
+    name: "Etrusco",
+    placeType: "cinema",
+    territoryId: "IT-VT",
+    municipality: "Tarquinia",
+    status: "active",
+    primarySourceId: "src-mymovies-vt",
+    matchNames: ["Cinema Etrusco", "Etrusco"],
+    externalRefs: {
+      mymovies: {
+        slug: "tarquinia",
+        venue_id: "4985",
+        url: "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/",
+      },
+    },
+  },
+  {
+    id: "place-cinema-excelsior-vetralla",
+    name: "Excelsior",
+    placeType: "cinema",
+    territoryId: "IT-VT",
+    municipality: "Vetralla",
+    matchTowns: ["Cura"],
+    status: "active",
+    primarySourceId: "src-mymovies-vt",
+    matchNames: ["Excelsior"],
+    externalRefs: {
+      mymovies: {
+        slug: "cura",
+        venue_id: "6173",
+        url: "https://www.mymovies.it/cinema/viterbo/cura/6173/",
+      },
+    },
+    notes: "Frazione Cura di Vetralla su MYmovies",
+  },
+  {
+    id: "place-cinema-tuscia-village-vitorchiano",
+    name: "Cine Tuscia Village",
+    placeType: "cinema",
+    territoryId: "IT-VT",
+    municipality: "Vitorchiano",
+    status: "active",
+    primarySourceId: "src-mymovies-vt",
+    matchNames: ["Cine Tuscia Village", "Tuscia Village", "Cinetuscia Village"],
+    externalRefs: {
+      mymovies: {
+        slug: "vitorchiano",
+        venue_id: "21249",
+        url: "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/",
       },
     },
   },
@@ -85,14 +173,36 @@ function normalizeMatch(value: string): string {
     .trim();
 }
 
+function townMatchesPlace(town: string, place: AtlasPlaceRegistryEntry): boolean {
+  if (!town) return true;
+  const placeTown = normalizeMatch(place.municipality ?? "");
+  if (!placeTown) return true;
+  if (placeTown === town) return true;
+  return (place.matchTowns ?? []).some((alt) => normalizeMatch(alt) === town);
+}
+
 function venueMatchesPlace(venue: UtilityCinemaVenue, place: AtlasPlaceRegistryEntry): boolean {
+  const mymovies = place.externalRefs?.mymovies;
+  if (venue.url && mymovies?.venue_id && venue.url.includes(`/${mymovies.venue_id}/`)) {
+    return true;
+  }
+
   const cinema = normalizeMatch(venue.cinema);
   const town = normalizeMatch(venue.town ?? "");
-  const placeTown = normalizeMatch(place.municipality ?? "");
-  if (placeTown && town && placeTown !== town) return false;
+  if (!townMatchesPlace(town, place)) return false;
 
   const names = [place.name, ...(place.matchNames ?? [])].map(normalizeMatch);
-  return names.some((name) => cinema.includes(name) || name.includes(cinema));
+  return names.some((name) => cinemaNameMatches(cinema, name));
+}
+
+function cinemaNameMatches(cinema: string, name: string): boolean {
+  if (cinema === name) return true;
+  const nameWords = name.split(/\s+/).filter(Boolean);
+  if (nameWords.length >= 2) {
+    return cinema.includes(name) || name.includes(cinema);
+  }
+  // Nome a parola singola: evita falsi positivi (es. Etrusco vs Arena Etrusco Lido).
+  return cinema.split(/\s+/).includes(name);
 }
 
 /** Confronta sale trovate nel sync con il censimento atteso. */

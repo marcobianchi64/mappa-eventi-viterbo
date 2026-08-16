@@ -28,6 +28,28 @@ INSERT INTO public.places (
     NULL
   ),
   (
+    'place-cinema-tevere-castiglione',
+    'Tevere',
+    'cinema',
+    'IT-VT',
+    'Castiglione in Teverina',
+    'active',
+    'src-mymovies-vt',
+    '{"mymovies": {"slug": "castiglioneinteverina", "venue_id": "6102", "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"}}'::jsonb,
+    NULL
+  ),
+  (
+    'place-cinema-gallery-montefiascone',
+    'Cinema Multisala Gallery',
+    'cinema',
+    'IT-VT',
+    'Montefiascone',
+    'active',
+    'src-mymovies-vt',
+    '{"mymovies": {"slug": "montefiascone", "venue_id": "5883", "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"}}'::jsonb,
+    NULL
+  ),
+  (
     'place-cinema-arena-etrusco-tarquinia',
     'Arena Etrusco Lido',
     'cinema',
@@ -37,6 +59,39 @@ INSERT INTO public.places (
     'src-mymovies-vt',
     '{"mymovies": {"slug": "tarquinia", "venue_id": "20275", "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/20275/"}}'::jsonb,
     'Cinema estivo sul lido'
+  ),
+  (
+    'place-cinema-etrusco-tarquinia',
+    'Etrusco',
+    'cinema',
+    'IT-VT',
+    'Tarquinia',
+    'active',
+    'src-mymovies-vt',
+    '{"mymovies": {"slug": "tarquinia", "venue_id": "4985", "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"}}'::jsonb,
+    NULL
+  ),
+  (
+    'place-cinema-excelsior-vetralla',
+    'Excelsior',
+    'cinema',
+    'IT-VT',
+    'Vetralla',
+    'active',
+    'src-mymovies-vt',
+    '{"mymovies": {"slug": "cura", "venue_id": "6173", "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"}}'::jsonb,
+    'Frazione Cura di Vetralla su MYmovies'
+  ),
+  (
+    'place-cinema-tuscia-village-vitorchiano',
+    'Cine Tuscia Village',
+    'cinema',
+    'IT-VT',
+    'Vitorchiano',
+    'active',
+    'src-mymovies-vt',
+    '{"mymovies": {"slug": "vitorchiano", "venue_id": "21249", "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"}}'::jsonb,
+    NULL
   ),
   (
     'place-cinema-thespace-viterbo',

@@ -47,6 +47,8 @@ export interface AtlasPlaceRegistryEntry {
   primarySourceId?: string;
   externalRefs?: PlaceExternalRefs;
   matchNames?: string[];
+  /** Comuni alternativi usati dalle fonti (es. Cura per Vetralla). */
+  matchTowns?: string[];
   notes?: string;
 }
 

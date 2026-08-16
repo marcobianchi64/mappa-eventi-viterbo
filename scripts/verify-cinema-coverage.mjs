@@ -10,9 +10,10 @@ const venues = [
   { cinema: "Multisala Moderno", town: "Bolsena", films: [] },
 ];
 
+const expectedCount = ATLAS_CINEMA_PLACES_VT.filter((p) => p.status !== "closed").length;
 const merged = mergeCinemaVenuesWithRegistry(venues);
-if (merged.length !== ATLAS_CINEMA_PLACES_VT.filter((p) => p.status !== "closed").length) {
-  throw new Error(`Attese ${ATLAS_CINEMA_PLACES_VT.length} sale nel merge, trovate ${merged.length}`);
+if (merged.length !== expectedCount) {
+  throw new Error(`Attese ${expectedCount} sale nel merge, trovate ${merged.length}`);
 }
 if (merged[0]?.cinema !== "Arena Marconi") {
   throw new Error("Ordinamento atteso per comune/nome, prima sala Bolsena Arena Marconi");

@@ -6,7 +6,6 @@ import {
   filterPharmacies,
   formatUtilitySyncDate,
   getUtilityServicesForEdition,
-  listCinemaTowns,
   mergeCinemaVenuesWithRegistry,
   type AtlasUtilityServiceLink,
   type CinemaViewMode,
@@ -182,14 +181,6 @@ function renderCinemaPanelContent(
   const updated = formatUtilitySyncDate(snapshot.syncedAt);
   const service = getUtilityServicesForEdition().find((s) => s.kind === "cinema_listings");
   const sourceUrl = service?.url ?? snapshot.cinema.sourceUrl;
-  const townChips = [
-    `<button type="button" class="utility-chip utility-chip-town${state.query ? "" : " active"}" data-cinema-town="">Tutte</button>`,
-    ...listCinemaTowns(venues).map(
-      (town) =>
-        `<button type="button" class="utility-chip utility-chip-town${state.query === town ? " active" : ""}" data-cinema-town="${escapeHtml(town)}">${escapeHtml(town)}</button>`,
-    ),
-  ].join("");
-
   const modeButtons = `
     <button type="button" class="utility-chip${state.mode === "cinemas" ? " active" : ""}" data-cinema-mode="cinemas">Per cinema</button>
     <button type="button" class="utility-chip${state.mode === "films" ? " active" : ""}" data-cinema-mode="films">Per film</button>
@@ -239,7 +230,6 @@ function renderCinemaPanelContent(
             <span class="utility-search-label">${state.mode === "cinemas" ? "Cerca cinema o comune" : "Cerca film o sala"}</span>
             <input type="search" class="utility-search-input" data-cinema-search placeholder="${state.mode === "cinemas" ? "Es. Moderno, Bolsena, Gallery…" : "Es. Odissea, Spider-Man…"}" value="${escapeHtml(state.query)}" />
           </label>
-          ${state.mode === "cinemas" && townChips ? `<div class="utility-chip-row utility-chip-row-wrap" role="group" aria-label="Comuni e filtri">${townChips}</div>` : ""}
         </div>
       </div>
       <div class="utility-panel-scroll-body" tabindex="0" aria-label="Elenco cinema">
@@ -290,12 +280,6 @@ function bindCinemaPanel(
     render();
   });
 
-  container.querySelectorAll("[data-cinema-town]").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.query = (button as HTMLButtonElement).dataset.cinemaTown ?? "";
-      render();
-    });
-  });
 }
 
 function renderExternalFallback(service: AtlasUtilityServiceLink, message: string): string {
