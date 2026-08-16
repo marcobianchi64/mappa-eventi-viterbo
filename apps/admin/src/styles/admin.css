@@ -188,6 +188,24 @@ button {
   margin-bottom: 16px;
 }
 
+.experience-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.experience-form textarea,
+.experience-form button {
+  grid-column: 1 / -1;
+}
+
+.experience-form textarea {
+  min-height: 78px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
 .source-form button {
   grid-column: 1 / -1;
 }

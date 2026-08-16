@@ -116,6 +116,14 @@ export type {
 } from "./atlas-registry.js";
 
 export {
+  isExperiencePublished,
+  type AtlasExperience,
+  type ExperiencePriceHint,
+  type ExperienceRepeatability,
+  type ExperienceType,
+} from "./types/experience.js";
+
+export {
   MAP_UI_SCALE,
   MAP_UI_SCALE_DESKTOP,
   MAP_UI_SCALE_DESKTOP_LARGE,

@@ -9,13 +9,16 @@ import {
   isRegistryInPubblicazione,
   loadDiscoverySession,
   type AtlasEvent,
+  type AtlasExperience,
   type SourceInput,
 } from "@atlas/core";
 import {
   approveSubmissionAsEvent,
+  createExperienceAdmin,
   createSource,
   fetchAllEventsAdmin,
   fetchOperationalAlerts,
+  fetchExperiencesAdmin,
   fetchPlacesAdmin,
   fetchPendingEvents,
   fetchPendingSubmissions,
@@ -25,6 +28,7 @@ import {
   getSession,
   signInWithOtp,
   updateEventReview,
+  updateExperienceStatus,
   updateOperationalAlertStatus,
   updatePlaceStatus,
   updateSource,
@@ -53,6 +57,7 @@ type AdminTab =
   | "discovery"
   | "registry"
   | "places"
+  | "experiences"
   | "submissions"
   | "sources"
   | "events";
@@ -108,6 +113,7 @@ export class AdminApp {
             <button type="button" data-tab="discovery" class="tab">Scoperta</button>
             <button type="button" data-tab="registry" class="tab">Registro</button>
             <button type="button" data-tab="places" class="tab">Patrimonio</button>
+            <button type="button" data-tab="experiences" class="tab">Esperienze</button>
             <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
             <button type="button" data-tab="events" class="tab">Revisione</button>
             <button type="button" data-tab="sources" class="tab">Fonti</button>
@@ -175,6 +181,7 @@ export class AdminApp {
       else if (this.tab === "discovery") await this.renderDiscovery(panel);
       else if (this.tab === "registry") await this.renderRegistry(panel);
       else if (this.tab === "places") await this.renderPlaces(panel);
+      else if (this.tab === "experiences") await this.renderExperiences(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
       else if (this.tab === "events") await this.renderEvents(panel);
       else if (this.tab === "sources") await this.renderSources(panel);
@@ -246,6 +253,58 @@ export class AdminApp {
         const status = btn.dataset.alertStatus;
         if (!id || (status !== "acknowledged" && status !== "resolved")) return;
         void updateOperationalAlertStatus(id, status).then(() => this.renderPanel());
+      });
+    });
+  }
+
+  private async renderExperiences(panel: HTMLElement): Promise<void> {
+    const experiences = await fetchExperiencesAdmin();
+    const active = experiences.filter((item) => item.status === "active" || item.status === "seasonal").length;
+    panel.innerHTML = `
+      <h2>Esperienze</h2>
+      <p class="small">Offerte ripetibili, gratuite o a pagamento. Non sono eventi con data.</p>
+      <div class="stats">
+        <div class="stat"><strong>${experiences.length}</strong><span>Esperienze</span></div>
+        <div class="stat"><strong>${active}</strong><span>Pubblicabili</span></div>
+        <div class="stat"><strong>${experiences.filter((item) => item.status === "unknown").length}</strong><span>Da verificare</span></div>
+      </div>
+      <form class="experience-form" data-experience-form>
+        <input name="title" required placeholder="Titolo esperienza" />
+        <select name="experience_type"><option value="tour">Tour</option><option value="tasting">Degustazione</option><option value="food">Food</option><option value="activity">Attività</option><option value="workshop">Laboratorio</option><option value="trail">Percorso</option><option value="lodging">Ospitalità</option><option value="other">Altro</option></select>
+        <select name="category"><option value="culture">Cultura</option><option value="food">Enogastronomia</option><option value="families">Famiglie</option><option value="sport">Sport</option><option value="other">Altro</option></select>
+        <input name="municipality" placeholder="Comune" />
+        <select name="price_hint"><option value="unknown">Prezzo da verificare</option><option value="free">Gratuita</option><option value="paid">A pagamento</option><option value="mixed">Mista</option></select>
+        <select name="repeatability"><option value="ongoing">Continuativa</option><option value="seasonal">Stagionale</option><option value="on_request">Su richiesta</option></select>
+        <input name="info_url" type="url" placeholder="Link informazioni o prenotazione" />
+        <textarea name="description" placeholder="Descrizione breve"></textarea>
+        <button class="primary" type="submit">Aggiungi esperienza</button>
+      </form>
+      <div class="places-list">
+        ${experiences.map((item) => `
+          <article class="place-row"><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.experience_type)} · ${escapeHtml(item.municipality ?? "Comune da definire")} · ${escapeHtml(item.price_hint)}</span><small>${escapeHtml(item.repeatability)}</small></div>
+          <label>Stato<select data-experience-status data-experience-id="${escapeHtml(item.id)}">${(["active", "unknown", "seasonal", "closed"] as const).map((status) => `<option value="${status}"${item.status === status ? " selected" : ""}>${status}</option>`).join("")}</select></label></article>`).join("") || "<p class=\"small\">Ancora nessuna esperienza: inserisci le prime offerte verificate.</p>"}
+      </div>`;
+
+    panel.querySelector<HTMLFormElement>("[data-experience-form]")?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const value = (name: string) => String(data.get(name) ?? "").trim();
+      void createExperienceAdmin({
+        title: value("title"),
+        experience_type: value("experience_type") as AtlasExperience["experience_type"],
+        category: value("category") as AtlasExperience["category"],
+        territory_id: "IT-VT",
+        municipality: value("municipality") || null,
+        description: value("description") || null,
+        info_url: value("info_url") || null,
+        price_hint: value("price_hint") as AtlasExperience["price_hint"],
+        repeatability: value("repeatability") as AtlasExperience["repeatability"],
+        status: "unknown",
+      }).then(() => this.renderPanel());
+    });
+    panel.querySelectorAll<HTMLSelectElement>("[data-experience-status]").forEach((select) => {
+      select.addEventListener("change", () => {
+        if (select.dataset.experienceId) void updateExperienceStatus(select.dataset.experienceId, select.value as AtlasExperience["status"]).then(() => this.renderPanel());
       });
     });
   }

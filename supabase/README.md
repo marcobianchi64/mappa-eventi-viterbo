@@ -9,9 +9,10 @@
 5. `migrations/007_aim_registry.sql` — luoghi censiti, osservazioni, alert operativi
 6. `migrations/008_place_registry_quality.sql` — qualità anagrafica luoghi
 7. `migrations/009_pharmacy_registry_source.sql` — fonte autorevole farmacie
-8. `seed_viterbo.sql` — pilota provincia di Viterbo
-9. `seed_places_vt.sql` — cinema censiti provincia VT
-10. `seed_pharmacies_vt.sql` — anagrafica farmacie attive provincia VT
+8. `migrations/010_experiences_foundation.sql` — offerte ripetibili, distinte dagli eventi
+9. `seed_viterbo.sql` — pilota provincia di Viterbo
+10. `seed_places_vt.sql` — cinema censiti provincia VT
+11. `seed_pharmacies_vt.sql` — anagrafica farmacie attive provincia VT
 
 ## Note
 

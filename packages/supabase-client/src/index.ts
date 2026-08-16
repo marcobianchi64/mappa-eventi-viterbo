@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type {
   AtlasEvent,
+  AtlasExperience,
   AtlasPlaceStatus,
   AtlasSource,
   EventSubmissionInput,
@@ -381,6 +382,46 @@ export async function fetchPlacesAdmin(): Promise<AtlasPlaceAdmin[]> {
 export async function updatePlaceStatus(id: string, status: AtlasPlaceStatus): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase.from("places").update({ status }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function fetchExperiencesAdmin(): Promise<AtlasExperience[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("*")
+    .order("experience_type", { ascending: true })
+    .order("municipality", { ascending: true })
+    .order("title", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AtlasExperience[];
+}
+
+export async function fetchVerifiedExperiences(): Promise<AtlasExperience[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("*")
+    .in("status", ["active", "seasonal"])
+    .order("title", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AtlasExperience[];
+}
+
+export async function createExperienceAdmin(
+  experience: Omit<AtlasExperience, "id" | "created_at" | "updated_at">,
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("experiences").insert({
+    ...experience,
+    territory_id: experience.territory_id ?? "IT-VT",
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function updateExperienceStatus(id: string, status: AtlasPlaceStatus): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("experiences").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 }
 
