@@ -97,6 +97,12 @@ export {
   sortCinemaVenuesForDisplay,
 } from "./atlas-place-catalog.js";
 
+export {
+  ATLAS_PHARMACY_PLACES_VT,
+  attachPharmacyPlaceIds,
+  findUnmatchedDutyPharmacies,
+} from "./atlas-pharmacy-catalog.js";
+
 export type {
   AtlasContentDomain,
   AtlasPlaceRegistryEntry,

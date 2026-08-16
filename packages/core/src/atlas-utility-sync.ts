@@ -10,6 +10,9 @@ export interface UtilityPharmacyEntry {
   municipality?: string;
   /** Orari previsti per oggi, se disponibili dalla fonte. */
   hoursToday?: string;
+  /** Collegamento al registro anagrafico AIM, se riconciliato. */
+  placeId?: string;
+  placeStatus?: "active" | "seasonal" | "closed" | "unknown";
 }
 
 export interface UtilityCinemaShowing {
@@ -65,6 +68,8 @@ export interface UtilitySyncSnapshot {
   /** Controllo copertura rispetto al censimento luoghi. */
   coverage?: {
     cinema?: UtilityCoverageReport;
+    /** Riservato a future regole territoriali dei turni: non è per-farmacia. */
+    pharmacy?: UtilityCoverageReport;
   };
   /** Alert operativi generati dal sync (per Control Center). */
   operationalAlerts?: OperationalAlertDraft[];

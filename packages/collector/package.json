@@ -29,7 +29,8 @@
     "fix:images": "node dist/fix-images-cli.js",
     "report:images": "node dist/report-images-cli.js",
     "report:categories": "node dist/report-categories-cli.js",
-    "sync:utilities": "node dist/sync-utilities-cli.js"
+    "sync:utilities": "node dist/sync-utilities-cli.js",
+    "import:pharmacy-registry": "node dist/utilities/import-pharmacy-registry.js"
   },
   "dependencies": {
     "@atlas/core": "1.0.0",

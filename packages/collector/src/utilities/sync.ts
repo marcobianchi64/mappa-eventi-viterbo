@@ -2,6 +2,7 @@ import {
   ATLAS_EDITION,
   ATLAS_EDITION_UTILITY_SERVICE_IDS,
   ATLAS_UTILITY_SERVICE_CATALOG,
+  attachPharmacyPlaceIds,
   buildCinemaVenues,
   checkCinemaCoverage,
   coverageToAlerts,
@@ -65,7 +66,7 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   console.log(`→ Farmacie (${edition.id}): ${pharmacyUrl}`);
   const pharmacyHtml = await fetchHtml(pharmacyUrl, { retries: 3 });
   const dutyDate = getUtilityDutyDate();
-  const pharmacies = parsePharmaciesFromPagineGialle(pharmacyHtml, dutyDate);
+  const pharmacies = attachPharmacyPlaceIds(parsePharmaciesFromPagineGialle(pharmacyHtml, dutyDate));
   console.log(`  ${pharmacies.length} farmacie di turno per il ${dutyDate}`);
 
   console.log(`→ Cinema (${edition.id}): ${cinemaUrl}`);

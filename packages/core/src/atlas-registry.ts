@@ -31,7 +31,8 @@ export type OperationalAlertSeverity = "info" | "warning" | "critical";
 
 export interface PlaceExternalRefs {
   mymovies?: { slug?: string; venue_id?: string; url?: string };
-  paginegialle?: { url?: string };
+  paginegialle?: { url?: string; slug?: string };
+  ministero?: { cim?: string; url?: string };
   comingsoon?: { url?: string };
   [key: string]: unknown;
 }
