@@ -333,6 +333,7 @@ export {
 
 export {
   createAtlasDraftMarkerIcon,
+  createAtlasExperienceMarkerIcon,
   createAtlasMapMarkerIcon,
   ATLAS_MAP_TOOLTIP_CLASS,
   type AtlasMapMarkerIconSpec,

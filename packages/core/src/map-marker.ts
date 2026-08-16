@@ -22,6 +22,16 @@ export function createAtlasMapMarkerIcon(category: string): AtlasMapMarkerIconSp
   };
 }
 
+/** Esperienze: cerchio distinto dai pin a goccia degli eventi datati. */
+export function createAtlasExperienceMarkerIcon(category: string): AtlasMapMarkerIconSpec {
+  const meta = getCategoryMeta(category);
+  const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
+  return {
+    html: `<div class="atlas-experience-marker" style="background:${meta.color}"><span>${meta.icon}</span></div>`,
+    ...layout,
+  };
+}
+
 export function createAtlasDraftMarkerIcon(): AtlasMapMarkerIconSpec {
   const layout = getMapMarkerIconLayout(getMapUiScale().markerSizePx);
   return {

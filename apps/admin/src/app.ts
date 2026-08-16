@@ -273,6 +273,8 @@ export class AdminApp {
         <select name="experience_type"><option value="tour">Tour</option><option value="tasting">Degustazione</option><option value="food">Food</option><option value="activity">Attività</option><option value="workshop">Laboratorio</option><option value="trail">Percorso</option><option value="lodging">Ospitalità</option><option value="other">Altro</option></select>
         <select name="category"><option value="culture">Cultura</option><option value="food">Enogastronomia</option><option value="families">Famiglie</option><option value="sport">Sport</option><option value="other">Altro</option></select>
         <input name="municipality" placeholder="Comune" />
+        <input name="lat" type="number" step="any" placeholder="Latitudine (per mappa)" />
+        <input name="lng" type="number" step="any" placeholder="Longitudine (per mappa)" />
         <select name="price_hint"><option value="unknown">Prezzo da verificare</option><option value="free">Gratuita</option><option value="paid">A pagamento</option><option value="mixed">Mista</option></select>
         <select name="repeatability"><option value="ongoing">Continuativa</option><option value="seasonal">Stagionale</option><option value="on_request">Su richiesta</option></select>
         <input name="info_url" type="url" placeholder="Link informazioni o prenotazione" />
@@ -295,6 +297,8 @@ export class AdminApp {
         category: value("category") as AtlasExperience["category"],
         territory_id: "IT-VT",
         municipality: value("municipality") || null,
+        lat: value("lat") ? Number(value("lat")) : null,
+        lng: value("lng") ? Number(value("lng")) : null,
         description: value("description") || null,
         info_url: value("info_url") || null,
         price_hint: value("price_hint") as AtlasExperience["price_hint"],

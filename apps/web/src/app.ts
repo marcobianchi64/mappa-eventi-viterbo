@@ -25,6 +25,7 @@ import {
   geocodeEventPlace,
   type SubmissionKind,
   type AtlasEvent,
+  type AtlasExperience,
   type DateRangeKey,
   type FestivalMapGroup,
   type EventCategory,
@@ -33,7 +34,7 @@ import {
   type SavedInterest,
   type UtilitySyncSnapshot,
 } from "@atlas/core";
-import { fetchVerifiedEvents, submitUserReport } from "@atlas/supabase-client";
+import { fetchVerifiedEvents, fetchVerifiedExperiences, submitUserReport } from "@atlas/supabase-client";
 import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, openFestivalEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
@@ -77,6 +78,7 @@ type AppViewMode = "map" | "list";
 
 export class AtlasApp {
   private allEvents: AtlasEvent[] = [];
+  private allExperiences: AtlasExperience[] = [];
   private currentRange: DateRangeKey = DEFAULT_DATE_RANGE;
   private viewMode: AppViewMode = "map";
   private locationRequestRunning = false;
@@ -114,6 +116,7 @@ export class AtlasApp {
     setEventSheetOnClose(() => this.syncEventUrlParam(null));
     this.applyViewFromUrl();
     void this.loadEvents();
+    void this.loadExperiences();
     this.restoreTopbar();
     this.setupMapDiscoverSheet();
   }
@@ -401,6 +404,15 @@ export class AtlasApp {
     }
   }
 
+  private async loadExperiences(): Promise<void> {
+    try {
+      this.allExperiences = await fetchVerifiedExperiences();
+      if (this.viewMode === "map") this.renderMapEvents();
+    } catch (error) {
+      console.error("Impossibile caricare le esperienze.", error);
+    }
+  }
+
   private getVisibleEvents(): AtlasEvent[] {
     return this.allEvents.filter((event) => isEventVisibleInRange(event, this.currentRange));
   }
@@ -438,6 +450,11 @@ export class AtlasApp {
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getFilteredEvents();
     this.mapService.renderEvents(visible, deepLink);
+    this.mapService.renderExperiences(
+      this.allExperiences.filter(
+        (experience) => this.listCategory === "all" || experience.category === this.listCategory,
+      ),
+    );
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
       const coords = buildMapMarkerPlacements(visible).map(

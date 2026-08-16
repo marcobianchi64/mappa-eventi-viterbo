@@ -19,9 +19,11 @@ import {
   isHttpUrl,
   ATLAS_MAP_TOOLTIP_CLASS,
   createAtlasDraftMarkerIcon,
+  createAtlasExperienceMarkerIcon,
   createAtlasMapMarkerIcon,
   getMapUiScale,
   type AtlasEvent,
+  type AtlasExperience,
   type FestivalMapGroup,
 } from "@atlas/core";
 import { createAtlasMarkerClusterGroup } from "./marker-cluster.js";
@@ -30,6 +32,7 @@ import { renderMapTooltipCategoryCover } from "../ui/event-media.js";
 export class MapService {
   private map: L.Map;
   private eventLayer = createAtlasMarkerClusterGroup();
+  private experienceLayer = L.layerGroup();
   private draftMarker: L.Marker | null = null;
   private userMarker: L.CircleMarker | null = null;
 
@@ -43,6 +46,7 @@ export class MapService {
       subdomains: [...MAP_TILE_SUBDOMAINS],
     }).addTo(this.map);
     this.eventLayer.addTo(this.map);
+    this.experienceLayer.addTo(this.map);
 
     this.map.on("click", (e) => this.onDraftPosition(e.latlng.lat, e.latlng.lng));
   }
@@ -59,6 +63,10 @@ export class MapService {
       className: "",
       ...createAtlasDraftMarkerIcon(),
     });
+  }
+
+  private createExperienceIcon(category: string): L.DivIcon {
+    return L.divIcon({ className: "", ...createAtlasExperienceMarkerIcon(category) });
   }
 
   private createTooltip(event: AtlasEvent, festivalGroup?: FestivalMapGroup): string {
@@ -170,6 +178,22 @@ export class MapService {
     }
 
     return placements.length;
+  }
+
+  renderExperiences(experiences: AtlasExperience[]): number {
+    this.experienceLayer.clearLayers();
+    for (const experience of experiences) {
+      if (!Number.isFinite(experience.lat) || !Number.isFinite(experience.lng)) continue;
+      const marker = L.marker([experience.lat!, experience.lng!], {
+        icon: this.createExperienceIcon(experience.category),
+      });
+      marker.bindTooltip(
+        `<div class="event-preview"><strong>${escapeHtml(experience.title)}</strong><span class="event-preview-date">♻️ Esperienza ${escapeHtml(experience.repeatability)}</span>${experience.municipality ? `<span class="event-preview-venue">${escapeHtml(experience.municipality)}</span>` : ""}</div>`,
+        { className: ATLAS_MAP_TOOLTIP_CLASS, direction: "top", offset: [0, -8], opacity: 0.98 },
+      );
+      this.experienceLayer.addLayer(marker);
+    }
+    return this.experienceLayer.getLayers().length;
   }
 
   fitToCoordinates(coordinates: [number, number][]): void {

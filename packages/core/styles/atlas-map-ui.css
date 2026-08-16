@@ -21,6 +21,23 @@
   line-height: 1;
 }
 
+.atlas-experience-marker {
+  width: calc(var(--marker-size) * .82);
+  height: calc(var(--marker-size) * .82);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.atlas-experience-marker span {
+  font-size: calc(var(--marker-icon-font) * .9);
+  color: #fff;
+  font-weight: bold;
+}
+
 .draft-marker {
   background: #6366f1;
   width: var(--marker-width, var(--marker-size));

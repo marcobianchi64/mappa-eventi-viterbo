@@ -22,6 +22,8 @@ export interface AtlasExperience {
   place_id?: string | null;
   municipality?: string | null;
   address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
   description?: string | null;
   image_url?: string | null;
   info_url?: string | null;
