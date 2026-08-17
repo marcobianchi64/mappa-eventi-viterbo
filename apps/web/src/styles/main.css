@@ -1354,6 +1354,22 @@ a.utility-sync-item:hover {
   background: #faf5ff;
 }
 
+.utility-panel-experience {
+  right: 12px;
+}
+
+button.utility-experience-item {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.utility-experience-item:hover {
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
 .utility-sync-item-title {
   display: block;
   font-size: calc(var(--legend-font) * 0.86);

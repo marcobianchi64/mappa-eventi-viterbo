@@ -419,6 +419,15 @@ export async function createExperienceAdmin(
   if (error) throw new Error(error.message);
 }
 
+export async function updateExperienceAdmin(
+  id: string,
+  patch: Partial<AtlasExperience>,
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("experiences").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 export async function updateExperienceStatus(id: string, status: AtlasPlaceStatus): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase.from("experiences").update({ status }).eq("id", id);

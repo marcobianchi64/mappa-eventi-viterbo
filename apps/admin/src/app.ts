@@ -14,7 +14,6 @@ import {
 } from "@atlas/core";
 import {
   approveSubmissionAsEvent,
-  createExperienceAdmin,
   createSource,
   fetchAllEventsAdmin,
   fetchOperationalAlerts,
@@ -42,6 +41,7 @@ import {
   type ProcessedDiscoveryRow,
 } from "./discovery/discovery-panel.js";
 import { EventEditor } from "./events/event-editor.js";
+import { ExperienceEditor } from "./experiences/experience-editor.js";
 import { AdminMapService } from "./map/admin-map.js";
 import {
   bindRegistryPanel,
@@ -260,51 +260,71 @@ export class AdminApp {
   private async renderExperiences(panel: HTMLElement): Promise<void> {
     const experiences = await fetchExperiencesAdmin();
     const active = experiences.filter((item) => item.status === "active" || item.status === "seasonal").length;
+    const typeLabels: Record<AtlasExperience["experience_type"], string> = {
+      tour: "Tour",
+      tasting: "Degustazione",
+      food: "Food",
+      activity: "Attività",
+      workshop: "Laboratorio",
+      trail: "Percorso",
+      lodging: "Ospitalità",
+      other: "Altro",
+    };
+
     panel.innerHTML = `
       <h2>Esperienze</h2>
-      <p class="small">Offerte ripetibili, gratuite o a pagamento. Non sono eventi con data.</p>
+      <p class="small">Offerte ripetibili, gratuite o a pagamento. Non sono eventi con data: si inseriscono qui e si pubblicano cambiando stato.</p>
       <div class="stats">
         <div class="stat"><strong>${experiences.length}</strong><span>Esperienze</span></div>
         <div class="stat"><strong>${active}</strong><span>Pubblicabili</span></div>
         <div class="stat"><strong>${experiences.filter((item) => item.status === "unknown").length}</strong><span>Da verificare</span></div>
       </div>
-      <form class="experience-form" data-experience-form>
-        <input name="title" required placeholder="Titolo esperienza" />
-        <select name="experience_type"><option value="tour">Tour</option><option value="tasting">Degustazione</option><option value="food">Food</option><option value="activity">Attività</option><option value="workshop">Laboratorio</option><option value="trail">Percorso</option><option value="lodging">Ospitalità</option><option value="other">Altro</option></select>
-        <select name="category"><option value="culture">Cultura</option><option value="food">Enogastronomia</option><option value="families">Famiglie</option><option value="sport">Sport</option><option value="other">Altro</option></select>
-        <input name="municipality" placeholder="Comune" />
-        <input name="lat" type="number" step="any" placeholder="Latitudine (per mappa)" />
-        <input name="lng" type="number" step="any" placeholder="Longitudine (per mappa)" />
-        <select name="price_hint"><option value="unknown">Prezzo da verificare</option><option value="free">Gratuita</option><option value="paid">A pagamento</option><option value="mixed">Mista</option></select>
-        <select name="repeatability"><option value="ongoing">Continuativa</option><option value="seasonal">Stagionale</option><option value="on_request">Su richiesta</option></select>
-        <input name="info_url" type="url" placeholder="Link informazioni o prenotazione" />
-        <textarea name="description" placeholder="Descrizione breve"></textarea>
-        <button class="primary" type="submit">Aggiungi esperienza</button>
-      </form>
-      <div class="places-list">
-        ${experiences.map((item) => `
-          <article class="place-row"><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.experience_type)} · ${escapeHtml(item.municipality ?? "Comune da definire")} · ${escapeHtml(item.price_hint)}</span><small>${escapeHtml(item.repeatability)}</small></div>
-          <label>Stato<select data-experience-status data-experience-id="${escapeHtml(item.id)}">${(["active", "unknown", "seasonal", "closed"] as const).map((status) => `<option value="${status}"${item.status === status ? " selected" : ""}>${status}</option>`).join("")}</select></label></article>`).join("") || "<p class=\"small\">Ancora nessuna esperienza: inserisci le prime offerte verificate.</p>"}
+      <div class="map-layout">
+        <div>
+          <button type="button" class="primary" id="newExperienceBtn">＋ Nuova esperienza</button>
+          <div class="places-list" style="margin-top:12px">
+            ${
+              experiences
+                .map(
+                  (item) => `
+                    <article class="place-row">
+                      <div>
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <span>${escapeHtml(typeLabels[item.experience_type])} · ${escapeHtml(item.municipality ?? "Comune da definire")}</span>
+                        <small>${escapeHtml(item.price_hint)} · ${escapeHtml(item.repeatability)}</small>
+                      </div>
+                      <div class="row-actions">
+                        <label>Stato
+                          <select data-experience-status data-experience-id="${escapeHtml(item.id)}">
+                            ${(["active", "unknown", "seasonal", "closed"] as const)
+                              .map((status) => `<option value="${status}"${item.status === status ? " selected" : ""}>${status}</option>`)
+                              .join("")}
+                          </select>
+                        </label>
+                        <button type="button" class="btn-secondary" data-experience-edit="${escapeHtml(item.id)}">Modifica</button>
+                      </div>
+                    </article>`,
+                )
+                .join("") || "<p class=\"small\">Ancora nessuna esperienza: usa «Nuova esperienza» per la prima offerta verificata.</p>"
+            }
+          </div>
+        </div>
+        <div id="experienceEditorHost" class="editor-host"></div>
       </div>`;
 
-    panel.querySelector<HTMLFormElement>("[data-experience-form]")?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget as HTMLFormElement);
-      const value = (name: string) => String(data.get(name) ?? "").trim();
-      void createExperienceAdmin({
-        title: value("title"),
-        experience_type: value("experience_type") as AtlasExperience["experience_type"],
-        category: value("category") as AtlasExperience["category"],
-        territory_id: "IT-VT",
-        municipality: value("municipality") || null,
-        lat: value("lat") ? Number(value("lat")) : null,
-        lng: value("lng") ? Number(value("lng")) : null,
-        description: value("description") || null,
-        info_url: value("info_url") || null,
-        price_hint: value("price_hint") as AtlasExperience["price_hint"],
-        repeatability: value("repeatability") as AtlasExperience["repeatability"],
-        status: "unknown",
-      }).then(() => this.renderPanel());
+    const editorHost = panel.querySelector("#experienceEditorHost") as HTMLElement;
+    const editor = new ExperienceEditor({
+      container: editorHost,
+      onSaved: () => void this.renderPanel(),
+      onClose: () => {},
+    });
+
+    panel.querySelector("#newExperienceBtn")?.addEventListener("click", () => editor.openNew());
+    panel.querySelectorAll<HTMLButtonElement>("[data-experience-edit]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const experience = experiences.find((item) => item.id === button.dataset.experienceEdit);
+        if (experience) editor.open(experience);
+      });
     });
     panel.querySelectorAll<HTMLSelectElement>("[data-experience-status]").forEach((select) => {
       select.addEventListener("change", () => {

@@ -72,6 +72,7 @@ export function renderShell(): string {
         <div class="header-subbar">
           <p id="activeFiltersBar" class="active-filters-bar" aria-live="polite"></p>
           <div class="header-subbar-utility" aria-label="Servizi utili">
+            <button id="experienceButton" class="topbar-btn topbar-btn-utility topbar-btn-experience" type="button" title="Esperienze da vivere in provincia" aria-expanded="false" aria-controls="experiencePanel"><span>✨</span><span class="topbar-btn-label">Esperienze</span></button>
             <button id="cinemaButton" class="topbar-btn topbar-btn-utility topbar-btn-cinema" type="button" title="Programmazione cinema in provincia" aria-expanded="false" aria-controls="cinemaPanel"><span>🎬</span><span class="topbar-btn-label">Cinema</span></button>
             <button id="pharmacyButton" class="topbar-btn topbar-btn-utility topbar-btn-pharmacy" type="button" title="Farmacie di turno oggi in provincia" aria-expanded="false" aria-controls="pharmacyPanel"><span>💊</span><span class="topbar-btn-label">Farmacie aperte</span></button>
           </div>
@@ -106,6 +107,11 @@ export function renderShell(): string {
     <div id="cinemaPanel" class="utility-services-panel utility-panel-cinema">
       <h3>🎬 Cinema</h3>
       <div id="cinemaPanelList" class="utility-panel-scroll"></div>
+    </div>
+
+    <div id="experiencePanel" class="utility-services-panel utility-panel-experience">
+      <h3>✨ Esperienze</h3>
+      <div id="experiencePanelList" class="utility-panel-scroll"></div>
     </div>
 
     <div class="map-stage atlas-map-only">

@@ -39,6 +39,7 @@ import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, openFestivalEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
 import { openExperienceSheet } from "./ui/experience-sheet";
+import { mountExperiencePanel } from "./ui/experience-panel";
 import { renderShell } from "./ui/shell";
 import {
   bindEventListPage,
@@ -234,8 +235,10 @@ export class AtlasApp {
       const utilityRoots = [
         document.getElementById("pharmacyButton"),
         document.getElementById("cinemaButton"),
+        document.getElementById("experienceButton"),
         document.getElementById("pharmacyPanel"),
         document.getElementById("cinemaPanel"),
+        document.getElementById("experiencePanel"),
       ];
       if (!utilityRoots.some((root) => root?.contains(e.target as Node))) {
         this.closeUtilityPanels();
@@ -261,6 +264,11 @@ export class AtlasApp {
     document.getElementById("cinemaButton")?.addEventListener("click", (e) => {
       e.stopPropagation();
       this.toggleUtilityPanel("cinema");
+    });
+
+    document.getElementById("experienceButton")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.toggleUtilityPanel("experience");
     });
 
     document.getElementById("topInsertBtn")?.addEventListener("click", () => {
@@ -1058,25 +1066,21 @@ export class AtlasApp {
   }
 
   private closeUtilityPanels(): void {
-    document.getElementById("pharmacyPanel")?.classList.remove("open");
-    document.getElementById("cinemaPanel")?.classList.remove("open");
-    document.getElementById("pharmacyButton")?.setAttribute("aria-expanded", "false");
-    document.getElementById("cinemaButton")?.setAttribute("aria-expanded", "false");
-    document.getElementById("pharmacyButton")?.classList.remove("active");
-    document.getElementById("cinemaButton")?.classList.remove("active");
+    for (const kind of ["pharmacy", "cinema", "experience"]) {
+      document.getElementById(`${kind}Panel`)?.classList.remove("open");
+      document.getElementById(`${kind}Button`)?.setAttribute("aria-expanded", "false");
+      document.getElementById(`${kind}Button`)?.classList.remove("active");
+    }
   }
 
-  private toggleUtilityPanel(kind: "pharmacy" | "cinema"): void {
+  private toggleUtilityPanel(kind: "pharmacy" | "cinema" | "experience"): void {
     this.closeFilterMenu();
     this.closeDockFlyouts();
     document.getElementById("programsPanel")?.classList.remove("open");
 
-    const panelId = kind === "pharmacy" ? "pharmacyPanel" : "cinemaPanel";
-    const buttonId = kind === "pharmacy" ? "pharmacyButton" : "cinemaButton";
-    const listId = kind === "pharmacy" ? "pharmacyPanelList" : "cinemaPanelList";
-    const panel = document.getElementById(panelId);
-    const button = document.getElementById(buttonId);
-    const list = document.getElementById(listId);
+    const panel = document.getElementById(`${kind}Panel`);
+    const button = document.getElementById(`${kind}Button`);
+    const list = document.getElementById(`${kind}PanelList`);
     if (!panel || !button || !list) return;
 
     const willOpen = !panel.classList.contains("open");
@@ -1089,8 +1093,16 @@ export class AtlasApp {
     button.setAttribute("aria-expanded", "true");
     button.classList.add("active");
 
+    if (kind === "experience") {
+      mountExperiencePanel(list, this.allExperiences, (experience) => {
+        this.closeUtilityPanels();
+        openExperienceSheet(experience, showToast);
+      });
+      return;
+    }
+
     void this.ensureUtilitySnapshot().then((snapshot) => {
-      const listEl = document.getElementById(listId);
+      const listEl = document.getElementById(`${kind}PanelList`);
       if (!listEl) return;
       if (kind === "pharmacy") mountPharmacyPanel(listEl, snapshot);
       else mountCinemaPanel(listEl, snapshot);
