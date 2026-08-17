@@ -13,6 +13,7 @@
 9. `seed_viterbo.sql` — pilota provincia di Viterbo
 10. `seed_places_vt.sql` — cinema censiti provincia VT
 11. `seed_pharmacies_vt.sql` — anagrafica farmacie attive provincia VT
+12. `seed_municipalities_vt.sql` — 60 comuni referenti istituzionali
 
 ## Note
 
@@ -20,3 +21,4 @@
 - Le policy RLS richiedono login Supabase Auth per il Control Center.
 - Dopo il seed avrai 6 fonti pilota + gerarchia territorio IT → Lazio → Viterbo.
 - Rigenera l'anagrafica farmacie con `npm run import:pharmacy-registry -w @atlas/collector`.
+- Rigenera il seed comuni con `node scripts/generate-municipality-seed.mjs`.
