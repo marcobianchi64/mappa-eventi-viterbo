@@ -180,7 +180,10 @@ export class MapService {
     return placements.length;
   }
 
-  renderExperiences(experiences: AtlasExperience[]): number {
+  renderExperiences(
+    experiences: AtlasExperience[],
+    onOpenExperience?: (experience: AtlasExperience) => void,
+  ): number {
     this.experienceLayer.clearLayers();
     for (const experience of experiences) {
       if (!Number.isFinite(experience.lat) || !Number.isFinite(experience.lng)) continue;
@@ -188,9 +191,15 @@ export class MapService {
         icon: this.createExperienceIcon(experience.category),
       });
       marker.bindTooltip(
-        `<div class="event-preview"><strong>${escapeHtml(experience.title)}</strong><span class="event-preview-date">♻️ Esperienza ${escapeHtml(experience.repeatability)}</span>${experience.municipality ? `<span class="event-preview-venue">${escapeHtml(experience.municipality)}</span>` : ""}</div>`,
+        `<div class="event-preview"><strong>${escapeHtml(experience.title)}</strong><span class="event-preview-date">♻️ Esperienza sempre prenotabile</span>${experience.municipality ? `<span class="event-preview-venue">${escapeHtml(experience.municipality)}</span>` : ""}</div>`,
         { className: ATLAS_MAP_TOOLTIP_CLASS, direction: "top", offset: [0, -8], opacity: 0.98 },
       );
+      if (onOpenExperience) {
+        marker.on("click", (e) => {
+          L.DomEvent.stopPropagation(e);
+          onOpenExperience(experience);
+        });
+      }
       this.experienceLayer.addLayer(marker);
     }
     return this.experienceLayer.getLayers().length;

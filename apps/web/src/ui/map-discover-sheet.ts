@@ -8,6 +8,7 @@ import {
   getEventDisplayTitle,
   getCategoryMeta,
   type AtlasEvent,
+  type AtlasExperience,
   type DateRangeKey,
 } from "@atlas/core";
 import { renderListCardMedia } from "./event-media.js";
@@ -20,6 +21,7 @@ export function renderMapDiscoverSheetHtml(
   events: AtlasEvent[],
   activeRange: DateRangeKey,
   totalCount: number,
+  experiences: AtlasExperience[] = [],
 ): string {
   const period = escapeHtml(DATE_RANGE_LABELS[activeRange] ?? activeRange);
   const territory = escapeHtml(getEditionTerritoryLabel());
@@ -59,7 +61,38 @@ export function renderMapDiscoverSheetHtml(
       <p class="map-discover-count" aria-live="polite"><strong>${totalCount}</strong> eventi · ${period}</p>
     </header>
     <div class="map-discover-rail" id="mapDiscoverRail">${cards}</div>
+    ${renderExperienceRail(experiences)}
     <button type="button" class="map-discover-cta" id="mapDiscoverListBtn">Vedi tutti in elenco →</button>
+  `;
+}
+
+function renderExperienceRail(experiences: AtlasExperience[]): string {
+  if (experiences.length === 0) return "";
+  const cards = experiences
+    .slice(0, 12)
+    .map((experience) => {
+      const meta = getCategoryMeta(experience.category);
+      const availability =
+        experience.repeatability === "seasonal"
+          ? "Stagionale"
+          : experience.repeatability === "on_request"
+            ? "Su richiesta"
+            : "Sempre disponibile";
+      return `
+        <button type="button" class="map-discover-card map-discover-card--experience" data-experience-id="${escapeHtml(experience.id)}">
+          <div class="map-discover-card-body">
+            <span class="map-discover-card-tag" style="color:${meta.color}">${escapeHtml(meta.label)}</span>
+            <strong class="map-discover-card-title">${escapeHtml(experience.title)}</strong>
+            <span class="map-discover-card-meta">♻️ ${escapeHtml(availability)}${experience.municipality ? ` · ${escapeHtml(experience.municipality)}` : ""}</span>
+          </div>
+        </button>
+      `;
+    })
+    .join("");
+
+  return `
+    <p class="map-discover-experiences-heading"><strong>${experiences.length}</strong> esperienze da vivere tutto l'anno</p>
+    <div class="map-discover-rail map-discover-rail--experiences" id="mapDiscoverExperienceRail">${cards}</div>
   `;
 }
 
@@ -83,6 +116,7 @@ export function bindMapDiscoverSheet(
   sheet: HTMLElement,
   options: {
     onSelectEvent: (eventId: string) => void;
+    onSelectExperience?: (experienceId: string) => void;
     onOpenList: () => void;
     onStateChange?: (state: MapDiscoverSheetState) => void;
   },
@@ -107,6 +141,11 @@ export function bindMapDiscoverSheet(
       }
       if (target.closest("#mapDiscoverListBtn")) {
         options.onOpenList();
+        return;
+      }
+      const experienceCard = target.closest<HTMLElement>("[data-experience-id]");
+      if (experienceCard?.dataset.experienceId) {
+        options.onSelectExperience?.(experienceCard.dataset.experienceId);
         return;
       }
       const card = target.closest<HTMLElement>("[data-event-id]");

@@ -38,6 +38,7 @@ import { fetchVerifiedEvents, fetchVerifiedExperiences, submitUserReport } from 
 import { MapService } from "./map/map-service";
 import { InterestsService } from "./services/interests";
 import { closeEventSheet, openEventSheet, openFestivalEventSheet, setEventSheetOnClose, shareEvent } from "./ui/event-sheet";
+import { openExperienceSheet } from "./ui/experience-sheet";
 import { renderShell } from "./ui/shell";
 import {
   bindEventListPage,
@@ -129,6 +130,10 @@ export class AtlasApp {
         const event = this.allEvents.find((e) => String(e.date_event) === eventId);
         if (event) this.handleOpenEvent(event);
       },
+      onSelectExperience: (experienceId) => {
+        const experience = this.allExperiences.find((item) => item.id === experienceId);
+        if (experience) this.handleOpenExperience(experience);
+      },
       onOpenList: () => this.setViewMode("list"),
       onStateChange: () => {
         setTimeout(() => this.mapService.invalidateSize(), 300);
@@ -142,11 +147,27 @@ export class AtlasApp {
     if (!sheet) return;
     const events = this.getListEvents();
     const state = sheet.dataset.state as MapDiscoverSheetState | undefined;
-    sheet.innerHTML = renderMapDiscoverSheetHtml(events, this.currentRange, events.length);
+    sheet.innerHTML = renderMapDiscoverSheetHtml(
+      events,
+      this.currentRange,
+      events.length,
+      this.getMapExperiences(),
+    );
     if (state && (state === "collapsed" || state === "peek" || state === "expanded")) {
       sheet.classList.remove("is-collapsed", "is-peek", "is-expanded");
       sheet.classList.add(`is-${state}`);
     }
+  }
+
+  private getMapExperiences(): AtlasExperience[] {
+    return this.allExperiences.filter(
+      (experience) => this.listCategory === "all" || experience.category === this.listCategory,
+    );
+  }
+
+  private handleOpenExperience(experience: AtlasExperience): void {
+    this.closeUtilityPanels();
+    openExperienceSheet(experience, showToast);
   }
 
   private handleOpenEvent(event: AtlasEvent, festivalGroup?: FestivalMapGroup): void {
@@ -450,10 +471,8 @@ export class AtlasApp {
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getFilteredEvents();
     this.mapService.renderEvents(visible, deepLink);
-    this.mapService.renderExperiences(
-      this.allExperiences.filter(
-        (experience) => this.listCategory === "all" || experience.category === this.listCategory,
-      ),
+    this.mapService.renderExperiences(this.getMapExperiences(), (experience) =>
+      this.handleOpenExperience(experience),
     );
 
     if (!deepLink && !this.initialMapFitDone && visible.length > 0) {
