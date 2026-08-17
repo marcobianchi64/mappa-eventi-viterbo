@@ -10,6 +10,7 @@ import {
   getEventDisplayTitle,
   getCategoryMeta,
   type AtlasEvent,
+  type AtlasExperience,
   type DateRangeKey,
   type EventCategory,
 } from "@atlas/core";
@@ -36,10 +37,61 @@ function filterSummary(
   return parts.join(" · ");
 }
 
+const EXPERIENCE_AVAILABILITY_LABELS: Record<AtlasExperience["repeatability"], string> = {
+  ongoing: "Sempre disponibile",
+  seasonal: "Stagionale",
+  on_request: "Su richiesta",
+};
+
+const EXPERIENCE_PRICE_LABELS: Record<AtlasExperience["price_hint"], string> = {
+  free: "Gratuita",
+  paid: "A pagamento",
+  mixed: "Gratuita e a pagamento",
+  unknown: "Prezzo da confermare",
+};
+
+/** Sezione esperienze in coda all'elenco: mai mischiata all'ordinamento per data. */
+function renderExperienceListSection(experiences: AtlasExperience[]): string {
+  if (experiences.length === 0) return "";
+  const cards = experiences
+    .map((experience) => {
+      const meta = getCategoryMeta(experience.category);
+      const desc = escapeHtml(excerpt(experience.description));
+      return `
+        <article class="list-card list-card--experience">
+          <button type="button" class="list-card-hit" data-experience-id="${escapeHtml(experience.id)}">
+            <div class="list-card-body">
+              <h2 class="list-card-title">${escapeHtml(experience.title)}</h2>
+              <p class="list-card-excerpt">${desc}</p>
+              <div class="list-card-meta">
+                <span class="list-card-meta-item">♻️ ${escapeHtml(EXPERIENCE_AVAILABILITY_LABELS[experience.repeatability])}</span>
+                <span class="list-card-meta-item">💶 ${escapeHtml(EXPERIENCE_PRICE_LABELS[experience.price_hint])}</span>
+                <span class="list-card-meta-item list-card-meta-category" style="color:${meta.color}">🏷 ${escapeHtml(meta.label)}</span>
+                ${experience.municipality ? `<span class="list-card-meta-item list-card-meta-place">📍 ${escapeHtml(experience.municipality)}</span>` : ""}
+              </div>
+            </div>
+          </button>
+        </article>
+      `;
+    })
+    .join("");
+
+  return `
+    <section class="list-experiences" aria-label="Esperienze del territorio">
+      <header class="list-experiences-header">
+        <h2>Esperienze da vivere tutto l'anno</h2>
+        <p class="list-experiences-lead"><strong>${experiences.length}</strong> proposte senza vincolo di data: prenota quando vuoi.</p>
+      </header>
+      <div class="list-cards">${cards}</div>
+    </section>
+  `;
+}
+
 export function renderEventListPageHtml(
   events: AtlasEvent[],
   activeCategory: EventListCategoryFilter,
   activeRange: DateRangeKey,
+  experiences: AtlasExperience[] = [],
 ): string {
   const summary = escapeHtml(filterSummary(activeCategory, activeRange));
   const cards =
@@ -84,16 +136,27 @@ export function renderEventListPageHtml(
         <p class="list-page-lead">${summary} · aggiornato ogni giorno da più fonti locali</p>
       </header>
       <div class="list-cards">${cards}</div>
+      ${renderExperienceListSection(experiences)}
     </div>
   `;
 }
 
-export function bindEventListPage(root: HTMLElement, onSelect: (eventId: string) => void): void {
+export function bindEventListPage(
+  root: HTMLElement,
+  onSelect: (eventId: string) => void,
+  onSelectExperience?: (experienceId: string) => void,
+): void {
   bindEventMediaImages(root);
   root.querySelectorAll("[data-event-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = (btn as HTMLButtonElement).dataset.eventId;
       if (id) onSelect(id);
+    });
+  });
+  root.querySelectorAll("[data-experience-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = (btn as HTMLButtonElement).dataset.experienceId;
+      if (id) onSelectExperience?.(id);
     });
   });
 }

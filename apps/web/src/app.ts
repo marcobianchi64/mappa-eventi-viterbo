@@ -428,7 +428,8 @@ export class AtlasApp {
   private async loadExperiences(): Promise<void> {
     try {
       this.allExperiences = await fetchVerifiedExperiences();
-      if (this.viewMode === "map") this.renderMapEvents();
+      if (this.viewMode === "list") this.renderEventList();
+      else this.renderMapEvents();
     } catch (error) {
       console.error("Impossibile caricare le esperienze.", error);
     }
@@ -459,12 +460,20 @@ export class AtlasApp {
       this.getListEvents(),
       this.listCategory,
       this.currentRange,
+      this.getMapExperiences(),
     );
-    bindEventListPage(root, (eventId) => {
-      const event = this.allEvents.find((e) => String(e.date_event) === eventId);
-      if (!event) return;
-      this.handleOpenEvent(event);
-    });
+    bindEventListPage(
+      root,
+      (eventId) => {
+        const event = this.allEvents.find((e) => String(e.date_event) === eventId);
+        if (!event) return;
+        this.handleOpenEvent(event);
+      },
+      (experienceId) => {
+        const experience = this.allExperiences.find((item) => item.id === experienceId);
+        if (experience) this.handleOpenExperience(experience);
+      },
+    );
   }
 
   private renderMapEvents(): void {

@@ -1588,6 +1588,32 @@ body:not(.atlas-view-list) .atlas-list-only {
   padding: 0;
 }
 
+.list-experiences {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 2px solid #fde68a;
+}
+
+.list-experiences-header h2 {
+  margin: 0;
+  font-size: calc(var(--legend-font) * 1.15);
+  color: #9a3412;
+}
+
+.list-experiences-lead {
+  margin: 4px 0 12px;
+  font-size: calc(var(--legend-font) * 0.85);
+  color: #57534e;
+}
+
+.list-experiences-lead strong {
+  color: #9a3412;
+}
+
+.list-card--experience {
+  border-left: 3px solid #f59e0b;
+}
+
 .list-page-empty {
   padding: 20px;
   background: #fff;
