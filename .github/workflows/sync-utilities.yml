@@ -1,0 +1,36 @@
+name: Atlas Utility Sync
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync-utilities:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Sync pharmacy and cinema data
+        run: npm run sync:utilities
+
+      - name: Commit updated utility snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/public/data/utilities/
+          if git diff --staged --quiet; then
+            echo "Nessuna modifica ai dati utilità."
+          else
+            git commit -m "chore: sync utility data (pharmacies + cinema)"
+            git push
+          fi

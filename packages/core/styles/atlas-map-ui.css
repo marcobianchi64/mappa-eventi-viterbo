@@ -1,0 +1,131 @@
+/* Condiviso tra apps/web e apps/admin — NON modificare qui a mano.
+ * Token in packages/core/src/map-ui-scale.ts · verifica: npm run verify:ui-scale */
+
+.atlas-marker {
+  width: var(--marker-width, var(--marker-size));
+  height: var(--marker-size);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.atlas-marker span {
+  transform: rotate(45deg);
+  font-size: var(--marker-icon-font);
+  color: #fff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.atlas-experience-marker {
+  width: calc(var(--marker-size) * .82);
+  height: calc(var(--marker-size) * .82);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.atlas-experience-marker span {
+  font-size: calc(var(--marker-icon-font) * .9);
+  color: #fff;
+  font-weight: bold;
+}
+
+.draft-marker {
+  background: #6366f1;
+  width: var(--marker-width, var(--marker-size));
+  height: var(--marker-size);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: var(--marker-border) solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+}
+
+.leaflet-tooltip.atlas-event-tooltip {
+  white-space: normal !important;
+  width: var(--tooltip-width) !important;
+  min-width: var(--tooltip-min-width) !important;
+  max-width: min(var(--tooltip-width), calc(100vw - 32px)) !important;
+  box-sizing: border-box;
+  padding: var(--tooltip-padding) !important;
+  line-height: 1.45 !important;
+  font-size: var(--tooltip-font) !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip .event-preview > strong,
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-festival-compact > strong {
+  font-size: var(--tooltip-title-font) !important;
+  font-weight: 800 !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip .event-preview-date {
+  font-size: var(--tooltip-date-font) !important;
+  font-weight: 700 !important;
+}
+
+.leaflet-tooltip.atlas-event-tooltip span:not(.event-preview-date):not(.event-preview-compact-date):not(.event-preview-compact-title):not(.event-preview-compact-hint),
+.leaflet-tooltip.atlas-event-tooltip .event-preview > span:not(.event-preview-date) {
+  font-size: var(--tooltip-meta-font) !important;
+}
+
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-more {
+  font-size: calc(var(--tooltip-meta-font) * 0.55) !important;
+  font-weight: 500 !important;
+  color: #6b7f9e !important;
+  line-height: 1.35 !important;
+}
+
+.leaflet-tooltip.atlas-festival-tooltip .event-preview-compact-cta {
+  font-size: calc(var(--tooltip-meta-font) * 0.62) !important;
+  font-weight: 500 !important;
+  color: #5a7aab !important;
+  line-height: 1.35 !important;
+}
+
+/* Cluster numerati (leaflet.markercluster) — stile Atlas */
+.atlas-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #be185d, #6366f1);
+  color: #fff;
+  font-weight: 800;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 12px rgba(190, 24, 93, 0.35);
+  box-sizing: border-box;
+}
+
+.atlas-cluster span {
+  line-height: 1;
+}
+
+.atlas-cluster-sm {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.atlas-cluster-md {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.atlas-cluster-lg {
+  width: 46px;
+  height: 46px;
+  font-size: 16px;
+}
+
+.marker-cluster-spider-leg {
+  stroke: #db2777;
+  stroke-opacity: 0.65;
+}
