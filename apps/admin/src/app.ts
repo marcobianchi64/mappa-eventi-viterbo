@@ -268,7 +268,10 @@ export class AdminApp {
 
   /** Copertura territoriale: eventi in pubblicazione per comune nel periodo scelto. */
   private async renderCoverage(panel: HTMLElement): Promise<void> {
-    const events = await fetchVerifiedEvents();
+    const [events, allEvents] = await Promise.all([
+      fetchVerifiedEvents(),
+      fetchAllEventsAdmin(5000),
+    ]);
     const inRange = events.filter((event) => isEventVisibleInRange(event, this.coverageRange));
 
     const counts = new Map<string, number>(listViterboComuni().map((key) => [key, 0]));
@@ -277,6 +280,19 @@ export class AdminApp {
       const key = inferComuneForEvent(event);
       if (key && counts.has(key)) counts.set(key, (counts.get(key) ?? 0) + 1);
       else unresolved += 1;
+    }
+
+    // Storico completo (anche eventi passati): da dove abbiamo già ottenuto
+    // dati per ogni comune — sono le fonti candidate da riattivare.
+    const history = new Map<string, { total: number; domains: Map<string, number> }>();
+    for (const event of allEvents) {
+      const key = inferComuneForEvent(event);
+      if (!key || !counts.has(key)) continue;
+      const entry = history.get(key) ?? { total: 0, domains: new Map<string, number>() };
+      entry.total += 1;
+      const domain = extractDomain(event.event_url);
+      if (domain) entry.domains.set(domain, (entry.domains.get(domain) ?? 0) + 1);
+      history.set(key, entry);
     }
 
     const rows = [...counts.entries()].sort(
@@ -305,11 +321,23 @@ export class AdminApp {
         ${rows
           .map(([key, count]) => {
             const label = formatComuneLabel(key);
+            const past = history.get(key);
+            const topDomains = past
+              ? [...past.domains.entries()]
+                  .sort((a, b) => b[1] - a[1])
+                  .slice(0, 3)
+                  .map(([domain, hits]) => `${domain} (${hits})`)
+                  .join(", ")
+              : "";
+            const historyLine = past
+              ? `Storico: ${past.total} eventi raccolti${topDomains ? ` · fonti: ${escapeHtml(topDomains)}` : ""}`
+              : "Nessuno storico: cercare sul web pro loco, comune e associazioni";
             return `
               <article class="place-row${count === 0 ? " coverage-row-empty" : ""}">
                 <div>
                   <strong>${escapeHtml(label)}</strong>
                   <span>${count === 0 ? "Nessun evento nel periodo — serve un referente locale" : `${count} eventi in pubblicazione`}</span>
+                  <small>${historyLine}</small>
                 </div>
                 <strong class="coverage-count${count === 0 ? " zero" : ""}">${count}</strong>
               </article>`;
@@ -774,5 +802,14 @@ export class AdminApp {
 
       list.appendChild(div);
     }
+  }
+}
+
+function extractDomain(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
   }
 }

@@ -226,6 +226,11 @@ export class AtlasApp {
     });
 
     document.addEventListener("click", (e) => {
+      const target = e.target as Node | null;
+      // Un click sui filtri interni rigenera la lista: il nodo cliccato non è
+      // più nel DOM e sembrerebbe "esterno". Non chiudere nulla in quel caso.
+      if (target && !document.contains(target)) return;
+
       if (!filterMenuWrap?.contains(e.target as Node)) {
         filterMenuWrap?.classList.remove("open");
         filterEventsButton?.setAttribute("aria-expanded", "false");
