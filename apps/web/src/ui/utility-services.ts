@@ -96,6 +96,26 @@ function renderCinemaVenueCard(venue: UtilityCinemaVenue): string {
   return `<article class="utility-cinema-venue-card">${header}${body}</article>`;
 }
 
+/** Data odierna nel fuso di Roma (YYYY-MM-DD). */
+function todayRome(): string {
+  return new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
+}
+
+function renderStaleDataNotice(referenceDate: string | undefined, consultUrl: string): string {
+  if (!referenceDate || referenceDate === todayRome()) return "";
+  const label = new Date(`${referenceDate}T12:00:00`).toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return `
+    <p class="utility-stale-notice" role="alert">
+      ⚠️ Turni del <strong>${escapeHtml(label)}</strong>, non ancora aggiornati a oggi.
+      Verifica su <a href="${escapeHtml(consultUrl)}" target="_blank" rel="noopener noreferrer">Pagine Gialle ↗</a>
+    </p>
+  `;
+}
+
 function renderPharmacyPanelContent(
   snapshot: UtilitySyncSnapshot,
   items: ReturnType<typeof filterPharmacies>,
@@ -111,6 +131,7 @@ function renderPharmacyPanelContent(
         month: "long",
       })
     : "oggi";
+  const staleNotice = renderStaleDataNotice(dutyDate, consult.all);
 
   const shiftButtons = (["all", "day", "night", "h24"] as const)
     .map((shift) => {
@@ -153,6 +174,7 @@ function renderPharmacyPanelContent(
   return `
     <div class="utility-services-list" data-utility-panel="pharmacy">
       <div class="utility-panel-sticky">
+        ${staleNotice}
         <p class="utility-services-lead">
           Turno del <strong>${escapeHtml(dutyLabel)}</strong> · ${items.length} risultati
           · aggiornato ${escapeHtml(updated)}

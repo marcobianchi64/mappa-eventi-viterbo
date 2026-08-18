@@ -1098,6 +1098,22 @@ button {
   flex-shrink: 0;
 }
 
+.utility-stale-notice {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: calc(var(--legend-font) * 0.8);
+  line-height: 1.4;
+}
+
+.utility-stale-notice a {
+  color: #991b1b;
+  font-weight: 700;
+}
+
 .utility-services-lead {
   margin: 0 0 10px;
   font-size: calc(var(--legend-font) * 0.8);

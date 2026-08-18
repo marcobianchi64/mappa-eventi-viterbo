@@ -1,113 +1,179 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-08-16T14:36:07.539Z",
+  "syncedAt": "2026-08-18T21:38:39.126Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
-    "dutyDate": "2026-08-16",
+    "dutyDate": "2026-08-18",
     "consult": {
       "all": "https://www.paginegialle.it/farmacie-turno/viterbo",
       "map": "https://www.paginegialle.it/mappa/farmacie-turno/viterbo?rk="
     },
     "items": [
       {
-        "name": "Farmacia Riccardi",
-        "address": "Via della Palazzina, 197 - 01100 Viterbo (VT)",
-        "phone": "0761 250825",
-        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/riccardi",
-        "municipality": "Viterbo"
+        "name": "Farmacia del Sacrario",
+        "address": "Piazzale dei Caduti, 12/15 - 01100 Viterbo (VT)",
+        "phone": "0761 304034",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-del-sacrario_22736205",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 23:59"
       },
       {
-        "name": "Farmacia Muscolino",
-        "address": "Viale Monaci Ernesto, 96 - 01038 Soriano nel Cimino (VT)",
-        "phone": "0761 748194",
-        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacie/farmacia-muscolino-dottor-pasquale",
-        "municipality": "Soriano nel Cimino"
+        "name": "Farmacia Morelli",
+        "address": "Via della Stazione, 5 - 01100 Grotte Santo Stefano (VT)",
+        "phone": "0761 367015",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/morelli_T10131551",
+        "municipality": "Grotte Santo Stefano",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Faleri",
-        "address": "Via Falerina, 23 - 01034 Fabrica di Roma (VT)",
-        "phone": "0761 769237",
-        "url": "https://www.paginegialle.it/fabrica-di-roma-vt/farmacie/farmacia-faleri",
-        "municipality": "Fabrica di Roma"
+        "name": "Farmacia Belati",
+        "address": "Viale Vittorio Emanuele III, 22 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 745025",
+        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacia-belati-zagoreo-s-a-s-di-fani-dott-lorenzo",
+        "municipality": "Soriano nel Cimino",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Farmacapranica",
-        "address": "Viale Matteotti G. - 01012 Capranica (VT)",
-        "phone": "0761 1707011",
-        "url": "https://www.paginegialle.it/capranica-vt/farmacie/farmacia-farmacapranica_T11338831",
-        "municipality": "Capranica"
+        "name": "Farmacia di Canepina",
+        "address": "Piazzale Caduti e Dispersi della Seconda Guerra Mondiale, 18 - 01030 Canepina (VT)",
+        "phone": "0761 750069",
+        "url": "https://www.paginegialle.it/canepina-vt/farmacie/farmacia-di-canepina_9465275",
+        "municipality": "Canepina",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Franceschini",
-        "address": "Piazza Buozzi Bruno, 6 - 01020 Bomarzo (VT)",
-        "phone": "0761 924015",
-        "url": "https://www.paginegialle.it/bomarzo-vt/farmacie/farmacia-franceschini-dr.-vezio-leonildo",
-        "municipality": "Bomarzo"
+        "name": "Farmacia Marini Agostini",
+        "address": "Piazza del Comune, 22 - 01015 Sutri (VT)",
+        "phone": "0761 600186",
+        "url": "https://www.paginegialle.it/sutri-vt/farmacie/farmacia-marini-agostini",
+        "municipality": "Sutri",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10108",
+        "placeStatus": "active"
       },
       {
-        "name": "Farmacia Iori",
-        "address": "Via Tartarola, 91 - 01027 Montefiascone (VT)",
-        "phone": "0761 959092",
-        "url": "https://www.paginegialle.it/montefiascone-vt/farmacie/farmacia-iori",
-        "municipality": "Montefiascone"
+        "name": "Farmacia Buccelli",
+        "address": "Via Tarquinia, 53 - 01017 Tuscania (VT)",
+        "phone": "0761 435013",
+        "url": "https://www.paginegialle.it/tuscania-vt/farmacie/farmacia-buccelli_T16731837",
+        "municipality": "Tuscania",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10133",
+        "placeStatus": "active"
       },
       {
-        "name": "Farmacia Palombi",
-        "address": "Via Roma, 109 - 01010 Blera (VT)",
-        "phone": "0761 479045",
-        "url": "https://www.paginegialle.it/blera-vt/farmacie/farmacia-palombi",
-        "municipality": "Blera"
+        "name": "Farmacia Centrale",
+        "address": "Corso Umberto I, 6 - 01037 Ronciglione (VT)",
+        "phone": "0761 625021",
+        "url": "https://www.paginegialle.it/ronciglione-vt/farmacie/farmacia-alessio-dottor-maria",
+        "municipality": "Ronciglione",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Perinelli",
-        "address": "Via Vi Febbraio 1971, 1971 - 01017 Tuscania (VT)",
-        "phone": "0761 096077",
-        "url": "https://www.paginegialle.it/tuscania-vt/farmacie/farmacia-perinelli",
-        "municipality": "Tuscania"
+        "name": "Farmacia Ciucci",
+        "address": "Piazza del Comune, 21 - 01020 Graffignano (VT)",
+        "phone": "0761 901476",
+        "url": "https://www.paginegialle.it/graffignano-vt/farmacie/farmacia-ciucci_T16731849",
+        "municipality": "Graffignano",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia San Bartolomeo",
-        "address": "Corso Umberto I, 33 - 01037 Ronciglione (VT)",
-        "phone": "0761 625053",
-        "url": "https://www.paginegialle.it/ronciglione-vt/farmacie/farmacia-san-bartolomeo",
-        "municipality": "Ronciglione"
+        "name": "Farmacia De Blasio",
+        "address": "Via Tuscania, 4/A - 01010 Marta (VT)",
+        "phone": "0761 871521",
+        "url": "https://www.paginegialle.it/marta-vt/farmacie/farmacia-de-blasio",
+        "municipality": "Marta",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10123",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia Farmafabrica",
+        "address": "Via Porta Vecchia, 19 - 01034 Fabrica di Roma (VT)",
+        "phone": "0761 569305",
+        "url": "https://www.paginegialle.it/fabrica-di-roma-vt/farmacie/farmafabrica_20412283",
+        "municipality": "Fabrica di Roma",
+        "hoursToday": "00:00 - 23:59"
+      },
+      {
+        "name": "Farmacia Morera",
+        "address": "Via Monti Padre Luigi Maria, 7 - 01012 Capranica (VT)",
+        "phone": "0761 669175",
+        "url": "https://www.paginegialle.it/capranica-vt/farmacie/farmacia-bartolomei-dottoressa-maria_2",
+        "municipality": "Capranica",
+        "hoursToday": "00:00 - 23:59"
+      },
+      {
+        "name": "Farmacia Palaggi Giuseppe",
+        "address": "Piazza Savoia - 01010 Villa San Giovanni in Tuscia (VT)",
+        "phone": "0761 476114",
+        "url": "https://www.paginegialle.it/villa-san-giovanni-in-tuscia-vt/farmacie/palaggi-giuseppe",
+        "municipality": "Villa San Giovanni in Tuscia",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10097",
+        "placeStatus": "active"
       },
       {
         "name": "Farmacia San Valentino",
         "address": "Borgo Garibaldi, 8 - 05028 Penna in Teverina (VT)",
         "phone": "0744 993152",
         "url": "https://www.paginegialle.it/penna-in-teverina-tr/farmacie/farmacia-san-valentino_20001642",
-        "municipality": "Penna in Teverina"
+        "municipality": "Penna in Teverina",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Sant'Antonio",
-        "address": "Via Morone Orazio, 1/B - 01015 Sutri (VT)",
-        "phone": "0761 600395",
-        "url": "https://www.paginegialle.it/sutri-vt/farmacia-sant-antonio-dr-michele-pianelli",
-        "municipality": "Sutri"
+        "name": "Farmacia Vetralla",
+        "address": "Strada San Michele - 01019 Vetralla (VT)",
+        "phone": "0761 477053",
+        "url": "https://www.paginegialle.it/vetralla-vt/farmacie/farmacia-vetralla",
+        "municipality": "Vetralla",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Zonghi",
-        "address": "Via Cassia, 38/A - 01019 Vetralla (VT)",
-        "phone": "0761 481008",
-        "url": "https://www.paginegialle.it/vetralla-vt/farmacie/farmacia-dr-zonghi-francesco-e-cerri-donatella-s-n-c_20356372",
-        "municipality": "Vetralla"
+        "name": "Farmacia Zepponami",
+        "address": "Via Cassia, 95/97 - 01027 Montefiascone (VT)",
+        "phone": "0761 825959",
+        "url": "https://www.paginegialle.it/zepponami-vt/farmacie/farmacia-d.ssa-terracina",
+        "municipality": "Montefiascone",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Comunale 1",
-        "address": "Piazza del Popolo, 15 - 01028 Orte (VT)",
-        "phone": "0761 493110",
-        "url": "https://www.paginegialle.it/orte-vt/farmacie/farmacia-comunale",
-        "municipality": "Orte"
+        "name": "Farmacia Bassano",
+        "address": "Via Leonardo da Vinci, 4 - 01030 Bassano Romano (VT)",
+        "phone": "0761 634023",
+        "url": "https://www.paginegialle.it/bassano-romano-vt/farmacie/farmacia-bassano-romano-dr.ssa-corsetti-lorena-c.",
+        "municipality": "Bassano Romano",
+        "hoursToday": "00:00 - 23:59"
       },
       {
-        "name": "Farmacia Farmabassano",
-        "address": "Piazza Vittorio Emanuele, 11 - 01030 Bassano Romano (VT)",
-        "phone": "0761 635698",
-        "url": "https://www.paginegialle.it/bassano-romano-vt/farmabassano",
-        "municipality": "Bassano Romano"
+        "name": "Farmacia Bigiotti",
+        "address": "Piazza Trento e Trieste, 10 - 01022 Bagnoregio (VT)",
+        "phone": "0761 792925",
+        "url": "https://www.paginegialle.it/bagnoregio-vt/farmacie/farmacia-bigiotti-di-bigiotti-francesco-e-andrea-s-n-c",
+        "municipality": "Bagnoregio",
+        "hoursToday": "00:00 - 23:59"
+      },
+      {
+        "name": "Farmacia Comunale 2",
+        "address": "Via Amerina, 19 - 01028 Orte (VT)",
+        "phone": "0761 411436",
+        "url": "https://www.paginegialle.it/orte-vt/comune/comune-di-orte_22959552",
+        "municipality": "Orte",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-21275",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia Conti Elda",
+        "address": "Largo Tronsarelli O., 41 - 01035 Gallese (VT)",
+        "phone": "0761 495036",
+        "url": "https://www.paginegialle.it/gallese-vt/farmacie/farmacia-conti-dottor-elda",
+        "municipality": "Gallese",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10071",
+        "placeStatus": "active"
       }
     ]
   },
@@ -120,12 +186,28 @@
         "url": "https://www.mymovies.it/film/2026/odissea/",
         "showings": [
           {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
+          },
+          {
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "17:00"
+              "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:15"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -137,29 +219,23 @@
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "21:30"
+              "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
-          }
-        ]
-      },
-      {
-        "title": "BUEN CAMINO",
-        "url": "https://www.mymovies.it/film/2025/buen-camino/",
-        "showings": [
+          },
           {
-            "cinema": "Arena Etrusco Lido",
-            "town": "Tarquinia",
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
             "times": [
               "21:30"
             ],
-            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/20275/"
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
       {
-        "title": "TRE CIOTOLE",
-        "url": "https://www.mymovies.it/film/2025/tre-ciotole/",
+        "title": "LA GRAZIA",
+        "url": "https://www.mymovies.it/film/2025/la-grazia/",
         "showings": [
           {
             "cinema": "Arena Marconi",
@@ -179,8 +255,8 @@
         "url": "https://www.mymovies.it/cinema/viterbo/bolsena/23914/",
         "films": [
           {
-            "title": "TRE CIOTOLE",
-            "url": "https://www.mymovies.it/film/2025/tre-ciotole/",
+            "title": "LA GRAZIA",
+            "url": "https://www.mymovies.it/film/2025/la-grazia/",
             "times": [
               "21:30"
             ]
@@ -196,7 +272,28 @@
             "title": "ODISSEA",
             "url": "https://www.mymovies.it/film/2026/odissea/",
             "times": [
-              "17:00"
+              "21:00"
+            ]
+          },
+          {
+            "title": "SPIDER-MAN - BRAND NEW DAY",
+            "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+            "times": [
+              "21:00"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Tevere",
+        "town": "Castiglione in Teverina",
+        "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+        "films": [
+          {
+            "title": "ODISSEA",
+            "url": "https://www.mymovies.it/film/2026/odissea/",
+            "times": [
+              "21:15"
             ]
           },
           {
@@ -209,13 +306,13 @@
         ]
       },
       {
-        "cinema": "Arena Etrusco Lido",
-        "town": "Tarquinia",
-        "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/20275/",
+        "cinema": "Excelsior",
+        "town": "Cura",
+        "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/",
         "films": [
           {
-            "title": "BUEN CAMINO",
-            "url": "https://www.mymovies.it/film/2025/buen-camino/",
+            "title": "ODISSEA",
+            "url": "https://www.mymovies.it/film/2026/odissea/",
             "times": [
               "21:30"
             ]
@@ -227,18 +324,95 @@
   "coverage": {
     "cinema": {
       "domain": "cinema",
-      "expected": 4,
-      "found": 3,
+      "expected": 16,
+      "found": 4,
       "missing": [
         {
-          "placeId": "place-cinema-thespace-viterbo",
-          "placeName": "The Space Cinema",
-          "municipality": "Viterbo",
-          "reason": "Sala censita senza dati MYmovies — serve fonte alternativa (ComingSoon/sito)",
+          "placeId": "place-cinema-olimpya-acquapendente",
+          "placeName": "Olimpya",
+          "municipality": "Acquapendente",
+          "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-florida-civita-castellana",
+          "placeName": "Florida",
+          "municipality": "Civita Castellana",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-multisala-flavia-montefiascone",
+          "placeName": "Multisala Flavia",
+          "municipality": "Montefiascone",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-gallery-montefiascone",
+          "placeName": "Cinema Multisala Gallery",
+          "municipality": "Montefiascone",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-florida-soriano-cimino",
+          "placeName": "Florida",
+          "municipality": "Soriano nel Cimino",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-etrusco-tarquinia",
+          "placeName": "Etrusco",
+          "municipality": "Tarquinia",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-colombo-valentano",
+          "placeName": "Colombo",
+          "municipality": "Valentano",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-albertone-nazionale-vasanello",
+          "placeName": "Albertone Nazionale",
+          "municipality": "Vasanello",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-lux-viterbo",
+          "placeName": "Lux",
+          "municipality": "Viterbo",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-trento-viterbo",
+          "placeName": "Trento",
+          "municipality": "Viterbo",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-tuscia-village-vitorchiano",
+          "placeName": "Cine Tuscia Village",
+          "municipality": "Vitorchiano",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-arena-etrusco-tarquinia",
+          "placeName": "Arena Etrusco Lido",
+          "municipality": "Tarquinia",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "info"
         }
       ],
-      "checkedAt": "2026-08-16T14:36:07.539Z"
+      "checkedAt": "2026-08-18T21:38:39.125Z"
     }
   },
   "operationalAlerts": [
@@ -246,13 +420,156 @@
       "alertType": "place_silent",
       "severity": "warning",
       "territoryId": "IT-VT",
-      "placeId": "place-cinema-thespace-viterbo",
-      "title": "Cinema senza dati: The Space Cinema",
-      "message": "Sala censita senza dati MYmovies — serve fonte alternativa (ComingSoon/sito)",
+      "placeId": "place-cinema-olimpya-acquapendente",
+      "title": "Cinema senza dati: Olimpya",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Acquapendente",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-florida-civita-castellana",
+      "title": "Cinema senza dati: Florida",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Civita Castellana",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-multisala-flavia-montefiascone",
+      "title": "Cinema senza dati: Multisala Flavia",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Montefiascone",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-gallery-montefiascone",
+      "title": "Cinema senza dati: Cinema Multisala Gallery",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Montefiascone",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-florida-soriano-cimino",
+      "title": "Cinema senza dati: Florida",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Soriano nel Cimino",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-etrusco-tarquinia",
+      "title": "Cinema senza dati: Etrusco",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Tarquinia",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-colombo-valentano",
+      "title": "Cinema senza dati: Colombo",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Valentano",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-albertone-nazionale-vasanello",
+      "title": "Cinema senza dati: Albertone Nazionale",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Vasanello",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-lux-viterbo",
+      "title": "Cinema senza dati: Lux",
+      "message": "Sala censita senza programmazione nel sync odierno",
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-08-16T14:36:07.539Z"
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-trento-viterbo",
+      "title": "Cinema senza dati: Trento",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Viterbo",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-tuscia-village-vitorchiano",
+      "title": "Cinema senza dati: Cine Tuscia Village",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Vitorchiano",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "info",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-arena-etrusco-tarquinia",
+      "title": "Cinema senza dati: Arena Etrusco Lido",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Tarquinia",
+        "checkedAt": "2026-08-18T21:38:39.125Z"
       }
     }
   ]
