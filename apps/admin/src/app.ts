@@ -3,8 +3,12 @@ import {
   ATLAS_VERSION,
   compareMapRegistryFromEvents,
   escapeHtml,
+  formatComuneLabel,
   formatDate,
   formatSubmissionContactLabel,
+  inferComuneForEvent,
+  isEventVisibleInRange,
+  listViterboComuni,
   getCategoryMeta,
   isRegistryInPubblicazione,
   loadDiscoverySession,
@@ -57,6 +61,7 @@ type AdminTab =
   | "discovery"
   | "registry"
   | "places"
+  | "coverage"
   | "experiences"
   | "submissions"
   | "sources"
@@ -113,6 +118,7 @@ export class AdminApp {
             <button type="button" data-tab="discovery" class="tab">Scoperta</button>
             <button type="button" data-tab="registry" class="tab">Registro</button>
             <button type="button" data-tab="places" class="tab">Patrimonio</button>
+            <button type="button" data-tab="coverage" class="tab">Copertura</button>
             <button type="button" data-tab="experiences" class="tab">Esperienze</button>
             <button type="button" data-tab="submissions" class="tab">Segnalazioni</button>
             <button type="button" data-tab="events" class="tab">Revisione</button>
@@ -181,6 +187,7 @@ export class AdminApp {
       else if (this.tab === "discovery") await this.renderDiscovery(panel);
       else if (this.tab === "registry") await this.renderRegistry(panel);
       else if (this.tab === "places") await this.renderPlaces(panel);
+      else if (this.tab === "coverage") await this.renderCoverage(panel);
       else if (this.tab === "experiences") await this.renderExperiences(panel);
       else if (this.tab === "submissions") await this.renderSubmissions(panel);
       else if (this.tab === "events") await this.renderEvents(panel);
@@ -253,6 +260,68 @@ export class AdminApp {
         const status = btn.dataset.alertStatus;
         if (!id || (status !== "acknowledged" && status !== "resolved")) return;
         void updateOperationalAlertStatus(id, status).then(() => this.renderPanel());
+      });
+    });
+  }
+
+  private coverageRange: "7" | "15" | "30" = "30";
+
+  /** Copertura territoriale: eventi in pubblicazione per comune nel periodo scelto. */
+  private async renderCoverage(panel: HTMLElement): Promise<void> {
+    const events = await fetchVerifiedEvents();
+    const inRange = events.filter((event) => isEventVisibleInRange(event, this.coverageRange));
+
+    const counts = new Map<string, number>(listViterboComuni().map((key) => [key, 0]));
+    let unresolved = 0;
+    for (const event of inRange) {
+      const key = inferComuneForEvent(event);
+      if (key && counts.has(key)) counts.set(key, (counts.get(key) ?? 0) + 1);
+      else unresolved += 1;
+    }
+
+    const rows = [...counts.entries()].sort(
+      (a, b) => a[1] - b[1] || a[0].localeCompare(b[0], "it"),
+    );
+    const uncovered = rows.filter(([, count]) => count === 0);
+
+    const rangeChips = (["7", "15", "30"] as const)
+      .map(
+        (range) =>
+          `<button type="button" class="tab${this.coverageRange === range ? " active" : ""}" data-coverage-range="${range}">${range} giorni</button>`,
+      )
+      .join("");
+
+    panel.innerHTML = `
+      <h2>Copertura territoriale</h2>
+      <p class="small">Eventi in pubblicazione per comune. I comuni scoperti indicano dove attivare fonti e referenti (pro loco, comune, associazioni).</p>
+      <div class="tabs" role="group" aria-label="Periodo">${rangeChips}</div>
+      <div class="stats">
+        <div class="stat"><strong>${inRange.length}</strong><span>Eventi nel periodo</span></div>
+        <div class="stat"><strong>${rows.length - uncovered.length}/${rows.length}</strong><span>Comuni coperti</span></div>
+        <div class="stat"><strong>${uncovered.length}</strong><span>Comuni senza eventi</span></div>
+        ${unresolved > 0 ? `<div class="stat"><strong>${unresolved}</strong><span>Eventi senza comune</span></div>` : ""}
+      </div>
+      <div class="places-list">
+        ${rows
+          .map(([key, count]) => {
+            const label = formatComuneLabel(key);
+            return `
+              <article class="place-row${count === 0 ? " coverage-row-empty" : ""}">
+                <div>
+                  <strong>${escapeHtml(label)}</strong>
+                  <span>${count === 0 ? "Nessun evento nel periodo — serve un referente locale" : `${count} eventi in pubblicazione`}</span>
+                </div>
+                <strong class="coverage-count${count === 0 ? " zero" : ""}">${count}</strong>
+              </article>`;
+          })
+          .join("")}
+      </div>
+    `;
+
+    panel.querySelectorAll<HTMLButtonElement>("[data-coverage-range]").forEach((button) => {
+      button.addEventListener("click", () => {
+        this.coverageRange = button.dataset.coverageRange as "7" | "15" | "30";
+        void this.renderPanel();
       });
     });
   }
