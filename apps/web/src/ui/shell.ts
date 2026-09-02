@@ -187,12 +187,12 @@ function renderFilterCategoryOptions(): string {
   return order
     .map((key) => {
       if (key === "all") {
-        return `<button type="button" class="filter-events-option filter-category-option active" data-category="all">Tutti gli eventi</button>`;
+        return `<button type="button" class="filter-events-option filter-category-option active" data-category="all">Tutti gli eventi<span class="filter-option-count" data-category-count="all"></span></button>`;
       }
       const meta = CATEGORY_META[key];
       const label = key === "other" ? "Altri" : meta.label;
       return `<button type="button" class="filter-events-option filter-category-option" data-category="${key}">
-        <span class="filter-category-dot" style="background:${meta.color}"></span>${label}
+        <span class="filter-category-dot" style="background:${meta.color}"></span>${label}<span class="filter-option-count" data-category-count="${key}"></span>
       </button>`;
     })
     .join("");
@@ -213,7 +213,7 @@ function renderFilterWhenOptions(active: DateRangeKey): string {
   return options
     .map(
       (range) =>
-        `<button class="filter-events-option filter-when-option${range === active ? " active" : ""}" data-range="${range}" type="button">${labels[range]}</button>`,
+        `<button class="filter-events-option filter-when-option${range === active ? " active" : ""}" data-range="${range}" type="button">${labels[range]}<span class="filter-option-count" data-range-count="${range}"></span></button>`,
     )
     .join("");
 }

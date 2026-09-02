@@ -466,9 +466,34 @@ export class AtlasApp {
     );
   }
 
+  private updateFilterCounts(): void {
+    const ranges: DateRangeKey[] = ["today", "tomorrow", "weekend", "7", "15", "30", "60"];
+    for (const range of ranges) {
+      const inRange = this.allEvents.filter((event) => isEventVisibleInRange(event, range));
+      const count =
+        this.listCategory === "all"
+          ? inRange.length
+          : inRange.filter((event) => getDisplayCategory(event) === this.listCategory).length;
+      document
+        .querySelectorAll<HTMLElement>(`[data-range-count="${range}"]`)
+        .forEach((el) => (el.textContent = String(count)));
+    }
+
+    const visible = this.getVisibleEvents();
+    const categoryCounts = new Map<string, number>([["all", visible.length]]);
+    for (const event of visible) {
+      const category = getDisplayCategory(event);
+      categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+    }
+    document.querySelectorAll<HTMLElement>("[data-category-count]").forEach((el) => {
+      el.textContent = String(categoryCounts.get(el.dataset.categoryCount ?? "") ?? 0);
+    });
+  }
+
   private renderEventList(): void {
     const root = document.getElementById("eventListContent");
     if (!root) return;
+    this.updateFilterCounts();
     root.innerHTML = renderEventListPageHtml(
       this.getListEvents(),
       this.listCategory,
@@ -490,6 +515,7 @@ export class AtlasApp {
   }
 
   private renderMapEvents(): void {
+    this.updateFilterCounts();
     const deepLink = new URLSearchParams(window.location.search).get("event");
     const visible = this.getFilteredEvents();
     this.mapService.renderEvents(visible, deepLink);
@@ -790,7 +816,8 @@ export class AtlasApp {
         : getCategoryMeta(this.listCategory).label.toLowerCase();
     const time = DATE_RANGE_LABELS[this.currentRange] ?? "15 giorni";
     const territory = getEditionTerritoryLabel();
-    el.innerHTML = `<span class="active-filters-main">${escapeHtml(`${territory} · ${category} · ${time}`)}</span> <span class="active-filters-hint">(clic Filtra per cambiare)</span>`;
+    const count = this.getFilteredEvents().length;
+    el.innerHTML = `<span class="active-filters-main">${escapeHtml(`${count} eventi · ${territory} · ${category} · ${time}`)}</span> <span class="active-filters-hint">(clic Filtra per cambiare)</span>`;
     this.syncHeaderLayout();
   }
 
