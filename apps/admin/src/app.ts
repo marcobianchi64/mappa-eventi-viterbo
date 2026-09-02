@@ -198,17 +198,51 @@ export class AdminApp {
   }
 
   private async renderDashboard(panel: HTMLElement): Promise<void> {
-    const [sources, pendingEvents, submissions, operationalAlerts] = await Promise.all([
+    let sources: Awaited<ReturnType<typeof fetchSources>> = [];
+    let pendingEvents: AtlasEvent[] = [];
+    let submissions: Awaited<ReturnType<typeof fetchPendingSubmissions>> = [];
+    let operationalAlerts: Awaited<ReturnType<typeof fetchOperationalAlerts>> = [];
+    const loadErrors: string[] = [];
+
+    const results = await Promise.allSettled([
       fetchSources(),
       fetchPendingEvents(),
       fetchPendingSubmissions(),
       fetchOperationalAlerts(),
     ]);
 
+    if (results[0].status === "fulfilled") sources = results[0].value;
+    else loadErrors.push(`Fonti: ${results[0].reason?.message ?? "errore"}`);
+
+    if (results[1].status === "fulfilled") pendingEvents = results[1].value;
+    else loadErrors.push(`Eventi in revisione: ${results[1].reason?.message ?? "errore"}`);
+
+    if (results[2].status === "fulfilled") submissions = results[2].value;
+    else loadErrors.push(`Segnalazioni: ${results[2].reason?.message ?? "errore"}`);
+
+    if (results[3].status === "fulfilled") operationalAlerts = results[3].value;
+    else {
+      const msg = results[3].reason?.message ?? "errore";
+      loadErrors.push(
+        msg.includes("operational_alerts")
+          ? "Alert dati: tabella mancante — esegui migration 007_aim_registry.sql su Supabase"
+          : `Alert dati: ${msg}`,
+      );
+    }
+
     const activeSources = sources.filter((s) => s.status === "active").length;
     const errorSources = sources.filter((s) => s.status === "error").length;
+    const setupHint =
+      loadErrors.length > 0
+        ? `<div class="error" style="margin-bottom:1rem;padding:0.75rem;background:#fef2f2;border-radius:8px">
+        <strong>Problemi di connessione o database:</strong>
+        <ul>${loadErrors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>
+        <p class="small">Esegui <code>npm run check:supabase</code> nel terminale per la diagnosi completa.</p>
+      </div>`
+        : "";
 
     panel.innerHTML = `
+      ${setupHint}
       <h2>Stato piattaforma</h2>
       <div class="stats">
         <div class="stat"><strong>${activeSources}</strong><span>Fonti attive</span></div>
