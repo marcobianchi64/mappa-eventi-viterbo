@@ -1,0 +1,839 @@
+{
+  "editionId": "viterbo",
+  "territoryId": "IT-VT",
+  "syncedAt": "2026-09-03T10:14:44.188Z",
+  "pharmacies": {
+    "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
+    "sourceLabel": "Pagine Gialle",
+    "dutyDate": "2026-09-03",
+    "consult": {
+      "all": "https://www.paginegialle.it/farmacie-turno/viterbo",
+      "map": "https://www.paginegialle.it/mappa/farmacie-turno/viterbo?rk="
+    },
+    "items": [
+      {
+        "name": "Farmacia Sassacci della Dr.ssa Anna Maria Versace",
+        "address": "Via Terni, 26 - 01033 Civita Castellana (VT)",
+        "phone": "0761 540381",
+        "url": "https://www.paginegialle.it/farmacia-sassacci-civita-castallana",
+        "municipality": "Civita Castellana",
+        "hoursToday": "09:00 - 13:00, 16:30 - 20:00",
+        "placeId": "place-pharmacy-ministero-17125",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia del Pilastro S.a.s. di M. Vittoria Terracina",
+        "address": "Via Carlo Minciotti, 35 - 01100 Viterbo (VT)",
+        "phone": "391 7270589",
+        "url": "https://www.paginegialle.it/farmaciaterracina",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 20:00"
+      },
+      {
+        "name": "Farmacia dei Papi",
+        "address": "Via Cassia Nord, 13 - 01100 Viterbo (VT)",
+        "phone": "333 2612980",
+        "url": "https://www.paginegialle.it/farmacia-deipapi",
+        "municipality": "Viterbo",
+        "hoursToday": "08:35 - 19:30"
+      },
+      {
+        "name": "Farmacia Petroselli",
+        "address": "Via Cattaneo Carlo, 30 - 01100 Viterbo (VT)",
+        "phone": "0761 324240",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-pila-petroselli-dr.-maria-teresa",
+        "municipality": "Viterbo",
+        "hoursToday": "08:35 - 13:30, 16:00 - 19:30"
+      },
+      {
+        "name": "Farmacia Blasi",
+        "address": "Viale Fiume, 6 - 01100 Viterbo (VT)",
+        "phone": "0761 288017",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-blasi_22293402",
+        "municipality": "Viterbo",
+        "hoursToday": "00:00 - 23:59",
+        "placeId": "place-pharmacy-ministero-10060",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia Comunale - Santa Barbara",
+        "address": "Via Porsenna, 41 - 01100 Viterbo (VT)",
+        "phone": "0761 250059",
+        "url": "https://www.paginegialle.it/viterbo-vt/trasporto-pubblico/francigena",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:30, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia Comunale La Quercia",
+        "address": "Piazza Campo Graziano, 35/C - 01100 Viterbo (VT)",
+        "phone": "0761 343384",
+        "url": "https://www.paginegialle.it/viterbo-vt/trasporti/francigena_3",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:30, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia Comunale Riello",
+        "address": "Via Galvani Luigi, 38 - 01100 Viterbo (VT)",
+        "phone": "0761 1580075",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-comunale-riello",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 19:30",
+        "placeId": "place-pharmacy-ministero-21151",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia dei Cappuccini",
+        "address": "Via Vicenza, 40/A - 01100 Viterbo (VT)",
+        "phone": "0761 342630",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-cappuccini-dr.-paolo-montalboldi-omeopati",
+        "municipality": "Viterbo",
+        "hoursToday": "00:00 - 13:00, 16:30 - 20:00",
+        "placeId": "place-pharmacy-ministero-16413",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia dei Papi",
+        "address": "Via Cassia Nord, 13 - 01100 Viterbo (VT)",
+        "phone": "0761 270110",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-dei-papi-s-n-c",
+        "municipality": "Viterbo",
+        "hoursToday": "08:35 - 19:30"
+      },
+      {
+        "name": "Farmacia del Sacrario",
+        "address": "Piazzale dei Caduti, 12/15 - 01100 Viterbo (VT)",
+        "phone": "0761 304034",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-del-sacrario_22736205",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 20:00"
+      },
+      {
+        "name": "Farmacia Gabriele Rossi",
+        "address": "Via Madre Teresa di Calcutta, 2/C - 01100 Viterbo (VT)",
+        "phone": "0761 250883",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacia-caprio-rossi",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 16:00 - 19:30",
+        "placeId": "place-pharmacy-ministero-19402",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Farmacia Galiano",
+        "address": "Via delle Fabbriche, 2 - 01100 Viterbo (VT)",
+        "phone": "0761 304183",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-galiano_3",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia Il Murialdo",
+        "address": "Via dei Monti Cimini, 15 - 01100 Viterbo (VT)",
+        "phone": "0761 972592",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-murialdo",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 16:00 - 19:30"
+      },
+      {
+        "name": "Farmacia Morelli",
+        "address": "Via della Stazione, 5 - 01100 Grotte Santo Stefano (VT)",
+        "phone": "0761 367015",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/morelli_T10131551",
+        "municipality": "Grotte Santo Stefano",
+        "hoursToday": "09:00 - 13:00, 16:00 - 19:30"
+      },
+      {
+        "name": "Farmacia Natalini",
+        "address": "Piazza Buratti Mariano, 2/3 - 01100 Viterbo (VT)",
+        "phone": "0761 379976",
+        "url": "https://www.paginegialle.it/san-martino-al-cimino-vt/farmacie/farmacia-natalini_2",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia Riccardi",
+        "address": "Via della Palazzina, 197 - 01100 Viterbo (VT)",
+        "phone": "0761 250825",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/riccardi",
+        "municipality": "Viterbo",
+        "hoursToday": "08:35 - 23:59"
+      },
+      {
+        "name": "Farmacia Rossi",
+        "address": "Largo Africa, 14 - 01100 Viterbo (VT)",
+        "phone": "0761 343121",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/farmacia-rossi_20243868",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 15:30 - 20:00",
+        "placeId": "place-pharmacy-ministero-10063",
+        "placeStatus": "active"
+      },
+      {
+        "name": "Giacci Dr. Federico Farmacia",
+        "address": "36/A, Vl. Trieste - 01100 Viterbo (VT)",
+        "phone": "0761 341083",
+        "url": "https://www.paginegialle.it/viterbo-vt/farmacie/giacci-dr-federico",
+        "municipality": "Viterbo",
+        "hoursToday": "08:30 - 13:00, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia del Cimino Snc",
+        "address": "Viale Cesare Battisti, 51 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 745789",
+        "url": "https://www.paginegialle.it/farmaciadelciminosnc-sorianonelcimino",
+        "municipality": "Soriano nel Cimino",
+        "hoursToday": "08:35 - 19:30"
+      },
+      {
+        "name": "Farmacia Ricci - Mari",
+        "address": "Via Alessandro Manzoni, 15/F - 01030 Vitorchiano (VT)",
+        "phone": "0761 370022",
+        "url": "https://www.paginegialle.it/farmaciaricci-mari-vitorchiano",
+        "municipality": "Vitorchiano",
+        "hoursToday": "09:00 - 12:40, 17:00 - 20:00"
+      },
+      {
+        "name": "Farmacia Muscolino",
+        "address": "Viale Monaci Ernesto, 96 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 748194",
+        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacie/farmacia-muscolino-dottor-pasquale",
+        "municipality": "Soriano nel Cimino",
+        "hoursToday": "00:00 - 23:59"
+      },
+      {
+        "name": "Farmacia Belati",
+        "address": "Viale Vittorio Emanuele III, 22 - 01038 Soriano nel Cimino (VT)",
+        "phone": "0761 745025",
+        "url": "https://www.paginegialle.it/soriano-nel-cimino-vt/farmacia-belati-zagoreo-s-a-s-di-fani-dott-lorenzo",
+        "municipality": "Soriano nel Cimino",
+        "hoursToday": "08:30 - 13:00, 16:30 - 20:00"
+      },
+      {
+        "name": "Farmacia di Canepina",
+        "address": "Piazzale Caduti e Dispersi della Seconda Guerra Mondiale, 18 - 01030 Canepina (VT)",
+        "phone": "0761 750069",
+        "url": "https://www.paginegialle.it/canepina-vt/farmacie/farmacia-di-canepina_9465275",
+        "municipality": "Canepina",
+        "hoursToday": "09:00 - 13:00, 16:30 - 20:30"
+      },
+      {
+        "name": "Farmacia Zonghi e Cerri",
+        "address": "Piazza Europa, 52 - 01019 Vetralla (VT)",
+        "phone": "0761 461640",
+        "url": "https://www.paginegialle.it/tre-croci-vt/farmacie/farmacia-comunale-sanitas",
+        "municipality": "Vetralla",
+        "hoursToday": "09:00 - 13:00, 16:30 - 19:30"
+      }
+    ]
+  },
+  "cinema": {
+    "sourceUrl": "https://www.mymovies.it/cinema/viterbo/provincia/",
+    "sourceLabel": "MYmovies",
+    "items": [
+      {
+        "title": "COYOTE VS. ACME",
+        "url": "https://www.mymovies.it/film/2026/coyote-vs-acme/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "19:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Gallery",
+            "town": "Montefiascone",
+            "times": [
+              "16:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          }
+        ]
+      },
+      {
+        "title": "OCEANIA",
+        "url": "https://www.mymovies.it/film/2026/oceania/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "19:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:10"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Gallery",
+            "town": "Montefiascone",
+            "times": [
+              "21:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          }
+        ]
+      },
+      {
+        "title": "IL MALLOPPO",
+        "url": "https://www.mymovies.it/film/2026/il-malloppo/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "19:15"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "18:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "SPIDER-MAN - BRAND NEW DAY",
+        "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "ODISSEA",
+        "url": "https://www.mymovies.it/film/2026/odissea/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "20:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "18:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "FAMMI IL PIACERE",
+        "url": "https://www.mymovies.it/film/2026/fammi-il-piacere/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "19:15"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "KETTICÈ",
+        "url": "https://www.mymovies.it/film/2026/kettice/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "19:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "THE MORTUARY ASSISTANT - ANATOMIA DI UN INCUBO",
+        "url": "https://www.mymovies.it/film/2026/the-mortuary-assistant-anatomia-di-un-incubo/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "TRAIN TO BUSAN",
+        "url": "https://www.mymovies.it/film/2016/busanhaeng/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "THE DOG STARS - LE STELLE DOPO LA FINE",
+        "url": "https://www.mymovies.it/film/2026/the-dog-stars-le-stelle-dopo-la-fine/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      }
+    ],
+    "venues": [
+      {
+        "cinema": "Gallery",
+        "town": "Montefiascone",
+        "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/",
+        "films": [
+          {
+            "title": "COYOTE VS. ACME",
+            "url": "https://www.mymovies.it/film/2026/coyote-vs-acme/",
+            "times": [
+              "16:30"
+            ]
+          },
+          {
+            "title": "OCEANIA",
+            "url": "https://www.mymovies.it/film/2026/oceania/",
+            "times": [
+              "21:00"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Etrusco",
+        "town": "Tarquinia",
+        "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/",
+        "films": [
+          {
+            "title": "COYOTE VS. ACME",
+            "url": "https://www.mymovies.it/film/2026/coyote-vs-acme/",
+            "times": [
+              "16:30"
+            ]
+          },
+          {
+            "title": "OCEANIA",
+            "url": "https://www.mymovies.it/film/2026/oceania/",
+            "times": [
+              "16:10"
+            ]
+          },
+          {
+            "title": "IL MALLOPPO",
+            "url": "https://www.mymovies.it/film/2026/il-malloppo/",
+            "times": [
+              "18:30"
+            ]
+          },
+          {
+            "title": "SPIDER-MAN - BRAND NEW DAY",
+            "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "ODISSEA",
+            "url": "https://www.mymovies.it/film/2026/odissea/",
+            "times": [
+              "18:30"
+            ]
+          },
+          {
+            "title": "FAMMI IL PIACERE",
+            "url": "https://www.mymovies.it/film/2026/fammi-il-piacere/",
+            "times": [
+              "16:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Cine Tuscia Village",
+        "town": "Vitorchiano",
+        "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/",
+        "films": [
+          {
+            "title": "COYOTE VS. ACME",
+            "url": "https://www.mymovies.it/film/2026/coyote-vs-acme/",
+            "times": [
+              "19:00"
+            ]
+          },
+          {
+            "title": "OCEANIA",
+            "url": "https://www.mymovies.it/film/2026/oceania/",
+            "times": [
+              "19:00"
+            ]
+          },
+          {
+            "title": "IL MALLOPPO",
+            "url": "https://www.mymovies.it/film/2026/il-malloppo/",
+            "times": [
+              "19:15"
+            ]
+          },
+          {
+            "title": "SPIDER-MAN - BRAND NEW DAY",
+            "url": "https://www.mymovies.it/film/2026/spiderman-brand-new-day/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "ODISSEA",
+            "url": "https://www.mymovies.it/film/2026/odissea/",
+            "times": [
+              "20:30"
+            ]
+          },
+          {
+            "title": "FAMMI IL PIACERE",
+            "url": "https://www.mymovies.it/film/2026/fammi-il-piacere/",
+            "times": [
+              "19:15"
+            ]
+          },
+          {
+            "title": "KETTICÈ",
+            "url": "https://www.mymovies.it/film/2026/kettice/",
+            "times": [
+              "19:00"
+            ]
+          },
+          {
+            "title": "THE MORTUARY ASSISTANT - ANATOMIA DI UN INCUBO",
+            "url": "https://www.mymovies.it/film/2026/the-mortuary-assistant-anatomia-di-un-incubo/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "TRAIN TO BUSAN",
+            "url": "https://www.mymovies.it/film/2016/busanhaeng/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "THE DOG STARS - LE STELLE DOPO LA FINE",
+            "url": "https://www.mymovies.it/film/2026/the-dog-stars-le-stelle-dopo-la-fine/",
+            "times": [
+              "21:30"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "coverage": {
+    "cinema": {
+      "domain": "cinema",
+      "expected": 16,
+      "found": 4,
+      "missing": [
+        {
+          "placeId": "place-cinema-olimpya-acquapendente",
+          "placeName": "Olimpya",
+          "municipality": "Acquapendente",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-moderno-bolsena",
+          "placeName": "Moderna",
+          "municipality": "Bolsena",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-arena-marconi-bolsena",
+          "placeName": "Arena Marconi",
+          "municipality": "Bolsena",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "info"
+        },
+        {
+          "placeId": "place-cinema-tevere-castiglione",
+          "placeName": "Tevere",
+          "municipality": "Castiglione in Teverina",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-florida-civita-castellana",
+          "placeName": "Florida",
+          "municipality": "Civita Castellana",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-excelsior-vetralla",
+          "placeName": "Excelsior",
+          "municipality": "Cura di Vetralla",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-multisala-flavia-montefiascone",
+          "placeName": "Multisala Flavia",
+          "municipality": "Montefiascone",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-florida-soriano-cimino",
+          "placeName": "Florida",
+          "municipality": "Soriano nel Cimino",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-colombo-valentano",
+          "placeName": "Colombo",
+          "municipality": "Valentano",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-albertone-nazionale-vasanello",
+          "placeName": "Albertone Nazionale",
+          "municipality": "Vasanello",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-lux-viterbo",
+          "placeName": "Lux",
+          "municipality": "Viterbo",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-trento-viterbo",
+          "placeName": "Trento",
+          "municipality": "Viterbo",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        }
+      ],
+      "checkedAt": "2026-09-03T10:14:44.188Z"
+    }
+  },
+  "operationalAlerts": [
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-olimpya-acquapendente",
+      "title": "Cinema senza dati: Olimpya",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Acquapendente",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-moderno-bolsena",
+      "title": "Cinema senza dati: Moderna",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Bolsena",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "info",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-arena-marconi-bolsena",
+      "title": "Cinema senza dati: Arena Marconi",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Bolsena",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-tevere-castiglione",
+      "title": "Cinema senza dati: Tevere",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Castiglione in Teverina",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-florida-civita-castellana",
+      "title": "Cinema senza dati: Florida",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Civita Castellana",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-excelsior-vetralla",
+      "title": "Cinema senza dati: Excelsior",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Cura di Vetralla",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-multisala-flavia-montefiascone",
+      "title": "Cinema senza dati: Multisala Flavia",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Montefiascone",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-florida-soriano-cimino",
+      "title": "Cinema senza dati: Florida",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Soriano nel Cimino",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-colombo-valentano",
+      "title": "Cinema senza dati: Colombo",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Valentano",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-albertone-nazionale-vasanello",
+      "title": "Cinema senza dati: Albertone Nazionale",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Vasanello",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-lux-viterbo",
+      "title": "Cinema senza dati: Lux",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Viterbo",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-trento-viterbo",
+      "title": "Cinema senza dati: Trento",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Viterbo",
+        "checkedAt": "2026-09-03T10:14:44.188Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+import {
+  formatEventSchedule,
+  isEventOngoing,
+  isFestivalAppointmentPast,
+  formatEventDateTime,
+  getEventVenueDisplay,
+  isHttpUrl,
+  linkifyPlainText,
+} from "@atlas/core";
+
+const errors = [];
+
+const festivalStart = "2026-07-20T10:00:00.000Z";
+const festivalEnd = "2026-08-10T22:00:00.000Z";
+const midFestival = new Date("2026-07-25T12:00:00.000Z");
+
+const ongoingLabel = formatEventSchedule(
+  { start_date: festivalStart, end_date: festivalEnd },
+  midFestival,
+);
+if (!ongoingLabel.startsWith("In corso")) {
+  errors.push(`atteso «In corso» a metà festival, ottenuto: ${ongoingLabel}`);
+}
+if (!isEventOngoing({ start_date: festivalStart, end_date: festivalEnd }, midFestival)) {
+  errors.push("isEventOngoing dovrebbe essere true a metà festival");
+}
+
+const futureLabel = formatEventSchedule(
+  { start_date: festivalStart, end_date: festivalEnd },
+  new Date("2026-07-01T12:00:00.000Z"),
+);
+if (!futureLabel.startsWith("Dal ")) {
+  errors.push(`atteso intervallo futuro «Dal …», ottenuto: ${futureLabel}`);
+}
+
+const singleDay = formatEventSchedule({
+  start_date: "2026-08-15T18:00:00.000Z",
+  end_date: null,
+});
+if (!singleDay) errors.push("data singola vuota");
+
+const midnightUtc = formatEventSchedule({
+  start_date: "2026-08-16T00:00:00.000Z",
+  end_date: "2026-08-24T00:00:00.000Z",
+});
+if (midnightUtc.includes("02:") || midnightUtc.includes("2:00")) {
+  errors.push(`date senza orario non devono mostrare 02:00, ottenuto: ${midnightUtc}`);
+}
+if (!midnightUtc.startsWith("Dal ")) {
+  errors.push(`atteso intervallo senza orario, ottenuto: ${midnightUtc}`);
+}
+
+const venue = getEventVenueDisplay({
+  title: "Sagra del Cavatello",
+  comune: "Vitorchiano",
+  venue: "Centro storico, Piazza Roma",
+  city: null,
+  location: null,
+});
+if (!venue.includes("Vitorchiano") || !venue.includes("Centro storico")) {
+  errors.push(`venue combinato atteso, ottenuto: ${venue}`);
+}
+
+const venueOnlyComune = getEventVenueDisplay({
+  title: "Festa",
+  comune: "Viterbo",
+  venue: null,
+  city: null,
+  location: null,
+});
+if (venueOnlyComune !== "Viterbo") errors.push(`venue fallback comune: ${venueOnlyComune}`);
+
+if (isHttpUrl("coda alla vaccinara")) errors.push("testo non deve essere URL");
+if (!isHttpUrl("https://example.com")) errors.push("https deve essere valido");
+
+const onlyDate = formatEventDateTime("2026-09-01");
+if (onlyDate.includes(":")) {
+  errors.push(`YYYY-MM-DD non deve mostrare orario: ${onlyDate}`);
+}
+
+const pastAppt = {
+  start_date: "2026-08-01T19:00:00.000Z",
+  end_date: null,
+};
+const afterPast = new Date("2026-08-02T10:00:00.000Z");
+if (!isFestivalAppointmentPast(pastAppt, afterPast)) {
+  errors.push("appuntamento del 1 ago dovrebbe essere passato il 2 ago");
+}
+const futureAppt = {
+  start_date: "2026-08-05T19:00:00.000Z",
+  end_date: null,
+};
+if (isFestivalAppointmentPast(futureAppt, afterPast)) {
+  errors.push("appuntamento del 5 ago non dovrebbe essere passato il 2 ago");
+}
+
+const longSpan = {
+  start_date: "2026-08-01T19:00:00.000Z",
+  end_date: "2026-08-31T22:00:00.000Z",
+};
+if (!isFestivalAppointmentPast(longSpan, afterPast)) {
+  errors.push("appuntamento del 1 ago deve essere passato il 2 ago anche con data fine lunga");
+}
+
+const linkedFb = linkifyPlainText("Fonte: https://www.facebook.com/infopoint.tarquinia");
+if (!linkedFb.includes('<a href="https://www.facebook.com/infopoint.tarquinia"')) {
+  errors.push(`linkifyPlainText atteso link Facebook, ottenuto: ${linkedFb}`);
+}
+const linkedOther = linkifyPlainText("Sito: https://example.com/evento");
+if (linkedOther.includes("<a ")) {
+  errors.push("linkifyPlainText non deve linkare URL non Facebook");
+}
+if (linkedFb.includes("<script")) errors.push("linkifyPlainText deve escapare HTML");
+
+if (errors.length) {
+  console.error("verify-event-schedule FAILED\n" + errors.map((e) => `  - ${e}`).join("\n"));
+  process.exit(1);
+}
+
+console.log("verify-event-schedule OK");
