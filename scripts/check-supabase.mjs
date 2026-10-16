@@ -83,6 +83,20 @@ try {
     if (events.count === "0") {
       console.log("   → Il DB è vuoto o nessun evento è verified=true");
       console.log("   → Controlla su Supabase Table Editor la tabella events");
+    } else {
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
+      const upcoming = await probe(
+        "events",
+        `select=date_event&verified=eq.true&end_date=gte.${today}&limit=1`,
+      );
+      if (upcoming.ok) {
+        console.log(`   → Con data fine >= oggi (${today}): ${upcoming.count}`);
+        if (upcoming.count === "0") {
+          console.log(
+            "   → La mappa mostra 0 eventi perché quelli in DB sono tutti conclusi: serve raccolta/import nuovi eventi",
+          );
+        }
+      }
     }
   }
 
