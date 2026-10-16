@@ -1,16 +1,15 @@
 import type { EventCategory, CategoryMeta } from "./types/event.js";
 
-export const ATLAS_VERSION = "1.11.8";
+export const ATLAS_VERSION = "1.11.9";
 
 export const DEFAULT_MAP_CENTER: [number, number] = [42.42, 12.104];
 export const DEFAULT_MAP_ZOOM = 10;
 
-/** Tile CARTO Voyager — strade e nomi locality leggibili, senza API key. */
-export const MAP_TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+/** OpenStreetMap standard — nessuna API key (CARTO basemaps ora la richiede). */
+export const MAP_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 export const MAP_TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
-export const MAP_TILE_SUBDOMAINS = ["a", "b", "c", "d"] as const;
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+export const MAP_TILE_SUBDOMAINS = ["a", "b", "c"] as const;
 
 export const CATEGORY_META: Record<EventCategory, CategoryMeta> = {
   music: { label: "Musica", color: "#2563eb", icon: "♪" },
