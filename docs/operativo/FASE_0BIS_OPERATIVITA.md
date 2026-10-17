@@ -2,14 +2,14 @@
 
 **Obiettivo:** automazioni GitHub e routine locali affidabili, senza cambiare il prodotto utente.
 
-**Stato repository (verificato in implementazione 0bis):**
+**Stato repository (aggiornato dopo merge 0bis su `main`, commit `5869548`):**
 
 | Branch | Contenuto |
 |--------|-----------|
-| `origin/main` | Solo `README.md`, `index.html`, `control-center.html` legacy — **nessun** workflow, **nessuna** app monorepo |
-| `cursor/filter-live-counts-d162` (e derivati) | App completa, collector, workflows `.github/workflows/*` |
+| `origin/main` | Monorepo Atlas (web, admin, collector), workflow Actions, legacy in `legacy/` |
+| Branch `cursor/*` | Sviluppo feature; allineare con `main` prima di nuove PR |
 
-**Conseguenza:** i cron `collect` e `sync-utilities` **non possono funzionare** finché i workflow non sono sul branch **default** (`main`) del repository. Il merge su `main` è un passo operativo critico e richiede **approvazione esplicita** (vedi sotto).
+**Cron:** `collect` (06:00 UTC) e `sync-utilities` (05:30 UTC) partono solo su `main` e richiedono secret configurati; dopo il merge eseguire almeno un **Run workflow** manuale per validare (vedi checklist B).
 
 ---
 
@@ -93,10 +93,11 @@ In sintesi:
 
 ## Criteri di completamento Fase 0bis
 
-- [ ] Documentazione operativa aggiornata (questo file + ripristino)
-- [ ] CI esegue verify automation + core su branch app
-- [ ] Workflow collect/sync con controllo secret esplicito
-- [ ] Merge su `main` pianificato e approvato dall’operatore *(fuori scope automatico agente)*
+- [x] Documentazione operativa aggiornata (questo file + ripristino)
+- [x] CI esegue verify automation + core su `main` (push post-merge)
+- [x] Workflow collect/sync con controllo secret esplicito
+- [x] Merge su `main` (rollback: commit `fda9230`, vedi RIPRISTINO)
+- [ ] Primo run manuale **Atlas Collector** e **Atlas Utility Sync** su `main` con esito verde *(operatore GitHub UI)*
 
 ---
 
