@@ -11,5 +11,5 @@ if not exist package.json (
   pause
   exit /b 1
 )
-start http://localhost:5173
+start http://localhost:5174
 npm run dev:admin

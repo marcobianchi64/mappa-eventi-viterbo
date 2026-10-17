@@ -15,6 +15,8 @@ Cartella Desktop per il lavoro quotidiano. La chat di sviluppo serve solo per mo
 | `APRI-QUESTO.html` | Pulsanti verso Control Center, mappa, scoperta |
 | `Avvia-Control-Center.bat` | Admin locale (porta 5173) |
 | `Avvia-Mappa.bat` | Mappa pubblica (porta 5174) |
+| `Aggiorna-Utilita.bat` | `npm run sync:utilities` (farmacie + cinema) |
+| `Riprendi-Automatismi.bat` | sync utilità + `npm run collect` |
 | `Aggiorna-Fonti.bat` | `npm run collect` |
 | `Importa-Eventi.bat` | Import CSV con anteprima |
 | `Report-Copertura.bat` | `npm run report:gap` |

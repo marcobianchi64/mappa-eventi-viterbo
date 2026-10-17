@@ -10,5 +10,5 @@ if not exist package.json (
   pause
   exit /b 1
 )
-start http://localhost:5174
+start http://localhost:5173
 npm run dev
