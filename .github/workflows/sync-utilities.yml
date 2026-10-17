@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
 
       - name: Sync pharmacy and cinema data
+        env:
+          ATLAS_UTILITY_ALLOW_STALE: "1"
         run: npm run sync:utilities
 
       - name: Commit updated utility snapshot
