@@ -3,6 +3,7 @@ import { collectTusciaEventiRss, collectEventiTusciaRss } from "./connectors/rss
 import { collectComuneViterboHtml } from "./connectors/comune-viterbo.js";
 import { collectViterboTodayHtml } from "./connectors/viterbotoday.js";
 import { collectTusciaUpHtml } from "./connectors/tusciaup.js";
+import { collectTusciawebEventiRss } from "./connectors/tusciaweb-rss.js";
 
 export async function collectFromSource(source: SourceConnectorConfig): Promise<CollectResult> {
   const errors: string[] = [];
@@ -19,6 +20,8 @@ export async function collectFromSource(source: SourceConnectorConfig): Promise<
       events = await collectViterboTodayHtml(source.page_url);
     } else if (source.connector === "html-tusciaup" && source.page_url) {
       events = await collectTusciaUpHtml(source.page_url);
+    } else if (source.connector === "rss-tusciaweb-eventi" && source.feed_url) {
+      events = await collectTusciawebEventiRss(source.feed_url);
     } else {
       errors.push(`Connettore non configurato per ${source.id}`);
     }

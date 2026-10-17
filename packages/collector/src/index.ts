@@ -1,5 +1,5 @@
-import { AUTO_SOURCES } from "./types.js";
 import { collectFromSource } from "./collector.js";
+import { loadCollectorSources } from "./source-registry.js";
 import { SupabaseEventWriter } from "./writer.js";
 
 export interface RunCollectorOptions {
@@ -24,9 +24,11 @@ export async function runCollector(options: RunCollectorOptions): Promise<RunCol
     serviceRoleKey: options.serviceRoleKey,
   });
 
-  const sources = AUTO_SOURCES.filter((s) =>
-    options.sourceIds?.length ? options.sourceIds.includes(s.id) : true,
-  );
+  const sources = await loadCollectorSources({
+    supabaseUrl: options.supabaseUrl,
+    serviceRoleKey: options.serviceRoleKey,
+    sourceIds: options.sourceIds,
+  });
 
   const reports: RunCollectorReport[] = [];
 

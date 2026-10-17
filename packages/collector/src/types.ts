@@ -20,9 +20,27 @@ export interface SourceConnectorConfig {
   name: string;
   reliability: "A" | "B" | "C";
   territory_id: string;
-  connector: "rss-tuscia-eventi" | "rss-eventi-tuscia" | "html-comune-viterbo" | "html-viterbotoday" | "html-tusciaup";
+  connector:
+    | "rss-tuscia-eventi"
+    | "rss-eventi-tuscia"
+    | "rss-tusciaweb-eventi"
+    | "html-comune-viterbo"
+    | "html-viterbotoday"
+    | "html-tusciaup";
   feed_url?: string;
   page_url?: string;
+}
+
+export interface DbSourceRow {
+  id: string;
+  name: string;
+  territory_id: string | null;
+  reliability: "A" | "B" | "C";
+  acquisition_mode: string;
+  status: string;
+  connector: string | null;
+  connector_config: Record<string, unknown> | null;
+  url: string | null;
 }
 
 export interface CollectResult {
@@ -79,5 +97,13 @@ export const AUTO_SOURCES: SourceConnectorConfig[] = [
     territory_id: "IT-VT",
     connector: "html-tusciaup",
     page_url: "https://www.tusciaup.it/eventi/",
+  },
+  {
+    id: "src-tusciaweb-eventi",
+    name: "Tusciaweb — Eventi",
+    reliability: "B",
+    territory_id: "IT-VT",
+    connector: "rss-tusciaweb-eventi",
+    feed_url: "https://www.tusciaweb.eu/category/eventi/feed/",
   },
 ];

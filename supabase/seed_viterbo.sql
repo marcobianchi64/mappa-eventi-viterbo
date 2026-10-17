@@ -85,6 +85,18 @@ INSERT INTO public.sources (
     'Eventi proposti dagli utenti con contatto obbligatorio'
   ),
   (
+    'src-tusciaweb-eventi',
+    'Tusciaweb — Eventi',
+    'editorial',
+    'IT-VT',
+    'https://www.tusciaweb.eu/category/eventi/',
+    'automatic',
+    'B',
+    'daily',
+    'active',
+    'Radar Fase 1: feed categoria Eventi'
+  ),
+  (
     'src-manual-discovery',
     'Scoperta manuale (AI + verifica)',
     'other',
