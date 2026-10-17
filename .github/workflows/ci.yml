@@ -25,6 +25,12 @@ jobs:
       - name: Verify UI scale contract
         run: npm run verify:ui-scale
 
+      - name: Verify automation readiness (Fase 0bis)
+        run: npm run verify:automation
+
+      - name: Verify core (no browser)
+        run: npm run verify:core
+
       - name: Build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}

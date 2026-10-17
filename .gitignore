@@ -2,6 +2,9 @@ node_modules/
 dist/
 .env
 .env.local
+packages/collector/.env
+apps/web/.env
+apps/admin/.env
 .env.*.local
 *.log
 .DS_Store

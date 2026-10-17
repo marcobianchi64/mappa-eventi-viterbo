@@ -1,3 +1,4 @@
+# Aggiorna apps/web/public/data/utilities/*.json e fa push (solo sul branch default).
 name: Atlas Utility Sync
 
 on:

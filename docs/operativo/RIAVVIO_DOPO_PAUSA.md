@@ -1,5 +1,7 @@
 # Riprendere Atlas dopo mesi di inattività
 
+Vedi anche: [FASE_0BIS_OPERATIVITA.md](./FASE_0BIS_OPERATIVITA.md) (automazioni GitHub, secret, merge su `main`) e [RIPRISTINO_E_ROLLBACK.md](./RIPRISTINO_E_ROLLBACK.md).
+
 ## Perché farmacie, cinema e eventi sono vuoti o vecchi
 
 | Dato | Dove vive | Chi lo aggiorna |
