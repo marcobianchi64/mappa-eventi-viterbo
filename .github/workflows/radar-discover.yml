@@ -1,0 +1,42 @@
+name: Atlas Radar Discovery
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      territory_id:
+        description: Territory id (es. IT-VT)
+        required: false
+        default: IT-VT
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verifica secret Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Secret VITE_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY richiesti"
+            exit 1
+          fi
+
+      - name: Radar discovery v1
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ATLAS_TERRITORY_ID: ${{ github.event.inputs.territory_id || 'IT-VT' }}
+          ATLAS_RADAR_MAX_PAGES: "10"
+        run: npm run radar:discover

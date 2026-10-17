@@ -192,6 +192,9 @@ export {
   sanitizeDiscoveryCell,
 } from "./discovery-normalize.js";
 
+export type { TerritoryResolver } from "./territory/resolver.js";
+export { viterboTerritoryResolver } from "./territory/viterbo-resolver.js";
+
 export {
   VITERBO_PROVINCE_CENTER,
   geocodeComuneViterbo,

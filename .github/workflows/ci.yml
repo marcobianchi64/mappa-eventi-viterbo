@@ -28,6 +28,9 @@ jobs:
       - name: Verify automation readiness (Fase 0bis)
         run: npm run verify:automation
 
+      - name: Verify radar registry (Fase 1)
+        run: npm run verify:radar-registry
+
       - name: Verify core (no browser)
         run: npm run verify:core
 

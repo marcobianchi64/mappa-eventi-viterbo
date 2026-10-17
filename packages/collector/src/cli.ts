@@ -16,7 +16,7 @@ if (!url || !serviceRoleKey) {
   process.exit(1);
 }
 
-console.log("Atlas Collector — sincronizzazione fonti Viterbo (AUTO-1 + AUTO-2)");
+console.log("Atlas Collector — registry DB + fonti automatiche");
 
 runCollector({ supabaseUrl: url, serviceRoleKey, sourceIds: sourceFilter })
   .then(async (reports) => {

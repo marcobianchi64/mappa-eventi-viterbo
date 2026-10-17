@@ -30,6 +30,7 @@
     "report:images": "node dist/report-images-cli.js",
     "report:categories": "node dist/report-categories-cli.js",
     "sync:utilities": "node dist/sync-utilities-cli.js",
+    "radar:discover": "node dist/radar/discover-cli.js",
     "import:pharmacy-registry": "node dist/utilities/import-pharmacy-registry.js"
   },
   "dependencies": {
