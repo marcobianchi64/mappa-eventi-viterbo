@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-10-18T09:49:21.606Z",
+  "syncedAt": "2026-10-19T11:08:09.191Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -234,34 +234,12 @@
         "url": "https://www.mymovies.it/film/2026/primetime/",
         "showings": [
           {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
             "cinema": "Etrusco",
             "town": "Tarquinia",
             "times": [
               "17:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
-          }
-        ]
-      },
-      {
-        "title": "SE AMI QUALCUNO DILLO",
-        "url": "https://www.mymovies.it/film/2026/se-ami-qualcuno-dillo/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
         ]
       },
@@ -284,42 +262,12 @@
         "url": "https://www.mymovies.it/film/2026/lestranea/",
         "showings": [
           {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "16:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
             "cinema": "Etrusco",
             "town": "Tarquinia",
             "times": [
               "16:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
-          },
-          {
-            "cinema": "Multisala Moderno",
-            "town": "Bolsena",
-            "times": [
-              "17:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
-          }
-        ]
-      },
-      {
-        "title": "NAZA",
-        "url": "https://www.mymovies.it/film/2026/naza/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
         ]
       },
@@ -328,18 +276,40 @@
         "url": "https://www.mymovies.it/film/2026/other-mommy/",
         "showings": [
           {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "21:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
             "cinema": "Etrusco",
             "town": "Tarquinia",
             "times": [
               "18:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:40"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
+          }
+        ]
+      },
+      {
+        "title": "JE SO' PAZZO",
+        "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
+        "showings": [
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           },
@@ -350,66 +320,6 @@
               "18:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
-          },
-          {
-            "cinema": "Multisala Moderno",
-            "town": "Bolsena",
-            "times": [
-              "17:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
-          },
-          {
-            "cinema": "Tevere",
-            "town": "Castiglione in Teverina",
-            "times": [
-              "16:40"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
-          }
-        ]
-      },
-      {
-        "title": "ZUSTISSIA",
-        "url": "https://www.mymovies.it/film/2026/zustissia/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          }
-        ]
-      },
-      {
-        "title": "JE SO' PAZZO",
-        "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
-            "cinema": "Etrusco",
-            "town": "Tarquinia",
-            "times": [
-              "16:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
-          },
-          {
-            "cinema": "Gallery",
-            "town": "Montefiascone",
-            "times": [
-              "16:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
         ]
       },
@@ -418,48 +328,12 @@
         "url": "https://www.mymovies.it/film/2026/whalefall/",
         "showings": [
           {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
             "cinema": "Etrusco",
             "town": "Tarquinia",
             "times": [
               "16:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
-          }
-        ]
-      },
-      {
-        "title": "FRANKIE E LE CREATURE DIMENTICATE",
-        "url": "https://www.mymovies.it/film/2025/frankie-e-le-creature-dimenticate/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "17:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          }
-        ]
-      },
-      {
-        "title": "HEART OF THE BEAST - NEL PROFONDO SELVAGGIO",
-        "url": "https://www.mymovies.it/film/2026/heart-of-the-beast/",
-        "showings": [
-          {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "19:15"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
         ]
       },
@@ -485,7 +359,7 @@
             "cinema": "Excelsior",
             "town": "Cura",
             "times": [
-              "16:00"
+              "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
           },
@@ -493,7 +367,7 @@
             "cinema": "Tevere",
             "town": "Castiglione in Teverina",
             "times": [
-              "16:30"
+              "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
@@ -504,32 +378,32 @@
         "url": "https://www.mymovies.it/film/2026/street-fighter/",
         "showings": [
           {
-            "cinema": "Cine Tuscia Village",
-            "town": "Vitorchiano",
-            "times": [
-              "21:30"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "17:00"
+              "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
         ]
       },
       {
-        "title": "LA CITTÀ DEI VIVI",
-        "url": "https://www.mymovies.it/film/2026/la-citta-dei-vivi/",
+        "title": "TRAINSPOTTING",
+        "url": "https://www.mymovies.it/film/1996/trainspotting/",
         "showings": [
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
           {
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "15:30"
+              "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
@@ -543,24 +417,17 @@
         "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/",
         "films": [
           {
-            "title": "L'ESTRANEA",
-            "url": "https://www.mymovies.it/film/2026/lestranea/",
-            "times": [
-              "17:30"
-            ]
-          },
-          {
             "title": "MAMMINA",
             "url": "https://www.mymovies.it/film/2026/other-mommy/",
             "times": [
-              "17:30"
+              "21:00"
             ]
           },
           {
-            "title": "LA CITTÀ DEI VIVI",
-            "url": "https://www.mymovies.it/film/2026/la-citta-dei-vivi/",
+            "title": "TRAINSPOTTING",
+            "url": "https://www.mymovies.it/film/1996/trainspotting/",
             "times": [
-              "15:30"
+              "21:00"
             ]
           }
         ]
@@ -574,14 +441,14 @@
             "title": "MAMMINA",
             "url": "https://www.mymovies.it/film/2026/other-mommy/",
             "times": [
-              "16:40"
+              "21:40"
             ]
           },
           {
             "title": "CARLO ACUTIS - IL GIOVANE SANTO",
             "url": "https://www.mymovies.it/film/2026/carlo-acutis-il-giovane-santo/",
             "times": [
-              "16:30"
+              "21:30"
             ]
           }
         ]
@@ -595,7 +462,7 @@
             "title": "CARLO ACUTIS - IL GIOVANE SANTO",
             "url": "https://www.mymovies.it/film/2026/carlo-acutis-il-giovane-santo/",
             "times": [
-              "16:00"
+              "21:30"
             ]
           }
         ]
@@ -606,24 +473,17 @@
         "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/",
         "films": [
           {
-            "title": "MAMMINA",
-            "url": "https://www.mymovies.it/film/2026/other-mommy/",
-            "times": [
-              "18:30"
-            ]
-          },
-          {
             "title": "JE SO' PAZZO",
             "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
             "times": [
-              "16:30"
+              "18:30"
             ]
           },
           {
             "title": "STREET FIGHTER",
             "url": "https://www.mymovies.it/film/2026/street-fighter/",
             "times": [
-              "17:00"
+              "21:00"
             ]
           }
         ]
@@ -681,87 +541,10 @@
             "times": [
               "19:40"
             ]
-          }
-        ]
-      },
-      {
-        "cinema": "Cine Tuscia Village",
-        "town": "Vitorchiano",
-        "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/",
-        "films": [
-          {
-            "title": "PRIMETIME",
-            "url": "https://www.mymovies.it/film/2026/primetime/",
-            "times": [
-              "17:00"
-            ]
           },
           {
-            "title": "SE AMI QUALCUNO DILLO",
-            "url": "https://www.mymovies.it/film/2026/se-ami-qualcuno-dillo/",
-            "times": [
-              "17:00"
-            ]
-          },
-          {
-            "title": "L'ESTRANEA",
-            "url": "https://www.mymovies.it/film/2026/lestranea/",
-            "times": [
-              "16:30"
-            ]
-          },
-          {
-            "title": "NAZA",
-            "url": "https://www.mymovies.it/film/2026/naza/",
-            "times": [
-              "17:30"
-            ]
-          },
-          {
-            "title": "MAMMINA",
-            "url": "https://www.mymovies.it/film/2026/other-mommy/",
-            "times": [
-              "21:30"
-            ]
-          },
-          {
-            "title": "ZUSTISSIA",
-            "url": "https://www.mymovies.it/film/2026/zustissia/",
-            "times": [
-              "17:00"
-            ]
-          },
-          {
-            "title": "JE SO' PAZZO",
-            "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
-            "times": [
-              "17:00"
-            ]
-          },
-          {
-            "title": "WHALEFALL - NELLA BALENA",
-            "url": "https://www.mymovies.it/film/2026/whalefall/",
-            "times": [
-              "17:00"
-            ]
-          },
-          {
-            "title": "FRANKIE E LE CREATURE DIMENTICATE",
-            "url": "https://www.mymovies.it/film/2025/frankie-e-le-creature-dimenticate/",
-            "times": [
-              "17:30"
-            ]
-          },
-          {
-            "title": "HEART OF THE BEAST - NEL PROFONDO SELVAGGIO",
-            "url": "https://www.mymovies.it/film/2026/heart-of-the-beast/",
-            "times": [
-              "19:15"
-            ]
-          },
-          {
-            "title": "STREET FIGHTER",
-            "url": "https://www.mymovies.it/film/2026/street-fighter/",
+            "title": "TRAINSPOTTING",
+            "url": "https://www.mymovies.it/film/1996/trainspotting/",
             "times": [
               "21:30"
             ]
@@ -774,7 +557,7 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 7,
+      "found": 6,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
@@ -838,9 +621,16 @@
           "municipality": "Viterbo",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-tuscia-village-vitorchiano",
+          "placeName": "Cine Tuscia Village",
+          "municipality": "Vitorchiano",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
         }
       ],
-      "checkedAt": "2026-10-18T09:49:21.605Z"
+      "checkedAt": "2026-10-19T11:08:09.190Z"
     }
   },
   "operationalAlerts": [
@@ -854,7 +644,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -867,7 +657,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -880,7 +670,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -893,7 +683,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -906,7 +696,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -919,7 +709,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -932,7 +722,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -945,7 +735,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
@@ -958,7 +748,20 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-18T09:49:21.605Z"
+        "checkedAt": "2026-10-19T11:08:09.190Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-tuscia-village-vitorchiano",
+      "title": "Cinema senza dati: Cine Tuscia Village",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Vitorchiano",
+        "checkedAt": "2026-10-19T11:08:09.190Z"
       }
     },
     {
