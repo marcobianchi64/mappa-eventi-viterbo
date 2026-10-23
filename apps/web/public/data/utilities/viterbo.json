@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-10-22T10:31:10.020Z",
+  "syncedAt": "2026-10-23T10:25:53.759Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -248,6 +248,14 @@
               "16:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "17:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
         ]
       },
@@ -347,9 +355,25 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "17:30"
+              "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:40"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -391,9 +415,25 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "21:00"
+              "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -497,7 +537,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "21:00"
+              "18:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
@@ -505,6 +545,55 @@
       }
     ],
     "venues": [
+      {
+        "cinema": "Multisala Moderno",
+        "town": "Bolsena",
+        "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/",
+        "films": [
+          {
+            "title": "RAGIONE E SENTIMENTO",
+            "url": "https://www.mymovies.it/film/2026/ragione-e-sentimento/",
+            "times": [
+              "17:30"
+            ]
+          },
+          {
+            "title": "JE SO' PAZZO",
+            "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "L'ESTRANEA",
+            "url": "https://www.mymovies.it/film/2026/lestranea/",
+            "times": [
+              "21:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Tevere",
+        "town": "Castiglione in Teverina",
+        "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+        "films": [
+          {
+            "title": "JE SO' PAZZO",
+            "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
+            "times": [
+              "21:40"
+            ]
+          },
+          {
+            "title": "L'ESTRANEA",
+            "url": "https://www.mymovies.it/film/2026/lestranea/",
+            "times": [
+              "21:30"
+            ]
+          }
+        ]
+      },
       {
         "cinema": "Gallery",
         "town": "Montefiascone",
@@ -521,21 +610,21 @@
             "title": "JE SO' PAZZO",
             "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
             "times": [
-              "17:30"
+              "21:30"
             ]
           },
           {
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
             "times": [
-              "21:00"
+              "21:30"
             ]
           },
           {
             "title": "STREET FIGHTER",
             "url": "https://www.mymovies.it/film/2026/street-fighter/",
             "times": [
-              "21:00"
+              "18:30"
             ]
           }
         ]
@@ -693,7 +782,7 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 4,
+      "found": 6,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
@@ -703,25 +792,11 @@
           "severity": "warning"
         },
         {
-          "placeId": "place-cinema-moderno-bolsena",
-          "placeName": "Moderna",
-          "municipality": "Bolsena",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
           "placeId": "place-cinema-arena-marconi-bolsena",
           "placeName": "Arena Marconi",
           "municipality": "Bolsena",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "info"
-        },
-        {
-          "placeId": "place-cinema-tevere-castiglione",
-          "placeName": "Tevere",
-          "municipality": "Castiglione in Teverina",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
         },
         {
           "placeId": "place-cinema-florida-civita-castellana",
@@ -780,7 +855,7 @@
           "severity": "warning"
         }
       ],
-      "checkedAt": "2026-10-22T10:31:10.019Z"
+      "checkedAt": "2026-10-23T10:25:53.758Z"
     }
   },
   "operationalAlerts": [
@@ -794,20 +869,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-moderno-bolsena",
-      "title": "Cinema senza dati: Moderna",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Bolsena",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -820,20 +882,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-tevere-castiglione",
-      "title": "Cinema senza dati: Tevere",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Castiglione in Teverina",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -846,7 +895,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -859,7 +908,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Cura di Vetralla",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -872,7 +921,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -885,7 +934,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -898,7 +947,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -911,7 +960,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -924,7 +973,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
@@ -937,7 +986,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-22T10:31:10.019Z"
+        "checkedAt": "2026-10-23T10:25:53.758Z"
       }
     },
     {
