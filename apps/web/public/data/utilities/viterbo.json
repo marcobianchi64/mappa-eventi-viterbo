@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-10-23T10:25:53.759Z",
+  "syncedAt": "2026-10-24T09:45:04.975Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -237,7 +237,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:00"
+              "16:45"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -253,7 +253,7 @@
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "17:30"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
@@ -281,7 +281,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "21:30"
+              "19:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -303,7 +303,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:00"
+              "16:45"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -325,7 +325,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "19:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -339,7 +339,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -355,7 +355,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "21:30"
+              "20:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           },
@@ -399,7 +399,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "21:30"
+              "19:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -415,7 +415,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "21:30"
+              "21:45"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           },
@@ -423,7 +423,7 @@
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "21:30"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           },
@@ -431,7 +431,7 @@
             "cinema": "Tevere",
             "town": "Castiglione in Teverina",
             "times": [
-              "21:30"
+              "17:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
@@ -448,6 +448,14 @@
               "18:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
         ]
       },
@@ -459,7 +467,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -473,7 +481,35 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "21:30"
+              "21:45"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "CARLO ACUTIS - IL GIOVANE SANTO",
+        "url": "https://www.mymovies.it/film/2026/carlo-acutis-il-giovane-santo/",
+        "showings": [
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "17:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
+          }
+        ]
+      },
+      {
+        "title": "TADDEO L'ESPLORATORE E LA LAMPADA MAGICA",
+        "url": "https://www.mymovies.it/film/2026/taddeo-lesploratore-e-la-lampada-magica/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -487,9 +523,23 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "SANTIAGO - UN CAMMINO PER RICOMINCIARE",
+        "url": "https://www.mymovies.it/film/2026/santiago-un-cammino-per-ricominciare/",
+        "showings": [
+          {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "17:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
           }
         ]
       },
@@ -501,7 +551,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -515,7 +565,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -529,7 +579,7 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "21:30"
+              "21:45"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
@@ -537,7 +587,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "18:30"
+              "16:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
@@ -554,7 +604,7 @@
             "title": "RAGIONE E SENTIMENTO",
             "url": "https://www.mymovies.it/film/2026/ragione-e-sentimento/",
             "times": [
-              "17:30"
+              "17:00"
             ]
           },
           {
@@ -567,6 +617,13 @@
           {
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
+            "times": [
+              "17:00"
+            ]
+          },
+          {
+            "title": "FATHERLAND",
+            "url": "https://www.mymovies.it/film/2026/fatherland/",
             "times": [
               "21:30"
             ]
@@ -589,7 +646,28 @@
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
             "times": [
-              "21:30"
+              "17:15"
+            ]
+          },
+          {
+            "title": "CARLO ACUTIS - IL GIOVANE SANTO",
+            "url": "https://www.mymovies.it/film/2026/carlo-acutis-il-giovane-santo/",
+            "times": [
+              "17:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Excelsior",
+        "town": "Cura",
+        "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/",
+        "films": [
+          {
+            "title": "SANTIAGO - UN CAMMINO PER RICOMINCIARE",
+            "url": "https://www.mymovies.it/film/2026/santiago-un-cammino-per-ricominciare/",
+            "times": [
+              "17:30"
             ]
           }
         ]
@@ -610,21 +688,21 @@
             "title": "JE SO' PAZZO",
             "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
             "times": [
-              "21:30"
+              "20:15"
             ]
           },
           {
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
             "times": [
-              "21:30"
+              "21:45"
             ]
           },
           {
             "title": "STREET FIGHTER",
             "url": "https://www.mymovies.it/film/2026/street-fighter/",
             "times": [
-              "18:30"
+              "16:00"
             ]
           }
         ]
@@ -694,84 +772,91 @@
             "title": "RAGIONE E SENTIMENTO",
             "url": "https://www.mymovies.it/film/2026/ragione-e-sentimento/",
             "times": [
-              "19:00"
+              "16:45"
             ]
           },
           {
             "title": "CLAYFACE",
             "url": "https://www.mymovies.it/film/2026/clayface/",
             "times": [
-              "21:30"
+              "19:30"
             ]
           },
           {
             "title": "WILDWOOD - I SEGRETI DEL BOSCO PROIBITO",
             "url": "https://www.mymovies.it/film/2026/wildwood-i-segreti-del-bosco-proibito/",
             "times": [
-              "19:00"
+              "16:45"
             ]
           },
           {
             "title": "L'ASSURDA STORIA DELLA GIALAPPA'S BAND",
             "url": "https://www.mymovies.it/film/2026/lassurda-storia-della-gialappas-band/",
             "times": [
-              "19:15"
+              "19:30"
             ]
           },
           {
             "title": "JE SO' PAZZO",
             "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
             "times": [
-              "19:15"
+              "17:15"
             ]
           },
           {
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
             "times": [
-              "21:30"
+              "19:15"
             ]
           },
           {
             "title": "SE AMI QUALCUNO DILLO",
             "url": "https://www.mymovies.it/film/2026/se-ami-qualcuno-dillo/",
             "times": [
-              "19:15"
+              "17:15"
             ]
           },
           {
             "title": "MAMMINA",
             "url": "https://www.mymovies.it/film/2026/other-mommy/",
             "times": [
-              "21:30"
+              "21:45"
+            ]
+          },
+          {
+            "title": "TADDEO L'ESPLORATORE E LA LAMPADA MAGICA",
+            "url": "https://www.mymovies.it/film/2026/taddeo-lesploratore-e-la-lampada-magica/",
+            "times": [
+              "17:00"
             ]
           },
           {
             "title": "HEART OF THE BEAST - NEL PROFONDO SELVAGGIO",
             "url": "https://www.mymovies.it/film/2026/heart-of-the-beast/",
             "times": [
-              "19:15"
+              "17:15"
             ]
           },
           {
             "title": "ZUSTISSIA",
             "url": "https://www.mymovies.it/film/2026/zustissia/",
             "times": [
-              "19:15"
+              "17:15"
             ]
           },
           {
             "title": "WHALEFALL - NELLA BALENA",
             "url": "https://www.mymovies.it/film/2026/whalefall/",
             "times": [
-              "19:15"
+              "17:00"
             ]
           },
           {
             "title": "STREET FIGHTER",
             "url": "https://www.mymovies.it/film/2026/street-fighter/",
             "times": [
-              "21:30"
+              "21:45"
             ]
           }
         ]
@@ -782,7 +867,7 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 6,
+      "found": 7,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
@@ -802,13 +887,6 @@
           "placeId": "place-cinema-florida-civita-castellana",
           "placeName": "Florida",
           "municipality": "Civita Castellana",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
-          "placeId": "place-cinema-excelsior-vetralla",
-          "placeName": "Excelsior",
-          "municipality": "Cura di Vetralla",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -855,7 +933,7 @@
           "severity": "warning"
         }
       ],
-      "checkedAt": "2026-10-23T10:25:53.758Z"
+      "checkedAt": "2026-10-24T09:45:04.974Z"
     }
   },
   "operationalAlerts": [
@@ -869,7 +947,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -882,7 +960,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -895,20 +973,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-excelsior-vetralla",
-      "title": "Cinema senza dati: Excelsior",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Cura di Vetralla",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -921,7 +986,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -934,7 +999,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -947,7 +1012,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -960,7 +1025,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -973,7 +1038,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
@@ -986,7 +1051,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-23T10:25:53.758Z"
+        "checkedAt": "2026-10-24T09:45:04.974Z"
       }
     },
     {
