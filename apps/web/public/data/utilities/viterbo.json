@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-10-29T11:41:10.614Z",
+  "syncedAt": "2026-10-30T11:33:27.976Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -256,6 +256,22 @@
               "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -278,6 +294,30 @@
               "16:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          },
+          {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:40"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -328,6 +368,14 @@
               "19:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Multisala Moderno",
+            "town": "Bolsena",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
         ]
       },
@@ -414,14 +462,6 @@
               "19:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
-          },
-          {
-            "cinema": "Multisala Moderno",
-            "town": "Bolsena",
-            "times": [
-              "21:00"
-            ],
-            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
         ]
       },
@@ -480,6 +520,34 @@
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
         ]
+      },
+      {
+        "title": "DRACULA DI BRAM STOKER",
+        "url": "https://www.mymovies.it/film/1992/draculadibramstoker/",
+        "showings": [
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "DRACULA",
+        "url": "https://www.mymovies.it/film/2025/dracula/",
+        "showings": [
+          {
+            "cinema": "Gallery",
+            "town": "Montefiascone",
+            "times": [
+              "21:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
+          }
+        ]
       }
     ],
     "venues": [
@@ -489,10 +557,59 @@
         "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/",
         "films": [
           {
-            "title": "SE AMI QUALCUNO DILLO",
-            "url": "https://www.mymovies.it/film/2026/se-ami-qualcuno-dillo/",
+            "title": "DIO RIDE",
+            "url": "https://www.mymovies.it/film/2026/dio-ride/",
             "times": [
-              "21:00"
+              "21:30"
+            ]
+          },
+          {
+            "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
+            "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "JE SO' PAZZO",
+            "url": "https://www.mymovies.it/film/2026/je-so-pazzo/",
+            "times": [
+              "21:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Tevere",
+        "town": "Castiglione in Teverina",
+        "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+        "films": [
+          {
+            "title": "DIO RIDE",
+            "url": "https://www.mymovies.it/film/2026/dio-ride/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
+            "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
+            "times": [
+              "21:40"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Excelsior",
+        "town": "Cura",
+        "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/",
+        "films": [
+          {
+            "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
+            "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
+            "times": [
+              "21:30"
             ]
           }
         ]
@@ -521,6 +638,13 @@
             "url": "https://www.mymovies.it/film/2026/taddeo-lesploratore-e-la-lampada-magica/",
             "times": [
               "17:00"
+            ]
+          },
+          {
+            "title": "DRACULA",
+            "url": "https://www.mymovies.it/film/2025/dracula/",
+            "times": [
+              "21:00"
             ]
           }
         ]
@@ -570,6 +694,13 @@
             "url": "https://www.mymovies.it/film/2026/minotaur/",
             "times": [
               "16:00"
+            ]
+          },
+          {
+            "title": "DRACULA DI BRAM STOKER",
+            "url": "https://www.mymovies.it/film/1992/draculadibramstoker/",
+            "times": [
+              "21:30"
             ]
           }
         ]
@@ -664,7 +795,7 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 5,
+      "found": 7,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
@@ -681,23 +812,9 @@
           "severity": "info"
         },
         {
-          "placeId": "place-cinema-tevere-castiglione",
-          "placeName": "Tevere",
-          "municipality": "Castiglione in Teverina",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
           "placeId": "place-cinema-florida-civita-castellana",
           "placeName": "Florida",
           "municipality": "Civita Castellana",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
-          "placeId": "place-cinema-excelsior-vetralla",
-          "placeName": "Excelsior",
-          "municipality": "Cura di Vetralla",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -744,7 +861,7 @@
           "severity": "warning"
         }
       ],
-      "checkedAt": "2026-10-29T11:41:10.614Z"
+      "checkedAt": "2026-10-30T11:33:27.975Z"
     }
   },
   "operationalAlerts": [
@@ -758,7 +875,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -771,20 +888,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-tevere-castiglione",
-      "title": "Cinema senza dati: Tevere",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Castiglione in Teverina",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -797,20 +901,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-excelsior-vetralla",
-      "title": "Cinema senza dati: Excelsior",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Cura di Vetralla",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -823,7 +914,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -836,7 +927,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -849,7 +940,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -862,7 +953,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -875,7 +966,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
@@ -888,7 +979,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-10-29T11:41:10.614Z"
+        "checkedAt": "2026-10-30T11:33:27.975Z"
       }
     },
     {
