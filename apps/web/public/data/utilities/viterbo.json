@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-11-03T12:57:38.429Z",
+  "syncedAt": "2026-11-04T13:12:58.336Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -237,25 +237,25 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:00"
+              "16:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
           {
-            "cinema": "Multisala Moderno",
-            "town": "Bolsena",
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
             "times": [
-              "21:00"
+              "16:15"
             ],
-            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           },
           {
-            "cinema": "Tevere",
-            "town": "Castiglione in Teverina",
+            "cinema": "Gallery",
+            "town": "Montefiascone",
             "times": [
-              "21:30"
+              "20:30"
             ],
-            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
+            "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
         ]
       },
@@ -267,25 +267,25 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           },
           {
-            "cinema": "Multisala Moderno",
-            "town": "Bolsena",
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
             "times": [
-              "21:00"
+              "16:30"
             ],
-            "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           },
           {
-            "cinema": "Tevere",
-            "town": "Castiglione in Teverina",
+            "cinema": "Excelsior",
+            "town": "Cura",
             "times": [
-              "21:40"
+              "17:30"
             ],
-            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
           }
         ]
       },
@@ -311,9 +311,17 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           }
         ]
       },
@@ -339,9 +347,17 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:00"
+              "16:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "18:15"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           }
         ]
       },
@@ -353,9 +369,31 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "21:30"
+              "19:15"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          },
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "18:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
+          }
+        ]
+      },
+      {
+        "title": "MINOTAUR",
+        "url": "https://www.mymovies.it/film/2026/minotaur/",
+        "showings": [
+          {
+            "cinema": "Etrusco",
+            "town": "Tarquinia",
+            "times": [
+              "16:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           }
         ]
       },
@@ -395,9 +433,23 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "LA BAMBOLA",
+        "url": "https://www.mymovies.it/film/2026/la-bambola/",
+        "showings": [
+          {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "19:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
           }
         ]
       },
@@ -409,7 +461,35 @@
             "cinema": "Cine Tuscia Village",
             "town": "Vitorchiano",
             "times": [
-              "19:15"
+              "17:00"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "WILDWOOD - I SEGRETI DEL BOSCO PROIBITO",
+        "url": "https://www.mymovies.it/film/2026/wildwood-i-segreti-del-bosco-proibito/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "16:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
+          }
+        ]
+      },
+      {
+        "title": "TADDEO L'ESPLORATORE E LA LAMPADA MAGICA",
+        "url": "https://www.mymovies.it/film/2026/taddeo-lesploratore-e-la-lampada-magica/",
+        "showings": [
+          {
+            "cinema": "Cine Tuscia Village",
+            "town": "Vitorchiano",
+            "times": [
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/vitorchiano/21249/"
           }
@@ -418,43 +498,85 @@
     ],
     "venues": [
       {
-        "cinema": "Multisala Moderno",
-        "town": "Bolsena",
-        "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/",
+        "cinema": "Excelsior",
+        "town": "Cura",
+        "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/",
         "films": [
-          {
-            "title": "DIO RIDE",
-            "url": "https://www.mymovies.it/film/2026/dio-ride/",
-            "times": [
-              "21:00"
-            ]
-          },
           {
             "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
             "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
             "times": [
-              "21:00"
+              "17:30"
+            ]
+          },
+          {
+            "title": "LA BAMBOLA",
+            "url": "https://www.mymovies.it/film/2026/la-bambola/",
+            "times": [
+              "19:30"
             ]
           }
         ]
       },
       {
-        "cinema": "Tevere",
-        "town": "Castiglione in Teverina",
-        "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+        "cinema": "Gallery",
+        "town": "Montefiascone",
+        "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/",
         "films": [
           {
             "title": "DIO RIDE",
             "url": "https://www.mymovies.it/film/2026/dio-ride/",
             "times": [
-              "21:30"
+              "20:30"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Etrusco",
+        "town": "Tarquinia",
+        "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/",
+        "films": [
+          {
+            "title": "DIO RIDE",
+            "url": "https://www.mymovies.it/film/2026/dio-ride/",
+            "times": [
+              "16:15"
             ]
           },
           {
             "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
             "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
             "times": [
-              "21:40"
+              "16:30"
+            ]
+          },
+          {
+            "title": "SHAUN, VITA DA PECORA: OPERAZIONE Z.U.C.C.A.",
+            "url": "https://www.mymovies.it/film/2026/shaun-vita-da-pecora-operazione-zucca/",
+            "times": [
+              "16:30"
+            ]
+          },
+          {
+            "title": "RAGIONE E SENTIMENTO",
+            "url": "https://www.mymovies.it/film/2026/ragione-e-sentimento/",
+            "times": [
+              "18:15"
+            ]
+          },
+          {
+            "title": "CLAYFACE",
+            "url": "https://www.mymovies.it/film/2026/clayface/",
+            "times": [
+              "18:30"
+            ]
+          },
+          {
+            "title": "MINOTAUR",
+            "url": "https://www.mymovies.it/film/2026/minotaur/",
+            "times": [
+              "16:00"
             ]
           }
         ]
@@ -468,14 +590,14 @@
             "title": "DIO RIDE",
             "url": "https://www.mymovies.it/film/2026/dio-ride/",
             "times": [
-              "19:00"
+              "16:30"
             ]
           },
           {
             "title": "UN TRANQUILLO FUNERALE DI FAMIGLIA",
             "url": "https://www.mymovies.it/film/2026/un-tranquillo-funerale-di-famiglia/",
             "times": [
-              "19:15"
+              "17:00"
             ]
           },
           {
@@ -489,7 +611,7 @@
             "title": "SHAUN, VITA DA PECORA: OPERAZIONE Z.U.C.C.A.",
             "url": "https://www.mymovies.it/film/2026/shaun-vita-da-pecora-operazione-zucca/",
             "times": [
-              "19:15"
+              "17:00"
             ]
           },
           {
@@ -503,14 +625,14 @@
             "title": "RAGIONE E SENTIMENTO",
             "url": "https://www.mymovies.it/film/2026/ragione-e-sentimento/",
             "times": [
-              "19:00"
+              "16:30"
             ]
           },
           {
             "title": "CLAYFACE",
             "url": "https://www.mymovies.it/film/2026/clayface/",
             "times": [
-              "21:30"
+              "19:15"
             ]
           },
           {
@@ -531,14 +653,28 @@
             "title": "L'ESTRANEA",
             "url": "https://www.mymovies.it/film/2026/lestranea/",
             "times": [
-              "19:15"
+              "17:00"
             ]
           },
           {
             "title": "HEART OF THE BEAST - NEL PROFONDO SELVAGGIO",
             "url": "https://www.mymovies.it/film/2026/heart-of-the-beast/",
             "times": [
-              "19:15"
+              "17:00"
+            ]
+          },
+          {
+            "title": "WILDWOOD - I SEGRETI DEL BOSCO PROIBITO",
+            "url": "https://www.mymovies.it/film/2026/wildwood-i-segreti-del-bosco-proibito/",
+            "times": [
+              "16:30"
+            ]
+          },
+          {
+            "title": "TADDEO L'ESPLORATORE E LA LAMPADA MAGICA",
+            "url": "https://www.mymovies.it/film/2026/taddeo-lesploratore-e-la-lampada-magica/",
+            "times": [
+              "17:00"
             ]
           }
         ]
@@ -549,12 +685,19 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 3,
+      "found": 5,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
           "placeName": "Olimpya",
           "municipality": "Acquapendente",
+          "reason": "Sala censita senza programmazione nel sync odierno",
+          "severity": "warning"
+        },
+        {
+          "placeId": "place-cinema-moderno-bolsena",
+          "placeName": "Moderna",
+          "municipality": "Bolsena",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -566,16 +709,16 @@
           "severity": "info"
         },
         {
-          "placeId": "place-cinema-florida-civita-castellana",
-          "placeName": "Florida",
-          "municipality": "Civita Castellana",
+          "placeId": "place-cinema-tevere-castiglione",
+          "placeName": "Tevere",
+          "municipality": "Castiglione in Teverina",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
         {
-          "placeId": "place-cinema-excelsior-vetralla",
-          "placeName": "Excelsior",
-          "municipality": "Cura di Vetralla",
+          "placeId": "place-cinema-florida-civita-castellana",
+          "placeName": "Florida",
+          "municipality": "Civita Castellana",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -587,23 +730,9 @@
           "severity": "warning"
         },
         {
-          "placeId": "place-cinema-gallery-montefiascone",
-          "placeName": "Cinema Multisala Gallery",
-          "municipality": "Montefiascone",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
           "placeId": "place-cinema-florida-soriano-cimino",
           "placeName": "Florida",
           "municipality": "Soriano nel Cimino",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
-          "placeId": "place-cinema-etrusco-tarquinia",
-          "placeName": "Etrusco",
-          "municipality": "Tarquinia",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -634,16 +763,9 @@
           "municipality": "Viterbo",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
-        },
-        {
-          "placeId": "place-cinema-arena-etrusco-tarquinia",
-          "placeName": "Arena Etrusco Lido",
-          "municipality": "Tarquinia",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "info"
         }
       ],
-      "checkedAt": "2026-11-03T12:57:38.428Z"
+      "checkedAt": "2026-11-04T13:12:58.335Z"
     }
   },
   "operationalAlerts": [
@@ -657,7 +779,20 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-moderno-bolsena",
+      "title": "Cinema senza dati: Moderna",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Bolsena",
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -670,7 +805,20 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
+      }
+    },
+    {
+      "alertType": "place_silent",
+      "severity": "warning",
+      "territoryId": "IT-VT",
+      "placeId": "place-cinema-tevere-castiglione",
+      "title": "Cinema senza dati: Tevere",
+      "message": "Sala censita senza programmazione nel sync odierno",
+      "details": {
+        "domain": "cinema",
+        "municipality": "Castiglione in Teverina",
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -683,20 +831,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-excelsior-vetralla",
-      "title": "Cinema senza dati: Excelsior",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Cura di Vetralla",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -709,20 +844,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-gallery-montefiascone",
-      "title": "Cinema senza dati: Cinema Multisala Gallery",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Montefiascone",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -735,20 +857,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-etrusco-tarquinia",
-      "title": "Cinema senza dati: Etrusco",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Tarquinia",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -761,7 +870,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -774,7 +883,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -787,7 +896,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
@@ -800,20 +909,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "info",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-arena-etrusco-tarquinia",
-      "title": "Cinema senza dati: Arena Etrusco Lido",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Tarquinia",
-        "checkedAt": "2026-11-03T12:57:38.428Z"
+        "checkedAt": "2026-11-04T13:12:58.335Z"
       }
     },
     {
