@@ -18,6 +18,7 @@ import { fetchHtml } from "../connectors/fetch-html.js";
 import { getUtilityDutyDate, parsePharmaciesFromPagineGialle } from "./parse-pharmacies.js";
 import { parseCinemaFromMyMovies } from "./parse.js";
 import { UtilitySyncWriter } from "./persist.js";
+import { publishPublicUtilitySnapshot } from "./publish-public-snapshot.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -38,9 +39,10 @@ async function loadExistingSnapshot(path: string): Promise<UtilitySyncSnapshot |
   }
 }
 
-function staleFallbackEnabled(options: SyncUtilitiesOptions): boolean {
-  if (options.allowStaleFallback === true) return true;
+/** Solo cinema: GitHub non blocca MYmovies; farmacie no (Pagine Gialle 403). */
+function cinemaStaleFallbackEnabled(options: SyncUtilitiesOptions): boolean {
   if (options.allowStaleFallback === false) return false;
+  if (options.allowStaleFallback === true) return true;
   return process.env.ATLAS_UTILITY_ALLOW_STALE === "1" || process.env.GITHUB_ACTIONS === "true";
 }
 
@@ -82,24 +84,30 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
 
   const outputPath = options.outputPath ?? defaultOutputPath(edition.id);
   const existing = await loadExistingSnapshot(outputPath);
-  const allowStale = staleFallbackEnabled(options);
+  const allowCinemaStale = cinemaStaleFallbackEnabled(options);
 
   console.log(`→ Farmacie (${edition.id}): ${pharmacyUrl}`);
-  let pharmacies = existing?.pharmacies.items ?? [];
-  let dutyDate = getUtilityDutyDate();
+  let pharmaciesBlock = existing?.pharmacies;
   let pharmacyStale = false;
+  const todayDuty = getUtilityDutyDate();
   try {
     const pharmacyHtml = await fetchHtml(pharmacyUrl, { retries: 2 });
-    dutyDate = getUtilityDutyDate();
-    pharmacies = attachPharmacyPlaceIds(parsePharmaciesFromPagineGialle(pharmacyHtml, dutyDate));
+    const dutyDate = getUtilityDutyDate();
+    const pharmacies = attachPharmacyPlaceIds(parsePharmaciesFromPagineGialle(pharmacyHtml, dutyDate));
     console.log(`  ${pharmacies.length} farmacie di turno per il ${dutyDate}`);
+    pharmaciesBlock = {
+      sourceUrl: pharmacyUrl,
+      sourceLabel: "Pagine Gialle",
+      dutyDate,
+      consult: existing?.pharmacies?.consult,
+      items: pharmacies,
+    };
   } catch (error) {
-    if (allowStale && existing?.pharmacies?.items?.length) {
-      pharmacyStale = true;
-      dutyDate = existing.pharmacies.dutyDate ?? dutyDate;
-      pharmacies = existing.pharmacies.items;
+    if (existing?.pharmacies?.items?.length) {
+      pharmacyStale = (existing.pharmacies.dutyDate ?? "") !== todayDuty;
+      pharmaciesBlock = existing.pharmacies;
       console.warn(
-        `  ⚠ Farmacie: fetch fallito (${(error as Error).message}); uso snapshot del ${existing.syncedAt}`,
+        `  ⚠ Farmacie: fetch fallito (${(error as Error).message}); conservo ultimo turno (${existing.pharmacies.dutyDate ?? "?"}).`,
       );
     } else {
       throw error;
@@ -116,7 +124,7 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
     console.log(`  ${cinema.length} film in programmazione`);
     venues = buildCinemaVenues(cinema);
   } catch (error) {
-    if (allowStale && existing?.cinema?.items?.length) {
+    if (allowCinemaStale && existing?.cinema?.items?.length) {
       cinemaStale = true;
       cinema = existing.cinema.items;
       venues = existing.cinema.venues ?? buildCinemaVenues(cinema);
@@ -130,15 +138,26 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
 
   const cinemaCoverage = checkCinemaCoverage(venues);
   let operationalAlerts = coverageToAlerts(cinemaCoverage);
-  if (pharmacyStale || cinemaStale) {
+  if (pharmacyStale) {
     operationalAlerts = [
       ...operationalAlerts,
       {
         alertType: "stale_data",
         severity: "warning",
-        title: "Sync utilità parziale",
-        message:
-          "Una o più fonti esterne hanno rifiutato la richiesta (es. 403 da datacenter). Dati da ultimo snapshot locale.",
+        title: "Turno farmacie non aggiornato",
+        message: `Ultimo turno disponibile: ${pharmaciesBlock.dutyDate ?? "?"}. Esegui sync da PC residenziale o attendi snapshot Supabase.`,
+        territoryId: edition.territoryId,
+      },
+    ];
+  }
+  if (cinemaStale) {
+    operationalAlerts = [
+      ...operationalAlerts,
+      {
+        alertType: "stale_data",
+        severity: "warning",
+        title: "Programmazione cinema non aggiornata",
+        message: "MYmovies non raggiungibile: uso ultimo programma salvato.",
         territoryId: edition.territoryId,
       },
     ];
@@ -152,20 +171,23 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
     }
   }
 
+  if (!pharmaciesBlock?.items?.length) {
+    throw new Error("Nessun dato farmacie disponibile (fetch fallito e nessuno snapshot precedente)");
+  }
+
   const municipalitySlug = edition.geo?.municipalitySlug ?? edition.id;
   const snapshot: UtilitySyncSnapshot = {
     editionId: edition.id,
     territoryId: edition.territoryId,
     syncedAt: new Date().toISOString(),
     pharmacies: {
+      ...pharmaciesBlock,
       sourceUrl: pharmacyUrl,
       sourceLabel: "Pagine Gialle",
-      dutyDate,
-      consult: {
+      consult: pharmaciesBlock.consult ?? {
         all: pharmacyUrl,
         map: `https://www.paginegialle.it/mappa/farmacie-turno/${municipalitySlug}?rk=`,
       },
-      items: pharmacies,
     },
     cinema: {
       sourceUrl: cinemaUrl,
@@ -182,11 +204,13 @@ export async function syncUtilities(options: SyncUtilitiesOptions = {}): Promise
   console.log(`✓ Salvato ${outputPath}`);
 
   if (options.persistence) {
-    await new UtilitySyncWriter({
+    const writerConfig = {
       url: options.persistence.supabaseUrl,
       serviceRoleKey: options.persistence.serviceRoleKey,
-    }).persist(snapshot);
-    console.log("✓ Osservazioni e alert utility aggiornati su Supabase");
+    };
+    await new UtilitySyncWriter(writerConfig).persist(snapshot);
+    await publishPublicUtilitySnapshot(snapshot, writerConfig);
+    console.log("✓ Osservazioni, alert e snapshot pubblico utility su Supabase");
   }
 
   return snapshot;

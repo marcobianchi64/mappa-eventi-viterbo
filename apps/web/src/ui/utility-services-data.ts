@@ -1,7 +1,13 @@
-import { ATLAS_EDITION, utilitySyncDataUrl, type UtilitySyncSnapshot } from "@atlas/core";
+import {
+  ATLAS_EDITION,
+  mergeUtilitySnapshots,
+  utilitySyncDataUrl,
+  type UtilitySyncSnapshot,
+} from "@atlas/core";
+import { fetchUtilityEditionSnapshot } from "@atlas/supabase-client";
 
-export async function loadUtilitySyncSnapshot(
-  editionId: string = ATLAS_EDITION.id,
+async function loadStaticUtilitySnapshot(
+  editionId: string,
 ): Promise<UtilitySyncSnapshot | null> {
   try {
     const response = await fetch(utilitySyncDataUrl(editionId), { cache: "no-cache" });
@@ -10,4 +16,14 @@ export async function loadUtilitySyncSnapshot(
   } catch {
     return null;
   }
+}
+
+export async function loadUtilitySyncSnapshot(
+  editionId: string = ATLAS_EDITION.id,
+): Promise<UtilitySyncSnapshot | null> {
+  const [staticSnap, remoteSnap] = await Promise.all([
+    loadStaticUtilitySnapshot(editionId),
+    fetchUtilityEditionSnapshot(editionId).catch(() => null),
+  ]);
+  return mergeUtilitySnapshots(staticSnap, remoteSnap);
 }

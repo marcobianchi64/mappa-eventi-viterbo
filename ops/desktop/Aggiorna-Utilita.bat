@@ -11,7 +11,8 @@ if not exist package.json (
   exit /b 1
 )
 echo Aggiornamento farmacie e cinema (Pagine Gialle + MYmovies)...
+echo Se hai packages\collector\.env con SUPABASE_SERVICE_ROLE_KEY, il turno va anche su Supabase (mappa aggiornata subito).
 npm run sync:utilities
 echo.
-echo Fatto. Riavvia la mappa (Ctrl+C e npm run dev) e ricarica il browser con Ctrl+F5.
+echo Fatto. Ricarica la mappa con Ctrl+F5 (non serve riavviare il dev server).
 pause

@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-11-14T12:26:17.601Z",
+  "syncedAt": "2026-11-14T19:03:07.876Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -927,7 +927,7 @@
           "severity": "warning"
         }
       ],
-      "checkedAt": "2026-11-14T12:26:17.601Z"
+      "checkedAt": "2026-11-14T19:03:07.876Z"
     }
   },
   "operationalAlerts": [
@@ -941,7 +941,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -954,7 +954,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -967,7 +967,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -980,7 +980,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -993,7 +993,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -1006,7 +1006,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -1019,7 +1019,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -1032,7 +1032,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
@@ -1045,14 +1045,14 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-14T12:26:17.601Z"
+        "checkedAt": "2026-11-14T19:03:07.876Z"
       }
     },
     {
       "alertType": "stale_data",
       "severity": "warning",
-      "title": "Sync utilità parziale",
-      "message": "Una o più fonti esterne hanno rifiutato la richiesta (es. 403 da datacenter). Dati da ultimo snapshot locale.",
+      "title": "Turno farmacie non aggiornato",
+      "message": "Ultimo turno disponibile: 2026-09-03. Esegui sync da PC residenziale o attendi snapshot Supabase.",
       "territoryId": "IT-VT"
     }
   ]

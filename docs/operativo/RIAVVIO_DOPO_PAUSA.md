@@ -6,7 +6,7 @@ Vedi anche: [FASE_0BIS_OPERATIVITA.md](./FASE_0BIS_OPERATIVITA.md) (automazioni 
 
 | Dato | Dove vive | Chi lo aggiorna |
 |------|-----------|-----------------|
-| **Farmacie / cinema** | File `apps/web/public/data/utilities/viterbo.json` | `npm run sync:utilities` (locale o GitHub Actions) |
+| **Farmacie / cinema** | JSON statico + tabella Supabase `utility_edition_snapshots` (la mappa unisce i due) | GitHub aggiorna cinema; farmacie da **PC** (`Aggiorna-Utilita.bat`) o quando PG non blocca il fetch |
 | **Eventi** | Database Supabase | `npm run collect` (locale o GitHub Actions) |
 | **Control Center** | Legge Supabase (serve **login** email) | Non “si alimenta da solo”: mostra ciò che c’è in DB |
 
@@ -74,7 +74,9 @@ Dopo il merge, il cron giornaliero riparte da solo.
 - Migration `002_collector.sql` non eseguita su Supabase.
 - Fonte esterna temporaneamente offline (riprovare più tardi).
 
-## Se farmacie/cinema restano vuoti in mappa
+## Se farmacie/cinema restano vuoti o datati in mappa
 
-- Esegui `npm run sync:utilities` e verifica che `apps/web/public/data/utilities/viterbo.json` abbia `dutyDate` di oggi.
-- Riavvia `npm run dev` e ricarica con **Ctrl+F5**.
+1. Su Supabase esegui la migration `014_utility_public_snapshot.sql` (una tantum).
+2. Dal PC (IP domestico): `ops\desktop\Aggiorna-Utilita.bat` con `packages\collector\.env` compilato → aggiorna Supabase.
+3. Ricarica la mappa con **Ctrl+F5** (legge JSON + snapshot Supabase e sceglie il turno farmacie di oggi).
+4. In GitHub Actions, **Atlas Utility Sync** aggiorna il cinema anche se Pagine Gialle blocca i datacenter (403).

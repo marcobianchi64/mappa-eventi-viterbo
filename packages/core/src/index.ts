@@ -76,6 +76,8 @@ export {
   type UtilitySyncSnapshot,
 } from "./atlas-utility-sync.js";
 
+export { mergeUtilitySnapshots, utilityTodayRome } from "./utility-snapshot-merge.js";
+
 export {
   buildCinemaVenues,
   classifyPharmacyShifts,
