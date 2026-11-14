@@ -8,6 +8,7 @@ import type {
   EventSubmissionRecord,
   ReviewStatus,
   SourceInput,
+  UtilitySyncSnapshot,
 } from "@atlas/core";
 
 export interface SupabaseConfig {
@@ -452,6 +453,25 @@ export async function getSession() {
   const { data, error } = await supabase.auth.getSession();
   if (error) throw new Error(error.message);
   return data.session;
+}
+
+// ---------------------------------------------------------------------------
+// Snapshot utilità (farmacie + cinema)
+// ---------------------------------------------------------------------------
+
+export async function fetchUtilityEditionSnapshot(
+  editionId: string,
+): Promise<UtilitySyncSnapshot | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("utility_edition_snapshots")
+    .select("snapshot")
+    .eq("edition_id", editionId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data?.snapshot) return null;
+  return data.snapshot as UtilitySyncSnapshot;
 }
 
 /** @deprecated Usa submitUserReport — mantenuto per compatibilità legacy */

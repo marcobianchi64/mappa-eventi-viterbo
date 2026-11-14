@@ -108,6 +108,12 @@ else fail("collect.yml dovrebbe avere workflow_dispatch");
 if (collectYml.includes("SUPABASE_SERVICE_ROLE_KEY")) ok("collect.yml usa SUPABASE_SERVICE_ROLE_KEY");
 else fail("collect.yml deve referenziare SUPABASE_SERVICE_ROLE_KEY");
 
+const syncYml = existsSync(resolve(root, ".github/workflows/sync-utilities.yml"))
+  ? read(".github/workflows/sync-utilities.yml")
+  : "";
+if (syncYml.includes("SUPABASE_SERVICE_ROLE_KEY")) ok("sync-utilities.yml pubblica snapshot su Supabase");
+else fail("sync-utilities.yml deve referenziare SUPABASE_SERVICE_ROLE_KEY");
+
 console.log("");
 if (failed > 0) {
   console.log(`verify:automation FAILED (${failed} controlli)`);
