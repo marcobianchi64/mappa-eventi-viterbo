@@ -1,7 +1,7 @@
 {
   "editionId": "viterbo",
   "territoryId": "IT-VT",
-  "syncedAt": "2026-11-26T15:39:11.532Z",
+  "syncedAt": "2026-11-27T15:29:27.947Z",
   "pharmacies": {
     "sourceUrl": "https://www.paginegialle.it/farmacie-turno/viterbo",
     "sourceLabel": "Pagine Gialle",
@@ -250,6 +250,14 @@
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           },
           {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "17:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
+          },
+          {
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
@@ -264,6 +272,14 @@
               "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -305,7 +321,7 @@
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "21:00"
+              "21:30"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
@@ -368,10 +384,18 @@
             "url": "https://www.mymovies.it/cinema/viterbo/tarquinia/4985/"
           },
           {
+            "cinema": "Excelsior",
+            "town": "Cura",
+            "times": [
+              "21:30"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/"
+          },
+          {
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "17:30"
+              "18:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           },
@@ -382,6 +406,14 @@
               "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
+          },
+          {
+            "cinema": "Tevere",
+            "town": "Castiglione in Teverina",
+            "times": [
+              "21:15"
+            ],
+            "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/"
           }
         ]
       },
@@ -451,7 +483,7 @@
             "cinema": "Multisala Moderno",
             "town": "Bolsena",
             "times": [
-              "21:00"
+              "17:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/bolsena/6566/"
           }
@@ -481,7 +513,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "21:00"
+              "16:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
@@ -511,7 +543,7 @@
             "cinema": "Gallery",
             "town": "Montefiascone",
             "times": [
-              "16:00"
+              "21:00"
             ],
             "url": "https://www.mymovies.it/cinema/viterbo/montefiascone/5883/"
           }
@@ -563,7 +595,7 @@
             "title": "LA NOTTE DELLE FRAGOLE",
             "url": "https://www.mymovies.it/film/2026/la-notte-delle-fragole/",
             "times": [
-              "21:00"
+              "21:30"
             ]
           },
           {
@@ -577,7 +609,49 @@
             "title": "IL FUOCO CHE TI PORTI DENTRO",
             "url": "https://www.mymovies.it/film/2026/il-fuoco-che-ti-porti-dentro/",
             "times": [
-              "21:00"
+              "17:00"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Tevere",
+        "town": "Castiglione in Teverina",
+        "url": "https://www.mymovies.it/cinema/viterbo/castiglioneinteverina/6102/",
+        "films": [
+          {
+            "title": "HEXE - IL REGNO DELLE STREGHE",
+            "url": "https://www.mymovies.it/film/2026/hexe-il-regno-delle-streghe/",
+            "times": [
+              "21:30"
+            ]
+          },
+          {
+            "title": "HUNGER GAMES - L'ALBA SULLA MIETITURA",
+            "url": "https://www.mymovies.it/film/2026/hunger-games-lalba-sulla-mietitura/",
+            "times": [
+              "21:15"
+            ]
+          }
+        ]
+      },
+      {
+        "cinema": "Excelsior",
+        "town": "Cura",
+        "url": "https://www.mymovies.it/cinema/viterbo/cura/6173/",
+        "films": [
+          {
+            "title": "HEXE - IL REGNO DELLE STREGHE",
+            "url": "https://www.mymovies.it/film/2026/hexe-il-regno-delle-streghe/",
+            "times": [
+              "17:30"
+            ]
+          },
+          {
+            "title": "HUNGER GAMES - L'ALBA SULLA MIETITURA",
+            "url": "https://www.mymovies.it/film/2026/hunger-games-lalba-sulla-mietitura/",
+            "times": [
+              "21:30"
             ]
           }
         ]
@@ -598,21 +672,21 @@
             "title": "HUNGER GAMES - L'ALBA SULLA MIETITURA",
             "url": "https://www.mymovies.it/film/2026/hunger-games-lalba-sulla-mietitura/",
             "times": [
-              "17:30"
+              "18:00"
             ]
           },
           {
             "title": "SCROOGE E GLI SPIRITI DEL NATALE",
             "url": "https://www.mymovies.it/film/2026/scrooge-e-gli-spiriti-del-natale/",
             "times": [
-              "21:00"
+              "16:00"
             ]
           },
           {
             "title": "UN WEEKEND ARTIFICIALE",
             "url": "https://www.mymovies.it/film/2026/un-weekend-artificiale/",
             "times": [
-              "16:00"
+              "21:00"
             ]
           }
         ]
@@ -784,7 +858,7 @@
     "cinema": {
       "domain": "cinema",
       "expected": 16,
-      "found": 5,
+      "found": 7,
       "missing": [
         {
           "placeId": "place-cinema-olimpya-acquapendente",
@@ -801,23 +875,9 @@
           "severity": "info"
         },
         {
-          "placeId": "place-cinema-tevere-castiglione",
-          "placeName": "Tevere",
-          "municipality": "Castiglione in Teverina",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
           "placeId": "place-cinema-florida-civita-castellana",
           "placeName": "Florida",
           "municipality": "Civita Castellana",
-          "reason": "Sala censita senza programmazione nel sync odierno",
-          "severity": "warning"
-        },
-        {
-          "placeId": "place-cinema-excelsior-vetralla",
-          "placeName": "Excelsior",
-          "municipality": "Cura di Vetralla",
           "reason": "Sala censita senza programmazione nel sync odierno",
           "severity": "warning"
         },
@@ -864,7 +924,7 @@
           "severity": "warning"
         }
       ],
-      "checkedAt": "2026-11-26T15:39:11.531Z"
+      "checkedAt": "2026-11-27T15:29:27.946Z"
     }
   },
   "operationalAlerts": [
@@ -878,7 +938,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Acquapendente",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -891,20 +951,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Bolsena",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-tevere-castiglione",
-      "title": "Cinema senza dati: Tevere",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Castiglione in Teverina",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -917,20 +964,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Civita Castellana",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
-      }
-    },
-    {
-      "alertType": "place_silent",
-      "severity": "warning",
-      "territoryId": "IT-VT",
-      "placeId": "place-cinema-excelsior-vetralla",
-      "title": "Cinema senza dati: Excelsior",
-      "message": "Sala censita senza programmazione nel sync odierno",
-      "details": {
-        "domain": "cinema",
-        "municipality": "Cura di Vetralla",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -943,7 +977,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Montefiascone",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -956,7 +990,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Soriano nel Cimino",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -969,7 +1003,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Valentano",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -982,7 +1016,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Vasanello",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -995,7 +1029,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
@@ -1008,7 +1042,7 @@
       "details": {
         "domain": "cinema",
         "municipality": "Viterbo",
-        "checkedAt": "2026-11-26T15:39:11.531Z"
+        "checkedAt": "2026-11-27T15:29:27.946Z"
       }
     },
     {
